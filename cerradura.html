@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cerradura — Simulador de Puerta</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/fontawesome.min.css">
+    <style>
+        body {
+            background: radial-gradient(circle at top, #24324f 0%, #101725 100%);
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            padding: 20px;
+        }
+        .lock {
+            width: 360px; background: #1b2436; border-radius: 24px; padding: 26px;
+            box-shadow: 0 24px 60px rgba(0,0,0,.55); border: 1px solid rgba(255,255,255,.06);
+        }
+        .lock-head { text-align: center; color: #cdd7ec; margin-bottom: 14px; }
+        .lock-head .fa-lock { font-size: 34px; color: #6ea8fe; }
+        .lock-aula {
+            width: 100%; background: #0e1524; color: #e7edf9; border: 1px solid #2c3852;
+            border-radius: 12px; padding: 10px 12px; margin-bottom: 14px; font-size: .9rem;
+        }
+        .display {
+            background: #0b1220; border: 1px solid #2c3852; border-radius: 14px;
+            height: 64px; display: flex; align-items: center; justify-content: center;
+            letter-spacing: 14px; font-size: 2rem; font-weight: 700; color: #7ee2b8;
+            margin-bottom: 16px; padding-left: 14px;
+        }
+        .keys { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .key {
+            background: #263353; color: #eaf0fb; border: none; border-radius: 14px;
+            padding: 16px 0; font-size: 1.3rem; font-weight: 600; cursor: pointer;
+            transition: transform .06s ease, background .15s;
+        }
+        .key:hover { background: #33456e; }
+        .key:active { transform: scale(.94); }
+        .key.action { background: #b23a48; }
+        .key.action.ok { background: #12996a; }
+        .msg { margin-top: 16px; min-height: 24px; text-align: center; font-size: .9rem; }
+        .msg.ok { color: #6ee7b7; } .msg.err { color: #ff8a9c; }
+        .foot { text-align: center; margin-top: 10px; }
+        .foot a { color: #7fa7ff; font-size: .78rem; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="lock">
+        <div class="lock-head">
+            <i class="fas fa-lock" id="lockIcon"></i>
+            <h5 class="mt-2 mb-0">Cerradura Biométrica</h5>
+            <small class="text-muted">Teclea tu código OTP</small>
+        </div>
+
+        <select class="lock-aula" id="aula"></select>
+
+        <div class="display" id="display"></div>
+
+        <div class="keys">
+            <button class="key" onclick="tecla('1')">1</button>
+            <button class="key" onclick="tecla('2')">2</button>
+            <button class="key" onclick="tecla('3')">3</button>
+            <button class="key" onclick="tecla('4')">4</button>
+            <button class="key" onclick="tecla('5')">5</button>
+            <button class="key" onclick="tecla('6')">6</button>
+            <button class="key" onclick="tecla('7')">7</button>
+            <button class="key" onclick="tecla('8')">8</button>
+            <button class="key" onclick="tecla('9')">9</button>
+            <button class="key action" onclick="borrar()"><i class="fas fa-delete-left"></i></button>
+            <button class="key" onclick="tecla('0')">0</button>
+            <button class="key action ok" onclick="abrir()"><i class="fas fa-unlock"></i></button>
+        </div>
+
+        <div class="msg" id="msg"></div>
+        <div class="foot"><a href="usuario.html"><i class="fas fa-arrow-left me-1"></i>Volver al portal</a></div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        let codigo = '';
+        const disp = document.getElementById('display');
+        const msg = document.getElementById('msg');
+
+        function pintar() { disp.textContent = codigo.padEnd(6, '·'); }
+
+        function tecla(n) {
+            if (codigo.length >= 6) return;
+            codigo += n; msg.textContent = ''; msg.className = 'msg'; pintar();
+        }
+        function borrar() { codigo = codigo.slice(0, -1); pintar(); }
+
+        async function cargarAulas() {
+            try {
+                const d = await apiFetch('cerraduras.php');
+                document.getElementById('aula').innerHTML = d.aulas
+                    .map(a => `<option value="${a.id}">Puerta ${esc(a.codigo)} — ${esc(a.edificio)}</option>`).join('');
+                // permite fijar el aula por URL (?aula=ID), como una cerradura real fija
+                const p = new URLSearchParams(location.search).get('aula');
+                if (p) document.getElementById('aula').value = p;
+            } catch (e) { msg.textContent = e.message; msg.className = 'msg err'; }
+        }
+
+        async function abrir() {
+            if (codigo.length !== 6) {
+                msg.textContent = 'Ingresa los 6 dígitos.'; msg.className = 'msg err'; return;
+            }
+            const idAula = parseInt(document.getElementById('aula').value, 10);
+            try {
+                const d = await apiFetch('cerradura_abrir.php', { metodo: 'POST', datos: { id_aula: idAula, codigo } });
+                msg.textContent = d.mensaje; msg.className = 'msg ok';
+                document.getElementById('lockIcon').className = 'fas fa-lock-open';
+                setTimeout(() => {
+                    document.getElementById('lockIcon').className = 'fas fa-lock';
+                    codigo = ''; pintar();
+                }, 2500);
+            } catch (e) {
+                msg.textContent = e.message; msg.className = 'msg err';
+                codigo = ''; pintar();
+            }
+        }
+
+        pintar();
+        cargarAulas();
+    </script>
+</body>
+</html>

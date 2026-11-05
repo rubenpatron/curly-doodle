@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AulaSync | Infraestructura Invisible</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/fontawesome.min.css">
+    <link rel="stylesheet" href="css/aulasync_landing.css">
+</head>
+<body>
+    <!-- Nav -->
+    <nav>
+        <a href="#" class="logo">
+            <div class="logo-dot"></div>
+            AulaSync
+        </a>
+        <div class="nav-links">
+            <a href="#arquitectura">Arquitectura</a>
+            <a href="#hardware">Hardware</a>
+            <a href="login.html" class="btn btn-primary">Panel de Control</a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-content fade-up">
+            <h1>El acceso,<br><span>reimaginado.</span></h1>
+            <p>La sincronización perfecta entre el sistema de horarios académicos y las puertas físicas de tu campus. Entra al futuro.</p>
+            <a href="#arquitectura" class="btn btn-accent" style="padding: 1rem 2rem; font-size: 1.1rem;">Descubre cómo funciona</a>
+        </div>
+        <div class="hero-visual fade-up" style="transition-delay: 0.2s;">
+            <!-- Abstract 3D Render -->
+            <img src="images/abstract.png" alt="Abstract Sync Concept" class="abstract-img">
+        </div>
+    </section>
+
+    <!-- Asymmetric Bento Box Section -->
+    <section id="arquitectura" class="bento-section">
+        <div class="section-header fade-up">
+            <h2>Gestión de aulas que funciona como magia.</h2>
+        </div>
+        
+        <div class="bento-grid">
+            
+            <!-- Large Card with Image -->
+            <div class="bento-card card-large fade-up">
+                <div class="card-large-content">
+                    <h3>Hardware Invisible</h3>
+                    <p>Nuestros nodos inteligentes se integran a la perfección con la arquitectura de tus aulas. Materiales premium, respuesta instantánea y conexión en tiempo real con el panel de administración central.</p>
+                </div>
+                <div class="card-large-image">
+                    <!-- Smart Lock 3D Render -->
+                    <img src="images/lock.png" alt="Smart Lock Render">
+                </div>
+            </div>
+
+            <!-- Small Card 1 -->
+            <div class="bento-card card-small fade-up">
+                <div class="icon-box">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+                <h3>Sincronización Total</h3>
+                <p>Las cerraduras consultan la base de datos académica y autorizan el acceso únicamente al profesor titular en su horario asignado.</p>
+            </div>
+
+            <!-- Small Card 2 -->
+            <div class="bento-card card-small fade-up" style="transition-delay: 0.1s;">
+                <div class="icon-box">
+                    <i class="fa-solid fa-mobile-screen-button"></i>
+                </div>
+                <h3>Autenticación OTP Dinámica</h3>
+                <p>Acceso seguro y sin llaves. Generación de códigos de un solo uso (OTP) sincronizados en tiempo real directamente al panel de control del docente autorizado.</p>
+            </div>
+
+            <!-- Small Card 3 -->
+            <div class="bento-card card-small fade-up" style="transition-delay: 0.2s;">
+                <div class="icon-box" style="background: rgba(30, 41, 59, 0.1); color: var(--primary);">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h3>Auditoría Inmutable</h3>
+                <p>Registros en tiempo real de cada apertura, cierre y solicitud de soporte. Todo controlado desde tu dashboard principal.</p>
+            </div>
+
+            <!-- Small Card 4 -->
+            <div class="bento-card card-small fade-up" style="transition-delay: 0.3s;">
+                <div class="icon-box" style="background: rgba(30, 41, 59, 0.1); color: var(--primary);">
+                    <i class="fa-solid fa-bolt"></i>
+                </div>
+                <h3>Cero Retrasos</h3>
+                <p>Olvida la logística de las llaves físicas. El acceso es instantáneo, ahorrando miles de horas académicas al semestre.</p>
+            </div>
+
+            <!-- Medium Card 1 (Span 6) -->
+            <div class="bento-card fade-up" style="grid-column: span 6; transition-delay: 0.4s;">
+                <div class="icon-box" style="background: rgba(15, 204, 146, 0.1); color: var(--accent);">
+                    <i class="fa-solid fa-person-chalkboard"></i>
+                </div>
+                <h3>Autogestión de Aulas</h3>
+                <p>Los docentes pueden solicitar cambios de aula o espacios extra directamente desde su portal. <strong>Una vez que el administrador autoriza la solicitud</strong>, el sistema asigna el espacio y actualiza los permisos criptográficos de la cerradura en milisegundos.</p>
+            </div>
+
+            <!-- Medium Card 2 (Span 6) -->
+            <div class="bento-card fade-up" style="grid-column: span 6; transition-delay: 0.5s;">
+                <div class="icon-box" style="background: rgba(30, 41, 59, 0.1); color: var(--primary);">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                </div>
+                <h3>Restricción Estricta de Horario</h3>
+                <p>La seguridad es prioritaria: <strong>los docentes solo pueden acceder estrictamente durante su horario asignado</strong>. La puerta se mantiene inquebrantable fuera de esa ventana, impidiendo el uso no autorizado de instalaciones fuera de los bloques de clase.</p>
+            </div>
+            
+        </div>
+    </section>
+
+    <!-- Hardware Section -->
+    <section id="hardware" class="hardware-section">
+        <div class="hardware-container">
+            <div class="hardware-text fade-up">
+                <h2>Diseñado para el mundo físico.</h2>
+                <p>Nuestros nodos IoT inteligentes se instalan directamente en las puertas del campus, comunicándose en tiempo real con el servidor de carga académica para validar la apertura instantánea mediante códigos OTP y control de accesos.</p>
+                
+                <ul class="hardware-specs">
+                    <li>
+                        <div class="spec-icon"><i class="fa-solid fa-microchip"></i></div>
+                        <div><strong>Procesamiento Edge:</strong> Validación criptográfica local de OTP en menos de 0.2s.</div>
+                    </li>
+                    <li>
+                        <div class="spec-icon"><i class="fa-solid fa-wifi"></i></div>
+                        <div><strong>Conectividad IoT:</strong> Sincronización encriptada en tiempo real.</div>
+                    </li>
+                    <li>
+                        <div class="spec-icon"><i class="fa-solid fa-battery-full"></i></div>
+                        <div><strong>Respaldo de Energía:</strong> Batería interna de seguridad.</div>
+                    </li>
+                    <li>
+                        <div class="spec-icon"><i class="fa-solid fa-keyboard"></i></div>
+                        <div><strong>Teclado Táctil Capacitivo:</strong> Ingreso de códigos dinámicos (OTP) con retroiluminación adaptativa e interfaz invisible.</div>
+                    </li>
+                </ul>
+            </div>
+            <div class="hardware-visual fade-up" style="transition-delay: 0.2s;">
+                <img src="images/lock.png" alt="Hardware Smart Lock">
+            </div>
+        </div>
+    </section>
+
+    <!-- Clean CTA -->
+    <section class="cta-section fade-up">
+        <h2>Listo para modernizar tu campus.</h2>
+        <div style="margin-top: 3rem;">
+            <a href="login.html" class="btn btn-primary" style="padding: 1.25rem 2.5rem; font-size: 1.1rem;">Ingresar al Sistema</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="logo">
+            <div class="logo-dot"></div>
+            AulaSync
+        </div>
+        <div style="color: var(--text-secondary); font-size: 0.9rem;">
+            &copy; 2026. Diseñado para el futuro de la educación.
+        </div>
+    </footer>
+
+    <!-- Scroll Animation Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.fade-up').forEach((el) => observer.observe(el));
+        });
+    </script>
+</body>
+</html>

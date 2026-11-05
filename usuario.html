@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Horario — Portal Docente</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/fontawesome.min.css">
+    <link rel="stylesheet" href="css/custom.css?v=1.3">
+    <style>
+        /* Fallback / Enforcement for tab visibility */
+        .tab-content > .tab-pane { display: none !important; }
+        .tab-content > .tab-pane.active { display: block !important; }
+        
+        /* Ensure basic styling is present even if custom.css is cached */
+        .class-card { display: flex; background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .class-time { background: #f8fafc; padding: 1rem; min-width: 100px; display: flex; align-items: center; justify-content: center; border-right: 1px solid #e2e8f0; }
+        .time-badge { text-align: center; font-weight: 700; color: #1a2e5a; }
+        .class-content { padding: 1rem 1.25rem; flex: 1; }
+        .class-actions { padding: 1rem; display: flex; align-items: center; justify-content: center; border-left: 1px dashed #e2e8f0; background: #f8fafc; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
+
+    <div class="app-wrapper">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar sidebar-light" id="sidebar">
+            <div class="sidebar-brand">
+                <div class="sidebar-brand-icon"><i class="fas fa-fingerprint"></i></div>
+                <div class="sidebar-brand-text">
+                    <h5>Aulas Inteligentes</h5>
+                    <small>Portal Docente</small>
+                </div>
+            </div>
+
+            <div class="sidebar-section-title">Navegación</div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-link active" data-section="section-horario" onclick="switchSection(this, event)">
+                    <i class="fas fa-calendar-week"></i><span>Mi Horario</span>
+                </a>
+                <a href="#" class="nav-link" data-section="section-puerta" onclick="switchSection(this, event)">
+                    <i class="fas fa-door-open"></i><span>Abrir Puerta (OTP)</span>
+                </a>
+                <a href="#" class="nav-link" data-section="section-solicitar" onclick="switchSection(this, event)">
+                    <i class="fas fa-plus-square"></i><span>Solicitar Aula</span>
+                </a>
+                <a href="#" class="nav-link" data-section="section-historial" onclick="switchSection(this, event)">
+                    <i class="fas fa-history"></i><span>Historial</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-section-title">Cuenta</div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-link" style="color: var(--danger-color);" onclick="apiLogout(); return false;">
+                    <i class="fas fa-sign-out-alt"></i><span>Cerrar Sesión</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+
+            <header class="top-navbar">
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-sm btn-outline-secondary d-lg-none" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="page-title" id="pageTitle">Mi Horario Académico</h1>
+                </div>
+                <div class="navbar-actions">
+                    <div class="user-profile-btn">
+                        <div class="user-avatar" id="userAvatar">--</div>
+                        <div class="user-info d-none d-md-block">
+                            <div class="user-name" id="userName">Cargando...</div>
+                            <div class="user-role" id="userRole">Docente</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content animate-fade-in">
+
+                <!-- ===== MI HORARIO ===== -->
+                <div class="app-section active" id="section-horario">
+                    <div class="section-header">
+                        <h2>Mi Horario Semanal</h2>
+                        <p id="docenteInfo">Clases obtenidas de la base de datos académica</p>
+                    </div>
+                    <div id="horarioContenedor">
+                        <div class="text-center text-muted py-5">
+                            <i class="fas fa-spinner fa-spin fa-2x"></i>
+                            <p class="mt-2">Cargando horario...</p>
+                        </div>
+                    </div>
+                    <div class="alert alert-info d-flex align-items-start gap-3 py-3 mt-3" role="alert">
+                        <i class="fas fa-info-circle fa-2x"></i>
+                        <div>
+                            <h6 class="alert-heading mb-1">Acceso a las aulas</h6>
+                            <p class="mb-0">Puedes abrir la puerta de cualquiera de tus aulas solicitando un código OTP desde la sección <strong>Abrir Puerta</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== ABRIR PUERTA (OTP) ===== -->
+                <div class="app-section" id="section-puerta">
+                    <div class="section-header">
+                        <h2><i class="fas fa-door-open me-2" style="color: var(--secondary);"></i>Abrir Puerta con OTP</h2>
+                        <p>Solicita un código temporal para una de tus aulas autorizadas</p>
+                    </div>
+
+                    <div class="content-card">
+                        <div class="content-card-body">
+                            <div class="alert alert-secondary d-flex align-items-start gap-2" role="alert">
+                                <i class="fas fa-circle-info mt-1"></i>
+                                <div>Solo aparecen las aulas de tu horario. El código se teclea en la
+                                <strong>cerradura física</strong> de la puerta (aquí puedes abrir un simulador).</div>
+                            </div>
+                            <div class="row g-3 align-items-end">
+                                <div class="col-md-8">
+                                    <label class="form-label">Aula autorizada</label>
+                                    <select class="form-select" id="otpAula"></select>
+                                </div>
+                                <div class="col-md-4">
+                                    <button class="btn btn-primary w-100" onclick="solicitarOTP()">
+                                        <i class="fas fa-paper-plane me-1"></i>Solicitar OTP
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="otpPanel" class="mt-4" style="display:none;">
+                                <div class="text-center p-4 rounded" style="background: linear-gradient(135deg, var(--accent), var(--secondary));">
+                                    <p class="text-white mb-2"><i class="fas fa-shield-alt me-2"></i>CÓDIGO OTP</p>
+                                    <h1 class="display-4 text-white fw-bold" id="otpCodigo">------</h1>
+                                    <p class="text-white mb-0" id="otpVigencia"></p>
+                                </div>
+
+                                <div class="alert alert-warning mt-3 mb-0">
+                                    <i class="fas fa-keyboard me-1"></i>
+                                    Dirígete a la puerta del aula <strong id="otpAulaNombre"></strong> y teclea este código en la cerradura.
+                                </div>
+                                <div class="text-center mt-3">
+                                    <a class="btn btn-outline-primary" id="otpAbrirCerradura" target="_blank">
+                                        <i class="fas fa-door-open me-1"></i>Abrir simulador de cerradura
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== SOLICITAR AULA ===== -->
+                <div class="app-section" id="section-solicitar">
+                    <div class="section-header">
+                        <h2><i class="fas fa-plus-square me-2" style="color: var(--secondary);"></i>Solicitar Aula Excepcional</h2>
+                        <p>Para eventos fuera de horario o cambio de aula asignada</p>
+                    </div>
+
+                    <div class="content-card">
+                        <div class="content-card-body">
+                            <form id="formSolicitud" onsubmit="enviarSolicitud(event)" novalidate>
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Tipo de Solicitud</label>
+                                    <div class="d-flex gap-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="tipoSolicitud" id="tipoAdicional" value="aula_adicional" checked onchange="toggleAulaOriginal()">
+                                            <label class="form-check-label" for="tipoAdicional">
+                                                <i class="fas fa-plus-circle me-1 text-success"></i>Aula adicional
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="tipoSolicitud" id="tipoCambio" value="cambio_aula" onchange="toggleAulaOriginal()">
+                                            <label class="form-check-label" for="tipoCambio">
+                                                <i class="fas fa-exchange-alt me-1 text-warning"></i>Cambio de aula asignada
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row g-3">
+                                    <div class="col-md-12">
+                                        <label class="form-label">Materia</label>
+                                        <select class="form-select" id="solMateria"></select>
+                                    </div>
+                                    <div class="col-md-6" id="grupoAulaOriginal" style="display:none;">
+                                        <label class="form-label">Aula Original (asignada)</label>
+                                        <select class="form-select" id="solAulaOriginal"></select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Aula Solicitada</label>
+                                        <select class="form-select" id="solAulaSolicitada"></select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Fecha</label>
+                                        <input type="date" class="form-control" id="solFecha">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Hora inicio</label>
+                                        <input type="time" class="form-control" id="solHoraInicio">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Hora fin</label>
+                                        <input type="time" class="form-control" id="solHoraFin">
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Motivo Breve</label>
+                                        <input type="text" class="form-control" id="solMotivo" maxlength="200" placeholder="Ej: Asesoría de tesis grupal">
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Justificación Detallada (opcional)</label>
+                                        <textarea class="form-control" id="solJustificacion" rows="3" maxlength="2000" placeholder="Explique por qué necesita esta aula..."></textarea>
+                                    </div>
+                                </div>
+
+                                <div id="solError" class="alert alert-danger mt-3" style="display:none;"></div>
+
+                                <div class="d-flex gap-2 justify-content-end mt-4">
+                                    <button type="reset" class="btn btn-outline-secondary"><i class="fas fa-times me-1"></i>Limpiar</button>
+                                    <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane me-1"></i>Enviar Solicitud</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <h5 class="mt-5 mb-3">Mis Solicitudes</h5>
+                    <div id="misSolicitudes">
+                        <p class="text-muted">Cargando...</p>
+                    </div>
+                </div>
+
+                <!-- ===== HISTORIAL ===== -->
+                <div class="app-section" id="section-historial">
+                    <div class="section-header">
+                        <h2><i class="fas fa-history me-2"></i>Historial de Accesos</h2>
+                        <p>Registro de tus aperturas de puerta</p>
+                    </div>
+                    <div class="content-card">
+                        <div class="content-card-body" id="historialContenedor">
+                            <p class="text-muted">Cargando...</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Éxito genérico -->
+    <div class="modal fade" id="modalExito" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 16px; border: none;">
+                <div class="modal-header" id="modalHeader" style="background: linear-gradient(135deg, #0fcc92, #0aad7a); color: white; border-radius: 16px 16px 0 0;">
+                    <h5 class="modal-title" id="modalTitle"><i class="fas fa-check-circle me-2"></i>Listo</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <i class="fas fa-check fa-3x text-success mb-3" id="modalIcon"></i>
+                    <p class="mb-0" id="modalExitoText"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" id="modalBtn" data-bs-dismiss="modal">Entendido</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        let AULAS = [];
+        let AULAS_AUT = [];
+        let MI_HORARIO = [];
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('sidebarBackdrop').classList.toggle('active');
+        }
+
+        function switchSection(el, event) {
+            event.preventDefault();
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            el.classList.add('active');
+            const id = el.dataset.section;
+            document.querySelectorAll('.app-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            const titulos = {
+                'section-horario': 'Mi Horario Académico',
+                'section-puerta': 'Abrir Puerta (OTP)',
+                'section-solicitar': 'Solicitar Aula',
+                'section-historial': 'Historial',
+            };
+            document.getElementById('pageTitle').textContent = titulos[id];
+        }
+
+        function modalAviso(exito, msg) {
+            const header = document.getElementById('modalHeader');
+            const icon = document.getElementById('modalIcon');
+            const title = document.getElementById('modalTitle');
+            const btn = document.getElementById('modalBtn');
+            if (exito) {
+                header.style.background = 'linear-gradient(135deg, #0fcc92, #0aad7a)';
+                icon.className = 'fas fa-check-circle fa-3x text-success mb-3';
+                title.innerHTML = '<i class="fas fa-check-circle me-2"></i>Listo';
+                btn.className = 'btn btn-success';
+            } else {
+                header.style.background = 'linear-gradient(135deg, #e74c5e, #c93d4f)';
+                icon.className = 'fas fa-times-circle fa-3x text-danger mb-3';
+                title.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>No se pudo completar';
+                btn.className = 'btn btn-danger';
+            }
+            document.getElementById('modalExitoText').textContent = msg;
+            new bootstrap.Modal(document.getElementById('modalExito')).show();
+        }
+
+        function modalExito(msg) { modalAviso(true, msg); }
+
+        function iniciales(nombre) {
+            return nombre.split(/\s+/).slice(0, 2).map(p => p[0] || '').join('').toUpperCase();
+        }
+
+        // ---------- Carga inicial ----------
+        async function init() {
+            const u = await apiExigirSesion('docente');
+            document.getElementById('userName').textContent = u.nombre;
+            const avatar = document.getElementById('userAvatar');
+            if (u.foto) {
+                avatar.textContent = '';
+                avatar.style.backgroundImage = `url('${u.foto}')`;
+                avatar.style.backgroundSize = 'cover';
+                avatar.style.backgroundPosition = 'center';
+            } else {
+                avatar.textContent = iniciales(u.nombre);
+            }
+            document.getElementById('userRole').textContent = u.matricula ? ('Docente · ' + u.matricula) : 'Docente';
+            document.getElementById('docenteInfo').textContent =
+                'Docente: ' + u.nombre + (u.matricula ? ' · Matrícula: ' + u.matricula : '') + ' — horario obtenido de la base de datos académica';
+
+            await Promise.all([cargarHorario(), cargarAulas(), cargarSolicitudes(), cargarHistorial()]);
+        }
+
+        // ---------- Horario ----------
+        async function cargarHorario() {
+            const cont = document.getElementById('horarioContenedor');
+            try {
+                const d = await apiFetch('horarios.php');
+                MI_HORARIO = d.horario;
+                if (!MI_HORARIO.length) {
+                    cont.innerHTML = '<p class="text-muted">No tienes clases asignadas.</p>';
+                    return;
+                }
+                const dias = {};
+                MI_HORARIO.forEach(c => { (dias[c.dia_nombre] ??= []).push(c); });
+                // Track current day (1 = Lunes ... 7 = Domingo)
+                let todayNum = new Date().getDay();
+                if (todayNum === 0) todayNum = 7;
+                const nombresDias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+                let activeDiaName = nombresDias[todayNum - 1];
+                
+                // Si hoy no tiene clases, activar el primer día que tenga
+                if (!dias[activeDiaName]) {
+                    activeDiaName = Object.keys(dias)[0];
+                }
+
+                // Generar Tabs
+                let html = '<div class="schedule-tabs">';
+                for (const dia of Object.keys(dias)) {
+                    const isActive = dia === activeDiaName ? 'active' : '';
+                    html += `<a class="nav-link ${isActive}" data-bs-toggle="pill" href="#tab-${dia}" onclick="switchScheduleTab(event, '${dia}')">${esc(dia)}</a>`;
+                }
+                html += '</div><div class="tab-content">';
+
+                for (const [dia, clases] of Object.entries(dias)) {
+                    const isActive = dia === activeDiaName ? 'show active' : '';
+                    html += `<div class="tab-pane fade ${isActive}" id="tab-${dia}">`;
+                    
+                    clases.forEach(c => {
+                        html += `<div class="class-card">
+                            <div class="class-time"><div class="time-badge">${esc(c.hora_inicio)}<small>${esc(c.hora_fin)}</small></div></div>
+                            <div class="class-content">
+                                <h5>${esc(c.materia)}</h5>
+                                <p><i class="fas fa-door-open me-2"></i>Aula ${esc(c.aula)} (${esc(c.edificio)})</p>
+                                <p><i class="fas fa-users me-2"></i>Cap. ${esc(c.capacidad)} · ${esc(c.materia_codigo)}</p>
+                            </div>
+                            <div class="class-actions">
+                                <button class="btn btn-primary" onclick="abrirPuertaDesdeHorario(${c.id_aula})">
+                                    <i class="fas fa-key me-1"></i>Abrir Puerta
+                                </button>
+                            </div>
+                        </div>`;
+                    });
+                    html += '</div>';
+                }
+                html += '</div>';
+                cont.innerHTML = html;
+            } catch (e) {
+                cont.innerHTML = `<p class="text-danger">Error al cargar: ${esc(e.message)}</p>`;
+            }
+        }
+
+        function switchScheduleTab(e, dia) {
+            e.preventDefault();
+            document.querySelectorAll('.schedule-tabs .nav-link').forEach(el => el.classList.remove('active'));
+            e.currentTarget.classList.add('active');
+            document.querySelectorAll('#horarioContenedor .tab-pane').forEach(el => {
+                el.classList.remove('show', 'active');
+            });
+            document.getElementById('tab-' + dia).classList.add('show', 'active');
+        }
+
+        function abrirPuertaDesdeHorario(idAula) {
+            document.querySelector('[data-section="section-puerta"]').click();
+            document.getElementById('otpAula').value = String(idAula);
+            solicitarOTP();
+        }
+
+        // ---------- Aulas ----------
+        async function cargarAulas() {
+            // Todas las aulas -> formulario de solicitud excepcional
+            const d = await apiFetch('aulas.php');
+            AULAS = d.aulas;
+            const opts = AULAS.map(a => `<option value="${a.id}">${esc(a.codigo)} — ${esc(a.edificio)} (cap. ${esc(a.capacidad)})</option>`).join('');
+            document.getElementById('solAulaSolicitada').innerHTML = opts;
+            document.getElementById('solAulaOriginal').innerHTML = opts;
+
+            const dmat = await apiFetch('materias.php');
+            document.getElementById('solMateria').innerHTML = dmat.materias.map(m => `<option value="${m.id}">${esc(m.codigo)} — ${esc(m.nombre)}</option>`).join('');
+
+            // Solo aulas autorizadas -> apertura de puerta (OTP)
+            const da = await apiFetch('aulas_autorizadas.php');
+            AULAS_AUT = da.aulas;
+            const otpSel = document.getElementById('otpAula');
+            otpSel.innerHTML = AULAS_AUT.length
+                ? AULAS_AUT.map(a => {
+                    const estado = a.activa_ahora ? '✓ disponible ahora' : '⏳ fuera de horario';
+                    return `<option value="${a.id}">${esc(a.codigo)} — ${esc(a.edificio)} (${estado})</option>`;
+                  }).join('')
+                : '<option value="">(Sin aulas asignadas en tu horario)</option>';
+        }
+
+        // ---------- OTP ----------
+        async function solicitarOTP() {
+            const idAula = parseInt(document.getElementById('otpAula').value, 10);
+            if (!idAula) { modalAviso(false, 'No tienes aulas autorizadas para abrir.'); return; }
+            try {
+                const d = await apiFetch('otp_solicitar.php', { metodo: 'POST', datos: { id_aula: idAula } });
+                document.getElementById('otpPanel').style.display = 'block';
+                document.getElementById('otpCodigo').textContent = d.codigo;
+                document.getElementById('otpVigencia').textContent = d.mensaje;
+                document.getElementById('otpAulaNombre').textContent = d.aula;
+                document.getElementById('otpAbrirCerradura').href = 'cerradura.html?aula=' + idAula;
+            } catch (e) {
+                document.getElementById('otpPanel').style.display = 'none';
+                modalAviso(false, e.message);
+            }
+        }
+
+        // ---------- Solicitudes ----------
+        function toggleAulaOriginal() {
+            const esCambio = document.getElementById('tipoCambio').checked;
+            document.getElementById('grupoAulaOriginal').style.display = esCambio ? 'block' : 'none';
+        }
+
+        function validarSolicitudCliente() {
+            const motivo = document.getElementById('solMotivo').value.trim();
+            const fecha = document.getElementById('solFecha').value;
+            const hi = document.getElementById('solHoraInicio').value;
+            const hf = document.getElementById('solHoraFin').value;
+            if (!fecha) return 'Selecciona una fecha.';
+            if (!hi || !hf) return 'Indica la hora de inicio y fin.';
+            if (motivo.length < 3) return 'El motivo debe tener al menos 3 caracteres.';
+            return null;
+        }
+
+        async function enviarSolicitud(event) {
+            event.preventDefault();
+            const err = document.getElementById('solError');
+            err.style.display = 'none';
+            const errCliente = validarSolicitudCliente();
+            if (errCliente) { err.textContent = errCliente; err.style.display = 'block'; return; }
+
+            const tipo = document.querySelector('input[name="tipoSolicitud"]:checked').value;
+            const datos = {
+                tipo,
+                id_materia: parseInt(document.getElementById('solMateria').value, 10),
+                id_aula_solicitada: parseInt(document.getElementById('solAulaSolicitada').value, 10),
+                fecha: document.getElementById('solFecha').value,
+                hora_inicio: document.getElementById('solHoraInicio').value,
+                hora_fin: document.getElementById('solHoraFin').value,
+                motivo: document.getElementById('solMotivo').value.trim(),
+                justificacion: document.getElementById('solJustificacion').value.trim(),
+            };
+            if (tipo === 'cambio_aula') {
+                datos.id_aula_original = parseInt(document.getElementById('solAulaOriginal').value, 10);
+            }
+            try {
+                await apiFetch('solicitudes.php', { metodo: 'POST', datos });
+                document.getElementById('formSolicitud').reset();
+                toggleAulaOriginal();
+                modalExito('Solicitud enviada. Un administrador la revisará.');
+                cargarSolicitudes();
+            } catch (e) {
+                err.textContent = e.message;
+                err.style.display = 'block';
+            }
+        }
+
+        const BADGE_ESTADO = {
+            pendiente: 'bg-warning text-dark', aprobada: 'bg-success',
+            rechazada: 'bg-danger', cancelada: 'bg-secondary',
+        };
+
+        async function cargarSolicitudes() {
+            const cont = document.getElementById('misSolicitudes');
+            try {
+                const d = await apiFetch('solicitudes.php');
+                if (!d.solicitudes.length) { cont.innerHTML = '<p class="text-muted">Aún no tienes solicitudes.</p>'; return; }
+                cont.innerHTML = d.solicitudes.map(s => `
+                    <div class="content-card mb-3" style="border-left:4px solid var(--secondary);">
+                        <div class="content-card-body">
+                            <span class="badge ${BADGE_ESTADO[s.estado]} mb-2">${esc(s.estado.toUpperCase())}</span>
+                            <h6>${esc(s.aula_solicitada)} — ${esc(s.motivo)}</h6>
+                            <p class="text-muted mb-1"><i class="fas fa-calendar me-1"></i>${esc(s.fecha)} · ${esc(s.hora_inicio)}-${esc(s.hora_fin)}</p>
+                            <small class="text-muted">${esc(s.tipo === 'cambio_aula' ? 'Cambio desde ' + (s.aula_original || '—') : 'Aula adicional')}</small>
+                            ${s.comentarios_admin ? `<div class="alert alert-light mt-2 mb-0"><i class="fas fa-comment me-1"></i>${esc(s.comentarios_admin)}</div>` : ''}
+                        </div>
+                    </div>`).join('');
+            } catch (e) {
+                cont.innerHTML = `<p class="text-danger">${esc(e.message)}</p>`;
+            }
+        }
+
+        // ---------- Historial ----------
+        async function cargarHistorial() {
+            const cont = document.getElementById('historialContenedor');
+            try {
+                const d = await apiFetch('accesos.php');
+                if (!d.accesos.length) { cont.innerHTML = '<p class="text-muted">Sin accesos registrados.</p>'; return; }
+                cont.innerHTML = d.accesos.map(a => `
+                    <div class="history-item">
+                        <div class="history-dot ${a.resultado === 'exitoso' ? 'dot-success' : 'dot-denied'}"></div>
+                        <div class="history-info">
+                            <strong>${a.resultado === 'exitoso' ? 'Puerta abierta' : 'Acceso denegado'} — ${esc(a.aula)}</strong>
+                            <span>${esc(a.tipo_acceso.toUpperCase())} · ${esc(a.detalle || '')}</span>
+                        </div>
+                        <div class="history-time">${esc(a.fecha_hora)}</div>
+                    </div>`).join('');
+            } catch (e) {
+                cont.innerHTML = `<p class="text-danger">${esc(e.message)}</p>`;
+            }
+        }
+
+        init();
+    </script>
+
+</body>
+</html>

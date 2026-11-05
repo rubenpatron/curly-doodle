@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Panel de administración IoT para el sistema de Aulas Inteligentes Biométricas. Monitoreo en tiempo real de cerraduras, nodos y accesos.">
+    <title>Dashboard IoT — Aulas Inteligentes</title>
+
+    <!-- Bootstrap 5.3 Local -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- Font Awesome Local -->
+    <link rel="stylesheet" href="css/fontawesome.min.css">
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/custom.css">
+</head>
+<body>
+
+    <!-- Sidebar Backdrop (Mobile) -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
+
+    <div class="app-wrapper">
+
+        <!-- ============================================ -->
+        <!-- SIDEBAR (Dark Admin)                         -->
+        <!-- ============================================ -->
+        <aside class="sidebar" id="sidebar">
+
+            <!-- Brand -->
+            <div class="sidebar-brand">
+                <div class="sidebar-brand-icon">
+                    <i class="fas fa-fingerprint"></i>
+                </div>
+                <div class="sidebar-brand-text">
+                    <h5>Aulas Inteligentes</h5>
+                    <small>Sistema IoT de Control</small>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="sidebar-section-title">Monitor IoT</div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-link active" data-section="section-dashboard" onclick="switchSection(this, event)">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard General</span>
+                </a>
+                <a href="#" class="nav-link" data-section="section-cerraduras" onclick="switchSection(this, event)">
+                    <i class="fas fa-door-closed"></i>
+                    <span>Estado de Cerraduras</span>
+                </a>
+                <a href="#" class="nav-link" data-section="section-logs" onclick="switchSection(this, event)">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Logs de Acceso</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-section-title">Gestión Académica</div>
+            <nav class="sidebar-nav">
+                <a href="admin_horarios.html" class="nav-link" style="cursor: pointer;">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Carga Académica</span>
+                </a>
+                <a href="admin_solicitudes.html" class="nav-link" style="cursor: pointer;">
+                    <i class="fas fa-inbox"></i>
+                    <span>Solicitudes</span>
+                </a>
+                <a href="#" class="nav-link" data-section="section-edificios" onclick="switchSection(this, event)">
+                    <i class="fas fa-building"></i>
+                    <span>Edificios y Aulas</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-section-title">Configuración</div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-link" data-section="section-ajustes" onclick="switchSection(this, event)">
+                    <i class="fas fa-cogs"></i>
+                    <span>Ajustes del Sistema</span>
+                </a>
+                <a href="#" class="nav-link" data-section="section-seguridad" onclick="switchSection(this, event)">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Seguridad</span>
+                </a>
+            </nav>
+
+            <!-- Logout -->
+            <div class="sidebar-section-title">Sesión</div>
+            <nav class="sidebar-nav">
+                <a href="login.html" class="nav-link" style="color: #e74c5e;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Cerrar Sesión</span>
+                </a>
+            </nav>
+
+            <!-- Sidebar Footer -->
+            <div class="mt-auto p-3 border-top" style="border-color: rgba(255,255,255,0.06) !important;">
+                <div class="d-flex align-items-center gap-2 px-2">
+                    <div style="width:8px; height:8px; background: var(--accent); border-radius:50%;"></div>
+                    <small class="text-muted" style="font-size: 0.7rem;">Sistema operativo · v2.4.1</small>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ============================================ -->
+        <!-- MAIN CONTENT                                 -->
+        <!-- ============================================ -->
+        <div class="main-content">
+
+            <!-- Top Navbar -->
+            <header class="top-navbar">
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-sm btn-outline-secondary d-lg-none" onclick="toggleSidebar()" id="sidebarToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="page-title" id="pageTitle">
+                        Monitoreo IoT
+                        <small class="d-none d-md-inline" id="pageSubtitle">Infraestructura en Tiempo Real</small>
+                    </h1>
+                </div>
+                <div class="navbar-actions">
+                    <div class="navbar-icon-btn" title="Buscar">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="navbar-icon-btn" title="Notificaciones">
+                        <i class="fas fa-bell"></i>
+                        <div class="notification-dot"></div>
+                    </div>
+                    <div class="user-profile-btn" id="userDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="user-avatar">AS</div>
+                        <div class="user-info d-none d-md-block">
+                            <div class="user-name">Admin. Sistemas</div>
+                            <div class="user-role">Superusuario</div>
+                        </div>
+                        <i class="fas fa-chevron-down ms-1" style="font-size: 0.6rem; color: var(--text-muted);"></i>
+                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdownBtn">
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Mi Perfil</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="switchSectionById('section-ajustes')"><i class="fas fa-cog me-2"></i>Configuración</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="login.html"><i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</a></li>
+                    </ul>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="page-content animate-fade-in">
+
+                <!-- ===== SECTION: Dashboard General ===== -->
+                <div class="app-section active" id="section-dashboard">
+
+                    <!-- KPI Cards Row -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-sm-6 col-xl-3">
+                            <div class="stat-card card-success">
+                                <div class="stat-card-header">
+                                    <div>
+                                        <div class="stat-card-label">Nodos Activos</div>
+                                        <div class="stat-card-value">42 <small>/ 45</small></div>
+                                    </div>
+                                    <div class="stat-card-icon icon-success"><i class="fas fa-wifi"></i></div>
+                                </div>
+                                <div class="stat-card-footer text-success"><i class="fas fa-arrow-up me-1"></i>93% Cobertura de red</div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xl-3">
+                            <div class="stat-card card-info">
+                                <div class="stat-card-header">
+                                    <div>
+                                        <div class="stat-card-label">Aulas Ocupadas</div>
+                                        <div class="stat-card-value">18</div>
+                                    </div>
+                                    <div class="stat-card-icon icon-info"><i class="fas fa-users"></i></div>
+                                </div>
+                                <div class="stat-card-footer text-muted"><i class="fas fa-clock me-1"></i>En este momento</div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xl-3">
+                            <div class="stat-card card-warning">
+                                <div class="stat-card-header">
+                                    <div>
+                                        <div class="stat-card-label">Fallas Autenticación</div>
+                                        <div class="stat-card-value">3</div>
+                                    </div>
+                                    <div class="stat-card-icon icon-warning"><i class="fas fa-fingerprint"></i></div>
+                                </div>
+                                <div class="stat-card-footer" style="color: var(--warning-color);"><i class="fas fa-exclamation-circle me-1"></i>Últimas 24 horas</div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xl-3">
+                            <div class="stat-card card-danger">
+                                <div class="stat-card-header">
+                                    <div>
+                                        <div class="stat-card-label">Nodos Desconectados</div>
+                                        <div class="stat-card-value" style="color: var(--danger-color);">3</div>
+                                    </div>
+                                    <div class="stat-card-icon icon-danger"><i class="fas fa-exclamation-triangle"></i></div>
+                                </div>
+                                <div class="stat-card-footer text-muted"><i class="fas fa-wrench me-1"></i>Requieren revisión física</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Floor Plan + Live Telemetry -->
+                    <div class="row g-3">
+                        <div class="col-lg-8">
+                            <div class="content-card">
+                                <div class="content-card-header">
+                                    <h6 id="mapTitle"><i class="fas fa-map me-2" style="color: var(--secondary);"></i>Plano Interactivo — Edificio A</h6>
+                                    <div class="d-flex gap-2">
+                                        <select class="form-select form-select-sm" style="width: auto; font-size: 0.78rem;" id="selectEdificio" onchange="window.changeEdificio(this.value)">
+                                            <option value="A" selected>Edificio A</option>
+                                            <option value="B">Edificio B</option>
+                                            <option value="C">Edificio C</option>
+                                            <option value="E">Edificio E</option>
+                                            <option value="F">Edificio F</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="content-card-body">
+                                    <div id="dynamicMapContainer" class="d-flex flex-wrap gap-3 p-3 bg-light rounded" style="min-height: 250px; border: 1px dashed var(--border-color); position: relative;">
+                                        <!-- Cargando aulas... -->
+                                    </div>
+                                    <div class="d-flex flex-wrap gap-3 mt-3" style="font-size: 0.75rem; color: var(--text-muted);">
+                                        <span><span class="d-inline-block rounded-circle me-1" style="width:10px;height:10px;background:var(--accent);"></span>En uso / Libre</span>
+                                        <span><span class="d-inline-block rounded-circle me-1" style="width:10px;height:10px;background:#94a3b8;"></span>Cerrada</span>
+                                        <span><span class="d-inline-block rounded-circle me-1" style="width:10px;height:10px;background:var(--secondary);"></span>Reserva</span>
+                                        <span><span class="d-inline-block rounded-circle me-1" style="width:10px;height:10px;background:var(--danger-color);"></span>Offline</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="content-card d-flex flex-column" style="height: 100%;">
+                                <div class="content-card-header">
+                                    <h6><i class="fas fa-bolt me-2" style="color: var(--warning-color);"></i>Telemetría en Vivo</h6>
+                                    <span class="badge bg-success" style="font-size: 0.65rem;"><i class="fas fa-circle me-1" style="font-size: 0.45rem;"></i>En línea</span>
+                                </div>
+                                <div class="telemetry-list flex-grow-1" id="telemetryContainer">
+                                    <!-- Cargando telemetría... -->
+                                </div>
+                                <div class="telemetry-footer">
+                                    <a href="#" onclick="switchSectionById('section-logs')"><i class="fas fa-external-link-alt me-1"></i>Ver bitácora completa</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== SECTION: Estado de Cerraduras ===== -->
+                <div class="app-section" id="section-cerraduras">
+                    <div class="section-header">
+                        <h2><i class="fas fa-door-closed me-2" style="color: var(--secondary);"></i>Estado de Cerraduras</h2>
+                        <p>Monitoreo en tiempo real de todas las cerraduras inteligentes del campus.</p>
+                    </div>
+
+                    <div class="content-card">
+                        <div class="content-card-header">
+                            <h6><i class="fas fa-building me-2" style="color: var(--text-muted);"></i>Filtros de Cerraduras</h6>
+                            <select class="form-select form-select-sm" style="width: auto; font-size: 0.78rem;" id="selectCerradurasEdificio" onchange="window.loadCerraduras(this.value)">
+                                <option value="A" selected>Edificio A</option>
+                                <option value="B">Edificio B</option>
+                                <option value="C">Edificio C</option>
+                                <option value="E">Edificio E</option>
+                                <option value="F">Edificio F</option>
+                                <option value="">Todos los edificios</option>
+                            </select>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table mb-0" style="font-size: 0.85rem;">
+                                <thead>
+                                    <tr style="background: #f8fafc;">
+                                        <th style="font-size: 0.78rem; font-weight: 600; color: var(--text-secondary);">Aula</th>
+                                        <th style="font-size: 0.78rem; font-weight: 600; color: var(--text-secondary);">Cerradura</th>
+                                        <th style="font-size: 0.78rem; font-weight: 600; color: var(--text-secondary);">Conectividad</th>
+                                        <th style="font-size: 0.78rem; font-weight: 600; color: var(--text-secondary);">Batería</th>
+                                        <th style="font-size: 0.78rem; font-weight: 600; color: var(--text-secondary);">Último Evento</th>
+                                        <th style="font-size: 0.78rem; font-weight: 600; color: var(--text-secondary);">Firmware</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cerradurasTableBody">
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== SECTION: Gestión Biométrica ===== -->
+                <div class="app-section" id="section-biometrica">
+                    <div class="section-header">
+                        <h2><i class="fas fa-users-cog me-2" style="color: var(--accent);"></i>Gestión Biométrica</h2>
+                        <p>Administre los registros biométricos de usuarios autorizados.</p>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-sm-4">
+                            <div class="stat-card card-success">
+                                <div class="stat-card-header">
+                                    <div><div class="stat-card-label">Usuarios Registrados</div><div class="stat-card-value">156</div></div>
+                                    <div class="stat-card-icon icon-success"><i class="fas fa-fingerprint"></i></div>
+                                </div>
+                                <div class="stat-card-footer text-success"><i class="fas fa-check-circle me-1"></i>Todos activos</div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="stat-card card-warning">
+                                <div class="stat-card-header">
+                                    <div><div class="stat-card-label">Pendientes de Registro</div><div class="stat-card-value">8</div></div>
+                                    <div class="stat-card-icon icon-warning"><i class="fas fa-user-plus"></i></div>
+                                </div>
+                                <div class="stat-card-footer" style="color: var(--warning-color);"><i class="fas fa-clock me-1"></i>Requieren cita</div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="stat-card card-info">
+                                <div class="stat-card-header">
+                                    <div><div class="stat-card-label">Huellas por Usuario</div><div class="stat-card-value">1.8</div></div>
+                                    <div class="stat-card-icon icon-info"><i class="fas fa-hand-paper"></i></div>
+                                </div>
+                                <div class="stat-card-footer text-muted"><i class="fas fa-info-circle me-1"></i>Promedio (máx. 3)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-card">
+                        <div class="content-card-header">
+                            <h6><i class="fas fa-users me-2" style="color: var(--text-muted);"></i>Usuarios Recientes</h6>
+                        </div>
+                        <div class="content-card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="bio-user-card">
+                                        <div class="bio-avatar">RS</div>
+                                        <div class="bio-info"><h6>Dr. Roberto Sánchez</h6><small>Docente · 2 huellas · Activo</small></div>
+                                        <span class="badge bg-success" style="font-size: 0.65rem;">Verificado</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="bio-user-card">
+                                        <div class="bio-avatar">AM</div>
+                                        <div class="bio-info"><h6>Ing. Ana Martínez</h6><small>Docente · 1 huella · Activo</small></div>
+                                        <span class="badge bg-success" style="font-size: 0.65rem;">Verificado</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="bio-user-card">
+                                        <div class="bio-avatar">CL</div>
+                                        <div class="bio-info"><h6>Dra. Carmen López</h6><small>Docente · 2 huellas · Activo</small></div>
+                                        <span class="badge bg-success" style="font-size: 0.65rem;">Verificado</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="bio-user-card">
+                                        <div class="bio-avatar" style="background: var(--gradient-danger);">JP</div>
+                                        <div class="bio-info"><h6>Mtro. José Pérez</h6><small>Docente · 0 huellas · Pendiente</small></div>
+                                        <span class="badge bg-warning text-dark" style="font-size: 0.65rem;">Pendiente</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== SECTION: Logs de Acceso ===== -->
+                <div class="app-section" id="section-logs">
+                    <div class="section-header">
+                        <h2><i class="fas fa-clipboard-list me-2" style="color: var(--primary-light);"></i>Logs de Acceso</h2>
+                        <p>Bitácora completa de todos los eventos de acceso del sistema.</p>
+                    </div>
+
+                    <div class="content-card">
+                        <div class="content-card-header">
+                            <h6><i class="fas fa-filter me-2" style="color: var(--text-muted);"></i>Filtros</h6>
+                            <div class="d-flex gap-2">
+                                <select class="form-select form-select-sm" style="width: auto; font-size: 0.78rem;">
+                                    <option selected>Todos los tipos</option>
+                                    <option>Biometría</option>
+                                    <option>PIN Temporal</option>
+                                    <option>Fallos</option>
+                                </select>
+                                <select class="form-select form-select-sm" style="width: auto; font-size: 0.78rem;">
+                                    <option selected>Hoy</option>
+                                    <option>Últimos 7 días</option>
+                                    <option>Este mes</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table mb-0" style="font-size: 0.82rem;">
+                                <thead>
+                                    <tr style="background: #f8fafc;">
+                                        <th style="font-size: 0.75rem; font-weight: 600; color: var(--text-secondary);">Hora</th>
+                                        <th style="font-size: 0.75rem; font-weight: 600; color: var(--text-secondary);">Evento</th>
+                                        <th style="font-size: 0.75rem; font-weight: 600; color: var(--text-secondary);">Aula</th>
+                                        <th style="font-size: 0.75rem; font-weight: 600; color: var(--text-secondary);">Usuario</th>
+                                        <th style="font-size: 0.75rem; font-weight: 600; color: var(--text-secondary);">Método</th>
+                                        <th style="font-size: 0.75rem; font-weight: 600; color: var(--text-secondary);">Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="white-space:nowrap;color:var(--text-muted);">13:28</td>
+                                        <td class="fw-semibold">Apertura</td>
+                                        <td>A-101</td>
+                                        <td>Dr. Sánchez</td>
+                                        <td><span class="badge bg-primary" style="font-size:0.65rem;"><i class="fas fa-fingerprint me-1"></i>Biometría</span></td>
+                                        <td><span class="badge bg-success" style="font-size:0.65rem;">Exitoso</span></td>
+                                    </tr>
+                                    <tr style="background: rgba(231,76,94,0.03);">
+                                        <td style="white-space:nowrap;color:var(--text-muted);">13:25</td>
+                                        <td class="fw-semibold" style="color:var(--danger-color);">Fallo Autenticación</td>
+                                        <td>A-102</td>
+                                        <td style="color:var(--text-muted);">Desconocido</td>
+                                        <td><span class="badge bg-danger" style="font-size:0.65rem;"><i class="fas fa-fingerprint me-1"></i>Biometría</span></td>
+                                        <td><span class="badge bg-danger" style="font-size:0.65rem;">Rechazado</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="white-space:nowrap;color:var(--text-muted);">13:18</td>
+                                        <td class="fw-semibold">Apertura</td>
+                                        <td>C-305</td>
+                                        <td>Ing. Martínez</td>
+                                        <td><span class="badge" style="font-size:0.65rem;background:rgba(245,166,35,0.15);color:var(--warning-color);"><i class="fas fa-key me-1"></i>OTP</span></td>
+                                        <td><span class="badge bg-success" style="font-size:0.65rem;">Exitoso</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="white-space:nowrap;color:var(--text-muted);">13:12</td>
+                                        <td class="fw-semibold">Cierre Automático</td>
+                                        <td>B-202</td>
+                                        <td style="color:var(--text-muted);">Sistema</td>
+                                        <td><span class="badge bg-secondary" style="font-size:0.65rem;"><i class="fas fa-robot me-1"></i>Auto</span></td>
+                                        <td><span class="badge bg-success" style="font-size:0.65rem;">Exitoso</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="white-space:nowrap;color:var(--text-muted);">13:05</td>
+                                        <td class="fw-semibold">Apertura</td>
+                                        <td>B-110</td>
+                                        <td>Dra. López</td>
+                                        <td><span class="badge" style="font-size:0.65rem;background:rgba(245,166,35,0.15);color:var(--warning-color);"><i class="fas fa-key me-1"></i>PIN</span></td>
+                                        <td><span class="badge bg-success" style="font-size:0.65rem;">Exitoso</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="white-space:nowrap;color:var(--text-muted);">12:02</td>
+                                        <td class="fw-semibold">Cierre Automático</td>
+                                        <td>A-102</td>
+                                        <td style="color:var(--text-muted);">Sistema</td>
+                                        <td><span class="badge bg-secondary" style="font-size:0.65rem;"><i class="fas fa-robot me-1"></i>Auto</span></td>
+                                        <td><span class="badge bg-success" style="font-size:0.65rem;">Exitoso</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== SECTION: Edificios y Aulas ===== -->
+                <div class="app-section" id="section-edificios">
+                    <div class="section-header">
+                        <h2><i class="fas fa-building me-2" style="color: var(--secondary);"></i>Edificios y Aulas</h2>
+                        <p>Administre la infraestructura física del campus.</p>
+                    </div>
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <div class="content-card">
+                                <div class="content-card-header"><h6><i class="fas fa-building me-2" style="color:var(--secondary);"></i>Edificio A</h6></div>
+                                <div class="content-card-body">
+                                    <p style="font-size:0.82rem;color:var(--text-secondary);"><strong>Ciencias</strong></p>
+                                    <div class="d-flex justify-content-between mb-2" style="font-size:0.78rem;"><span class="text-muted">Total de aulas</span><strong>15</strong></div>
+                                    <div class="d-flex justify-content-between mb-2" style="font-size:0.78rem;"><span class="text-muted">Cerraduras IoT</span><strong style="color:var(--accent);">14</strong></div>
+                                    <div class="d-flex justify-content-between" style="font-size:0.78rem;"><span class="text-muted">Sin cerradura</span><strong style="color:var(--warning-color);">1</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="content-card">
+                                <div class="content-card-header"><h6><i class="fas fa-building me-2" style="color:var(--secondary);"></i>Edificio B</h6></div>
+                                <div class="content-card-body">
+                                    <p style="font-size:0.82rem;color:var(--text-secondary);"><strong>Ingeniería</strong></p>
+                                    <div class="d-flex justify-content-between mb-2" style="font-size:0.78rem;"><span class="text-muted">Total de aulas</span><strong>18</strong></div>
+                                    <div class="d-flex justify-content-between mb-2" style="font-size:0.78rem;"><span class="text-muted">Cerraduras IoT</span><strong style="color:var(--accent);">18</strong></div>
+                                    <div class="d-flex justify-content-between" style="font-size:0.78rem;"><span class="text-muted">Sin cerradura</span><strong style="color:var(--accent);">0</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="content-card">
+                                <div class="content-card-header"><h6><i class="fas fa-building me-2" style="color:var(--secondary);"></i>Edificio C</h6></div>
+                                <div class="content-card-body">
+                                    <p style="font-size:0.82rem;color:var(--text-secondary);"><strong>Humanidades</strong></p>
+                                    <div class="d-flex justify-content-between mb-2" style="font-size:0.78rem;"><span class="text-muted">Total de aulas</span><strong>12</strong></div>
+                                    <div class="d-flex justify-content-between mb-2" style="font-size:0.78rem;"><span class="text-muted">Cerraduras IoT</span><strong style="color:var(--accent);">10</strong></div>
+                                    <div class="d-flex justify-content-between" style="font-size:0.78rem;"><span class="text-muted">Sin cerradura</span><strong style="color:var(--warning-color);">2</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== SECTION: Ajustes del Sistema ===== -->
+                <div class="app-section" id="section-ajustes">
+                    <div class="section-header">
+                        <h2><i class="fas fa-cogs me-2" style="color: var(--text-muted);"></i>Ajustes del Sistema</h2>
+                        <p>Configure los parámetros generales del sistema IoT.</p>
+                    </div>
+                    <div class="content-card">
+                        <div class="content-card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label" style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);">Tiempo de cierre automático</label>
+                                    <select class="form-select form-select-sm"><option>5 minutos</option><option selected>10 minutos</option><option>15 minutos</option><option>30 minutos</option></select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);">Anticipación apertura biométrica</label>
+                                    <select class="form-select form-select-sm"><option>5 minutos</option><option selected>10 minutos</option><option>15 minutos</option></select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);">Duración del PIN temporal</label>
+                                    <select class="form-select form-select-sm"><option>5 minutos</option><option selected>15 minutos</option><option>30 minutos</option></select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);">Intentos máximos biométricos</label>
+                                    <select class="form-select form-select-sm"><option selected>3 intentos</option><option>5 intentos</option><option>10 intentos</option></select>
+                                </div>
+                            </div>
+                            <hr style="border-color: var(--border-color);">
+                            <button class="btn btn-sm" style="background:var(--gradient-primary);color:#fff;font-weight:600;"><i class="fas fa-save me-1"></i>Guardar Cambios</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== SECTION: Seguridad ===== -->
+                <div class="app-section" id="section-seguridad">
+                    <div class="section-header">
+                        <h2><i class="fas fa-shield-alt me-2" style="color: var(--danger-color);"></i>Seguridad</h2>
+                        <p>Alertas de seguridad y eventos críticos que requieren atención.</p>
+                    </div>
+
+                    <div class="alert d-flex align-items-start gap-3 py-3 px-4 mb-4" style="background:rgba(231,76,94,0.06);border:1px solid rgba(231,76,94,0.15);border-radius:var(--radius-md);font-size:0.85rem;color:var(--danger-color);" role="alert">
+                        <i class="fas fa-exclamation-triangle fa-lg mt-1"></i>
+                        <div>
+                            <strong>3 alertas activas</strong> requieren su atención inmediata.
+                            <div class="text-muted mt-1" style="font-size:0.75rem;">Última actualización: hace 5 minutos</div>
+                        </div>
+                    </div>
+
+                    <div class="content-card mb-3">
+                        <div class="content-card-body d-flex align-items-center gap-3">
+                            <div class="stat-card-icon icon-danger" style="flex-shrink:0;"><i class="fas fa-wifi"></i></div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1" style="font-size:0.88rem;font-weight:600;color:var(--text-primary);">Nodo A-103 desconectado</h6>
+                                <p class="mb-0" style="font-size:0.75rem;color:var(--text-muted);">La cerradura del aula A-103 perdió conexión hace 2 horas. Puede requerir reinicio físico del módulo WiFi.</p>
+                            </div>
+                            <button class="btn btn-sm btn-outline-danger" style="font-size:0.75rem;white-space:nowrap;">Gestionar</button>
+                        </div>
+                    </div>
+                    <div class="content-card mb-3">
+                        <div class="content-card-body d-flex align-items-center gap-3">
+                            <div class="stat-card-icon icon-warning" style="flex-shrink:0;"><i class="fas fa-fingerprint"></i></div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1" style="font-size:0.88rem;font-weight:600;color:var(--text-primary);">Intento de acceso no autorizado</h6>
+                                <p class="mb-0" style="font-size:0.75rem;color:var(--text-muted);">Huella no registrada detectada en A-102. 3 intentos fallidos consecutivos registrados hoy.</p>
+                            </div>
+                            <button class="btn btn-sm btn-outline-warning" style="font-size:0.75rem;white-space:nowrap;">Investigar</button>
+                        </div>
+                    </div>
+                    <div class="content-card">
+                        <div class="content-card-body d-flex align-items-center gap-3">
+                            <div class="stat-card-icon icon-warning" style="flex-shrink:0;"><i class="fas fa-battery-quarter"></i></div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1" style="font-size:0.88rem;font-weight:600;color:var(--text-primary);">Batería baja en A-104</h6>
+                                <p class="mb-0" style="font-size:0.75rem;color:var(--text-muted);">La cerradura de A-104 reporta 35% de batería. Se recomienda reemplazo preventivo.</p>
+                            </div>
+                            <button class="btn btn-sm btn-outline-secondary" style="font-size:0.75rem;white-space:nowrap;">Programar</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /page-content -->
+
+        </div><!-- /main-content -->
+
+    </div><!-- /app-wrapper -->
+
+    <!-- Modal Éxito genérico -->
+    <div class="modal fade" id="modalExito" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 16px; border: none;">
+                <div class="modal-header" id="modalHeader" style="background: linear-gradient(135deg, #0fcc92, #0aad7a); color: white; border-radius: 16px 16px 0 0;">
+                    <h5 class="modal-title" id="modalTitle"><i class="fas fa-check-circle me-2"></i>Listo</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <i class="fas fa-check fa-3x text-success mb-3" id="modalIcon"></i>
+                    <p class="mb-0" id="modalExitoText"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" id="modalBtn" data-bs-dismiss="modal">Entendido</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Detalles de Aula -->
+    <div class="modal fade" id="roomDetailModal" tabindex="-1" aria-labelledby="roomDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="roomDetailModalLabel"><i class="fas fa-door-open me-2 text-primary"></i>Aula: <span id="modalRoomName"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-4">
+                        <!-- Detalles y Controles -->
+                        <div class="col-md-6">
+                            <h6 class="text-uppercase text-muted" style="font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px;">Estado de Cerradura</h6>
+                            <div class="d-flex align-items-center gap-3 mb-4">
+                                <span id="modalRoomStatus" class="fs-6"></span>
+                                <div class="ms-auto d-flex align-items-center gap-2" style="font-size: 0.85rem; color: var(--text-secondary);">
+                                    <i class="fas fa-battery-three-quarters text-success"></i>
+                                    <span>78% Batería</span>
+                                </div>
+                            </div>
+
+                            <h6 class="text-uppercase text-muted" style="font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px;">Controles Remotos</h6>
+                            <div class="d-flex gap-2 mb-3">
+                                <button class="btn btn-outline-success flex-grow-1" onclick="controlRemoto('abrir')"><i class="fas fa-unlock me-2"></i>Abrir</button>
+                                <button class="btn btn-dark flex-grow-1" onclick="controlRemoto('cerrar')"><i class="fas fa-lock me-2"></i>Cerrar</button>
+                            </div>
+                            <button class="btn btn-danger w-100"><i class="fas fa-ban me-2"></i>Bloqueo de Emergencia</button>
+                        </div>
+
+                        <!-- Bitácora de Accesos -->
+                        <div class="col-md-6">
+                            <h6 class="text-uppercase text-muted" style="font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px;">Últimos Accesos</h6>
+                            <div class="border rounded" style="max-height: 200px; overflow-y: auto;">
+                                <div class="telemetry-item p-3 border-bottom d-flex align-items-start gap-3">
+                                    <div class="telemetry-icon icon-success" style="width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(15,204,146,0.12); color: var(--accent);"><i class="fas fa-fingerprint"></i></div>
+                                    <div>
+                                        <div style="font-size: 0.85rem; font-weight: 600;">Dr. Roberto Sánchez</div>
+                                        <div class="text-muted" style="font-size: 0.75rem;">Apertura exitosa (OTP Temporal)</div>
+                                    </div>
+                                    <div class="ms-auto text-muted" style="font-size: 0.7rem;">Hace 5 min</div>
+                                </div>
+                                <div class="telemetry-item p-3 border-bottom d-flex align-items-start gap-3">
+                                    <div class="telemetry-icon icon-danger" style="width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(231,76,94,0.12); color: var(--danger-color);"><i class="fas fa-times"></i></div>
+                                    <div>
+                                        <div style="font-size: 0.85rem; font-weight: 600;">Intento Desconocido</div>
+                                        <div class="text-muted" style="font-size: 0.75rem;">PIN OTP inválido o expirado</div>
+                                    </div>
+                                    <div class="ms-auto text-muted" style="font-size: 0.7rem;">Hace 12 min</div>
+                                </div>
+                                <div class="telemetry-item p-3 d-flex align-items-start gap-3">
+                                    <div class="telemetry-icon icon-muted" style="width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(148,163,184,0.15); color: var(--text-muted);"><i class="fas fa-lock"></i></div>
+                                    <div>
+                                        <div style="font-size: 0.85rem; font-weight: 600;">Sistema Cierre Auto.</div>
+                                        <div class="text-muted" style="font-size: 0.75rem;">Cierre por inactividad</div>
+                                    </div>
+                                    <div class="ms-auto text-muted" style="font-size: 0.7rem;">Hace 2 hrs</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar Panel</button>
+                    <button type="button" class="btn btn-primary">Ir a Bitácora Completa</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Local -->
+    <script src="js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // ============================
+        // Section Switching
+        // ============================
+        const pageTitles = {
+            'section-dashboard': { title: 'Monitoreo IoT', subtitle: 'Infraestructura en Tiempo Real' },
+            'section-cerraduras': { title: 'Estado de Cerraduras', subtitle: 'Monitoreo de cerraduras inteligentes' },
+            'section-biometrica': { title: 'Gestión Biométrica', subtitle: 'Administración de registros biométricos' },
+            'section-logs': { title: 'Logs de Acceso', subtitle: 'Bitácora completa del sistema' },
+            'section-edificios': { title: 'Edificios y Aulas', subtitle: 'Infraestructura del campus' },
+            'section-ajustes': { title: 'Ajustes del Sistema', subtitle: 'Configuración general IoT' },
+            'section-seguridad': { title: 'Seguridad', subtitle: 'Alertas y eventos críticos' }
+        };
+
+        function switchSection(link, event) {
+            if (event) event.preventDefault();
+            const sectionId = link.dataset.section;
+
+            // Update sidebar active
+            document.querySelectorAll('.sidebar-nav .nav-link').forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+
+            // Update sections
+            document.querySelectorAll('.app-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+
+            // Update page title
+            const info = pageTitles[sectionId];
+            if (info) {
+                document.getElementById('pageTitle').innerHTML = info.title + '<small class="d-none d-md-inline">' + info.subtitle + '</small>';
+            }
+
+            // Close mobile sidebar
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebarBackdrop');
+            sidebar.classList.remove('show');
+            backdrop.classList.remove('show');
+        }
+
+        function switchSectionById(sectionId) {
+            const link = document.querySelector(`[data-section="${sectionId}"]`);
+            if (link) switchSection(link);
+        }
+
+        // Sidebar Toggle (Mobile)
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebarBackdrop');
+            sidebar.classList.toggle('show');
+            backdrop.classList.toggle('show');
+        }
+
+        // Floor room click interaction
+        let roomModalInstance = null;
+        document.querySelectorAll('.floor-room').forEach(room => {
+            room.addEventListener('click', function() {
+                const name = this.querySelector('.floor-room-name').textContent;
+                const status = this.querySelector('.badge').textContent.trim();
+                
+                document.getElementById('modalRoomName').textContent = name;
+                document.getElementById('modalRoomStatus').textContent = status;
+                
+                if (!roomModalInstance) {
+                    roomModalInstance = new bootstrap.Modal(document.getElementById('roomDetailModal'));
+                }
+                roomModalInstance.show();
+            });
+        });
+    </script>
+
+
+    <!-- Integración con API -->
+    <script src="js/dashboard_api.js"></script>
+</body>
+
+</html>

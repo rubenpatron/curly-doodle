@@ -1,0 +1,479 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net" agent="AulaSync PRISTINE ERD Generator v5" version="22.0.0">
+  <diagram name="Diagrama ER - AulaSync" id="er_aulasync">
+    <mxGraphModel dx="2200" dy="1800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2400" pageHeight="1900" background="none">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="AulaSync  —  Diagrama Entidad-Relacion Completo  (MariaDB  —  13 Tablas  —  100 Columnas  —  PKs Descriptivas  —  20 FK)" style="text;html=0;align=left;verticalAlign=middle;fontSize=18;fontStyle=1;fontColor=#0f172a;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="60" y="30" width="1500" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_roles" value="ROLES" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=34;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=0;fillColor=#1d4ed8;strokeColor=#1e40af;fontColor=#ffffff;fontSize=13;fontFamily=Helvetica;shadow=1;arcSize=4;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="100" width="240" height="138" as="geometry" />
+        </mxCell>
+        <mxCell id="col_roles_id_rol" value="PK  id_rol : INT UNSIGNED" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_roles">
+          <mxGeometry y="34" width="240" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_roles_nombre" value="UQ  nombre : VARCHAR(30)" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_roles">
+          <mxGeometry y="60" width="240" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_roles_descripcion" value="    descripcion : VARCHAR(200)" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_roles">
+          <mxGeometry y="86" width="240" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_roles_creado_en" value="    creado_en : TIMESTAMP" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_roles">
+          <mxGeometry y="112" width="240" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_usuarios" value="USUARIOS" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=34;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=0;fillColor=#1d4ed8;strokeColor=#1e40af;fontColor=#ffffff;fontSize=13;fontFamily=Helvetica;shadow=1;arcSize=4;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="520" y="100" width="270" height="268" as="geometry" />
+        </mxCell>
+        <mxCell id="col_usuarios_id_usuario" value="PK  id_usuario : INT UNSIGNED" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_usuarios">
+          <mxGeometry y="34" width="270" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_usuarios_google_sub" value="UQ  google_sub : VARCHAR(64)" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_usuarios">
+          <mxGeometry y="60" width="270" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_usuarios_email" value="UQ  email : VARCHAR(150)" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_usuarios">
+          <mxGeometry y="86" width="270" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_usuarios_nombre" value="    nombre : VARCHAR(120)" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_usuarios">
+          <mxGeometry y="112" width="270" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_usuarios_matricula" value="UQ  matricula : VARCHAR(20)" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_usuarios">
+          <mxGeometry y="138" width="270" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_usuarios_id_rol" value="FK  id_rol : INT UNSIGNED" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_usuarios">
+          <mxGeometry y="164" width="270" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_usuarios_foto_url" value="    foto_url : VARCHAR(400)" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_usuarios">
+          <mxGeometry y="190" width="270" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_usuarios_activo" value="    activo : TINYINT(1)" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_usuarios">
+          <mxGeometry y="216" width="270" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_usuarios_creado_en" value="    creado_en : TIMESTAMP" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_usuarios">
+          <mxGeometry y="242" width="270" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_sesiones" value="SESIONES" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=34;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=0;fillColor=#1d4ed8;strokeColor=#1e40af;fontColor=#ffffff;fontSize=13;fontFamily=Helvetica;shadow=1;arcSize=4;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="100" width="260" height="216" as="geometry" />
+        </mxCell>
+        <mxCell id="col_sesiones_id_sesion" value="PK  id_sesion : INT UNSIGNED" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_sesiones">
+          <mxGeometry y="34" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_sesiones_id_usuario" value="FK  id_usuario : INT UNSIGNED" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_sesiones">
+          <mxGeometry y="60" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_sesiones_token" value="UQ  token : VARCHAR(255)" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_sesiones">
+          <mxGeometry y="86" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_sesiones_ip" value="    ip : VARCHAR(45)" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_sesiones">
+          <mxGeometry y="112" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_sesiones_user_agent" value="    user_agent : VARCHAR(255)" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_sesiones">
+          <mxGeometry y="138" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_sesiones_creada_en" value="    creada_en : DATETIME" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_sesiones">
+          <mxGeometry y="164" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_sesiones_expira_en" value="    expira_en : DATETIME" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_sesiones">
+          <mxGeometry y="190" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_alertas_seguridad" value="ALERTAS_SEGURIDAD" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=34;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=0;fillColor=#b91c1c;strokeColor=#991b1b;fontColor=#ffffff;fontSize=13;fontFamily=Helvetica;shadow=1;arcSize=4;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="1560" y="100" width="280" height="294" as="geometry" />
+        </mxCell>
+        <mxCell id="col_alertas_seguridad_id_alerta" value="PK  id_alerta : INT UNSIGNED" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_alertas_seguridad">
+          <mxGeometry y="34" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_alertas_seguridad_id_nodo" value="FK  id_nodo : INT UNSIGNED" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_alertas_seguridad">
+          <mxGeometry y="60" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_alertas_seguridad_id_usuario" value="FK  id_usuario : INT UNSIGNED" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_alertas_seguridad">
+          <mxGeometry y="86" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_alertas_seguridad_tipo_alerta" value="    tipo_alerta : ENUM" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_alertas_seguridad">
+          <mxGeometry y="112" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_alertas_seguridad_severidad" value="    severidad : ENUM" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_alertas_seguridad">
+          <mxGeometry y="138" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_alertas_seguridad_descripcion" value="    descripcion : VARCHAR(255)" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_alertas_seguridad">
+          <mxGeometry y="164" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_alertas_seguridad_estado" value="    estado : ENUM" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_alertas_seguridad">
+          <mxGeometry y="190" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_alertas_seguridad_resuelta_por" value="FK  resuelta_por : INT UNSIGNED" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_alertas_seguridad">
+          <mxGeometry y="216" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_alertas_seguridad_creada_en" value="    creada_en : DATETIME" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_alertas_seguridad">
+          <mxGeometry y="242" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_alertas_seguridad_resuelta_en" value="    resuelta_en : DATETIME" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_alertas_seguridad">
+          <mxGeometry y="268" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_edificios" value="EDIFICIOS" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=34;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=0;fillColor=#047857;strokeColor=#065f46;fontColor=#ffffff;fontSize=13;fontFamily=Helvetica;shadow=1;arcSize=4;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="650" width="240" height="164" as="geometry" />
+        </mxCell>
+        <mxCell id="col_edificios_id_edificio" value="PK  id_edificio : INT UNSIGNED" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_edificios">
+          <mxGeometry y="34" width="240" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_edificios_codigo" value="UQ  codigo : VARCHAR(10)" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_edificios">
+          <mxGeometry y="60" width="240" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_edificios_nombre" value="    nombre : VARCHAR(120)" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_edificios">
+          <mxGeometry y="86" width="240" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_edificios_descripcion" value="    descripcion : VARCHAR(255)" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_edificios">
+          <mxGeometry y="112" width="240" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_edificios_activo" value="    activo : TINYINT(1)" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_edificios">
+          <mxGeometry y="138" width="240" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_aulas" value="AULAS" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=34;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=0;fillColor=#047857;strokeColor=#065f46;fontColor=#ffffff;fontSize=13;fontFamily=Helvetica;shadow=1;arcSize=4;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="520" y="650" width="270" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="col_aulas_id_aula" value="PK  id_aula : INT UNSIGNED" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_aulas">
+          <mxGeometry y="34" width="270" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_aulas_id_edificio" value="FK  id_edificio : INT UNSIGNED" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_aulas">
+          <mxGeometry y="60" width="270" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_aulas_codigo" value="UQ  codigo : VARCHAR(20)" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_aulas">
+          <mxGeometry y="86" width="270" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_aulas_capacidad" value="    capacidad : SMALLINT UNSIGNED" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_aulas">
+          <mxGeometry y="112" width="270" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_aulas_tipo" value="    tipo : ENUM" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_aulas">
+          <mxGeometry y="138" width="270" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_aulas_estado" value="    estado : ENUM" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_aulas">
+          <mxGeometry y="164" width="270" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_nodos_iot" value="NODOS_IOT" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=34;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=0;fillColor=#b45309;strokeColor=#92400e;fontColor=#ffffff;fontSize=13;fontFamily=Helvetica;shadow=1;arcSize=4;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="650" width="270" height="268" as="geometry" />
+        </mxCell>
+        <mxCell id="col_nodos_iot_id_nodo" value="PK  id_nodo : INT UNSIGNED" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_nodos_iot">
+          <mxGeometry y="34" width="270" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_nodos_iot_id_aula" value="FK  id_aula : INT UNSIGNED" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_nodos_iot">
+          <mxGeometry y="60" width="270" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_nodos_iot_mac_address" value="UQ  mac_address : VARCHAR(17)" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_nodos_iot">
+          <mxGeometry y="86" width="270" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_nodos_iot_tipo_nodo" value="    tipo_nodo : ENUM" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_nodos_iot">
+          <mxGeometry y="112" width="270" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_nodos_iot_firmware_version" value="    firmware_version : VARCHAR(20)" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_nodos_iot">
+          <mxGeometry y="138" width="270" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_nodos_iot_estado" value="    estado : ENUM" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_nodos_iot">
+          <mxGeometry y="164" width="270" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_nodos_iot_bateria_pct" value="    bateria_pct : TINYINT UNSIGNED" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_nodos_iot">
+          <mxGeometry y="190" width="270" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_nodos_iot_ultimo_ping" value="    ultimo_ping : DATETIME" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_nodos_iot">
+          <mxGeometry y="216" width="270" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_nodos_iot_registrado_en" value="    registrado_en : TIMESTAMP" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_nodos_iot">
+          <mxGeometry y="242" width="270" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_telemetria" value="TELEMETRIA" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=34;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=0;fillColor=#b45309;strokeColor=#92400e;fontColor=#ffffff;fontSize=13;fontFamily=Helvetica;shadow=1;arcSize=4;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="1560" y="650" width="260" height="164" as="geometry" />
+        </mxCell>
+        <mxCell id="col_telemetria_id_telemetria" value="PK  id_telemetria : INT UNSIGNED" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_telemetria">
+          <mxGeometry y="34" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_telemetria_id_nodo" value="FK  id_nodo : INT UNSIGNED" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_telemetria">
+          <mxGeometry y="60" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_telemetria_tipo_evento" value="    tipo_evento : ENUM" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_telemetria">
+          <mxGeometry y="86" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_telemetria_valor" value="    valor : VARCHAR(255)" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_telemetria">
+          <mxGeometry y="112" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_telemetria_fecha_hora" value="    fecha_hora : DATETIME" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_telemetria">
+          <mxGeometry y="138" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_materias" value="MATERIAS" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=34;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=0;fillColor=#6d28d9;strokeColor=#5b21b6;fontColor=#ffffff;fontSize=13;fontFamily=Helvetica;shadow=1;arcSize=4;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1200" width="240" height="138" as="geometry" />
+        </mxCell>
+        <mxCell id="col_materias_id_materia" value="PK  id_materia : INT UNSIGNED" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_materias">
+          <mxGeometry y="34" width="240" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_materias_codigo" value="UQ  codigo : VARCHAR(20)" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_materias">
+          <mxGeometry y="60" width="240" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_materias_nombre" value="    nombre : VARCHAR(120)" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_materias">
+          <mxGeometry y="86" width="240" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_materias_departamento" value="    departamento : VARCHAR(120)" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_materias">
+          <mxGeometry y="112" width="240" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_carga_academica" value="CARGA_ACADEMICA" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=34;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=0;fillColor=#6d28d9;strokeColor=#5b21b6;fontColor=#ffffff;fontSize=13;fontFamily=Helvetica;shadow=1;arcSize=4;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="520" y="1200" width="270" height="294" as="geometry" />
+        </mxCell>
+        <mxCell id="col_carga_academica_id_carga_academica" value="PK  id_carga_academica : INT UNSIGNED" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_carga_academica">
+          <mxGeometry y="34" width="270" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_carga_academica_id_usuario" value="FK  id_usuario : INT UNSIGNED" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_carga_academica">
+          <mxGeometry y="60" width="270" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_carga_academica_id_materia" value="FK  id_materia : INT UNSIGNED" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_carga_academica">
+          <mxGeometry y="86" width="270" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_carga_academica_id_aula" value="FK  id_aula : INT UNSIGNED" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_carga_academica">
+          <mxGeometry y="112" width="270" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_carga_academica_dia_semana" value="    dia_semana : TINYINT UNSIGNED" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_carga_academica">
+          <mxGeometry y="138" width="270" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_carga_academica_hora_inicio" value="    hora_inicio : TIME" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_carga_academica">
+          <mxGeometry y="164" width="270" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_carga_academica_hora_fin" value="    hora_fin : TIME" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_carga_academica">
+          <mxGeometry y="190" width="270" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_carga_academica_fecha_inicio" value="    fecha_inicio : DATE" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_carga_academica">
+          <mxGeometry y="216" width="270" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_carga_academica_fecha_fin" value="    fecha_fin : DATE" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_carga_academica">
+          <mxGeometry y="242" width="270" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_carga_academica_activo" value="    activo : TINYINT(1)" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_carga_academica">
+          <mxGeometry y="268" width="270" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_solicitudes_aulas" value="SOLICITUDES_AULAS" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=34;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=0;fillColor=#be185d;strokeColor=#9d174d;fontColor=#ffffff;fontSize=13;fontFamily=Helvetica;shadow=1;arcSize=4;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="1200" width="280" height="450" as="geometry" />
+        </mxCell>
+        <mxCell id="col_solicitudes_aulas_id_solicitud" value="PK  id_solicitud : INT UNSIGNED" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_solicitudes_aulas">
+          <mxGeometry y="34" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_solicitudes_aulas_id_usuario" value="FK  id_usuario : INT UNSIGNED" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_solicitudes_aulas">
+          <mxGeometry y="60" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_solicitudes_aulas_tipo" value="    tipo : ENUM" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_solicitudes_aulas">
+          <mxGeometry y="86" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_solicitudes_aulas_id_aula_original" value="FK  id_aula_original : INT UNSIGNED" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_solicitudes_aulas">
+          <mxGeometry y="112" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_solicitudes_aulas_id_aula_solicitada" value="FK  id_aula_solicitada : INT UNSIGNED" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_solicitudes_aulas">
+          <mxGeometry y="138" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_solicitudes_aulas_id_materia" value="FK  id_materia : INT UNSIGNED" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_solicitudes_aulas">
+          <mxGeometry y="164" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_solicitudes_aulas_fecha" value="    fecha : DATE" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_solicitudes_aulas">
+          <mxGeometry y="190" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_solicitudes_aulas_hora_inicio" value="    hora_inicio : TIME" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_solicitudes_aulas">
+          <mxGeometry y="216" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_solicitudes_aulas_hora_fin" value="    hora_fin : TIME" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_solicitudes_aulas">
+          <mxGeometry y="242" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_solicitudes_aulas_motivo" value="    motivo : VARCHAR(200)" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_solicitudes_aulas">
+          <mxGeometry y="268" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_solicitudes_aulas_justificacion" value="    justificacion : TEXT" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_solicitudes_aulas">
+          <mxGeometry y="294" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_solicitudes_aulas_estado" value="    estado : ENUM" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_solicitudes_aulas">
+          <mxGeometry y="320" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_solicitudes_aulas_id_aprobador" value="FK  id_aprobador : INT UNSIGNED" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_solicitudes_aulas">
+          <mxGeometry y="346" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_solicitudes_aulas_fecha_solicitud" value="    fecha_solicitud : DATETIME" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_solicitudes_aulas">
+          <mxGeometry y="372" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_solicitudes_aulas_fecha_respuesta" value="    fecha_respuesta : DATETIME" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_solicitudes_aulas">
+          <mxGeometry y="398" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_solicitudes_aulas_comentarios_admin" value="    comentarios_admin : TEXT" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_solicitudes_aulas">
+          <mxGeometry y="424" width="280" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_accesos" value="ACCESOS" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=34;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=0;fillColor=#0e7490;strokeColor=#155e75;fontColor=#ffffff;fontSize=13;fontFamily=Helvetica;shadow=1;arcSize=4;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="1560" y="1200" width="260" height="216" as="geometry" />
+        </mxCell>
+        <mxCell id="col_accesos_id_acceso" value="PK  id_acceso : INT UNSIGNED" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_accesos">
+          <mxGeometry y="34" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_accesos_id_usuario" value="FK  id_usuario : INT UNSIGNED" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_accesos">
+          <mxGeometry y="60" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_accesos_id_aula" value="FK  id_aula : INT UNSIGNED" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_accesos">
+          <mxGeometry y="86" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_accesos_fecha_hora" value="    fecha_hora : DATETIME" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_accesos">
+          <mxGeometry y="112" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_accesos_tipo_acceso" value="    tipo_acceso : ENUM" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_accesos">
+          <mxGeometry y="138" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_accesos_resultado" value="    resultado : ENUM" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_accesos">
+          <mxGeometry y="164" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_accesos_detalle" value="    detalle : VARCHAR(200)" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_accesos">
+          <mxGeometry y="190" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_otp_codigos" value="OTP_CODIGOS" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=34;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=0;fillColor=#0e7490;strokeColor=#155e75;fontColor=#ffffff;fontSize=13;fontFamily=Helvetica;shadow=1;arcSize=4;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="1980" y="1200" width="260" height="242" as="geometry" />
+        </mxCell>
+        <mxCell id="col_otp_codigos_id_otp" value="PK  id_otp : INT UNSIGNED" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_otp_codigos">
+          <mxGeometry y="34" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_otp_codigos_id_usuario" value="FK  id_usuario : INT UNSIGNED" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_otp_codigos">
+          <mxGeometry y="60" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_otp_codigos_id_aula" value="FK  id_aula : INT UNSIGNED" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_otp_codigos">
+          <mxGeometry y="86" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_otp_codigos_codigo" value="    codigo : CHAR(6)" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_otp_codigos">
+          <mxGeometry y="112" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_otp_codigos_creado_en" value="    creado_en : DATETIME" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_otp_codigos">
+          <mxGeometry y="138" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_otp_codigos_expira_en" value="    expira_en : DATETIME" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_otp_codigos">
+          <mxGeometry y="164" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_otp_codigos_usado" value="    usado : TINYINT(1)" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_otp_codigos">
+          <mxGeometry y="190" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="col_otp_codigos_usado_en" value="    usado_en : DATETIME" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=8;spacingRight=8;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1e293b;fontSize=11;fontFamily=Helvetica;html=0;" vertex="1" parent="tbl_otp_codigos">
+          <mxGeometry y="216" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="fk_0_usuarios_id_rol" value="id_rol" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#475569;strokeWidth=1.5;fontSize=9;fontColor=#64748b;fontFamily=Helvetica;endArrow=ERmany;endFill=0;startArrow=ERone;startFill=0;exitX=0;exitY=0.6604;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.3406;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="tbl_usuarios" target="tbl_roles">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fk_1_sesiones_id_usuario" value="id_usuario" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#475569;strokeWidth=1.5;fontSize=9;fontColor=#64748b;fontFamily=Helvetica;endArrow=ERmany;endFill=0;startArrow=ERone;startFill=0;exitX=0;exitY=0.3380;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.1754;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="tbl_sesiones" target="tbl_usuarios">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fk_2_aulas_id_edificio" value="id_edificio" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#475569;strokeWidth=1.5;fontSize=9;fontColor=#64748b;fontFamily=Helvetica;endArrow=ERmany;endFill=0;startArrow=ERone;startFill=0;exitX=0;exitY=0.3842;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.2866;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="tbl_aulas" target="tbl_edificios">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fk_3_nodos_iot_id_aula" value="id_aula" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#475569;strokeWidth=1.5;fontSize=9;fontColor=#64748b;fontFamily=Helvetica;endArrow=ERmany;endFill=0;startArrow=ERone;startFill=0;exitX=0;exitY=0.2724;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.2474;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="tbl_nodos_iot" target="tbl_aulas">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fk_4_telemetria_id_nodo" value="id_nodo" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#475569;strokeWidth=1.5;fontSize=9;fontColor=#64748b;fontFamily=Helvetica;endArrow=ERmany;endFill=0;startArrow=ERone;startFill=0;exitX=0;exitY=0.4451;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.1754;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="tbl_telemetria" target="tbl_nodos_iot">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fk_5_carga_academica_id_materia" value="id_materia" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#475569;strokeWidth=1.5;fontSize=9;fontColor=#64748b;fontFamily=Helvetica;endArrow=ERmany;endFill=0;startArrow=ERone;startFill=0;exitX=0;exitY=0.3367;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.3406;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="tbl_carga_academica" target="tbl_materias">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fk_6_carga_academica_id_aula" value="id_aula" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#475569;strokeWidth=1.5;fontSize=9;fontColor=#64748b;fontFamily=Helvetica;endArrow=ERmany;endFill=0;startArrow=ERone;startFill=0;exitX=0.5;exitY=0.0000;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=1.0000;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="tbl_carga_academica" target="tbl_aulas">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fk_7_carga_academica_id_usuario" value="id_usuario" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#475569;strokeWidth=1.5;fontSize=9;fontColor=#64748b;fontFamily=Helvetica;endArrow=ERmany;endFill=0;startArrow=ERone;startFill=0;exitX=0;exitY=0.2483;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.2;entryY=1.0000;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="tbl_carga_academica" target="tbl_usuarios">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="440" y="1273" />
+              <mxPoint x="440" y="388" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fk_8_alertas_seguridad_id_nodo" value="id_nodo" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#94a3b8;strokeWidth=1.5;dashed=1;fontSize=9;fontColor=#64748b;fontFamily=Helvetica;endArrow=ERmany;endFill=0;startArrow=ERzeroToOne;startFill=0;exitX=0;exitY=0.2483;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.1754;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="tbl_alertas_seguridad" target="tbl_nodos_iot">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1420" y="173" />
+              <mxPoint x="1420" y="697" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fk_9_alertas_seguridad_id_usuario" value="id_usuario" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#94a3b8;strokeWidth=1.5;dashed=1;fontSize=9;fontColor=#64748b;fontFamily=Helvetica;endArrow=ERmany;endFill=0;startArrow=ERzeroToOne;startFill=0;exitX=0;exitY=0.3367;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.3500;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="tbl_alertas_seguridad" target="tbl_usuarios">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="920" y="199" />
+              <mxPoint x="920" y="193" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fk_10_alertas_seguridad_resuelta_por" value="resuelta_por" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#94a3b8;strokeWidth=1.5;dashed=1;fontSize=9;fontColor=#64748b;fontFamily=Helvetica;endArrow=ERmany;endFill=0;startArrow=ERzeroToOne;startFill=0;exitX=0;exitY=0.7789;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.7500;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="tbl_alertas_seguridad" target="tbl_usuarios">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="880" y="329" />
+              <mxPoint x="880" y="301" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fk_11_solicitudes_aulas_id_usuario" value="id_usuario" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#475569;strokeWidth=1.5;fontSize=9;fontColor=#64748b;fontFamily=Helvetica;endArrow=ERmany;endFill=0;startArrow=ERone;startFill=0;exitX=0;exitY=0.1622;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.4;entryY=1.0000;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="tbl_solicitudes_aulas" target="tbl_usuarios">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="400" y="1273" />
+              <mxPoint x="400" y="408" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fk_12_solicitudes_aulas_id_aprobador" value="id_aprobador" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#94a3b8;strokeWidth=1.5;dashed=1;fontSize=9;fontColor=#64748b;fontFamily=Helvetica;endArrow=ERmany;endFill=0;startArrow=ERzeroToOne;startFill=0;exitX=0;exitY=0.7978;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.6;entryY=1.0000;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="tbl_solicitudes_aulas" target="tbl_usuarios">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="360" y="1559" />
+              <mxPoint x="360" y="428" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fk_13_solicitudes_aulas_id_aula_original" value="id_aula_original" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#94a3b8;strokeWidth=1.5;dashed=1;fontSize=9;fontColor=#64748b;fontFamily=Helvetica;endArrow=ERmany;endFill=0;startArrow=ERzeroToOne;startFill=0;exitX=0;exitY=0.2778;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.8500;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="tbl_solicitudes_aulas" target="tbl_aulas">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="850" y="1325" />
+              <mxPoint x="850" y="811" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fk_14_solicitudes_aulas_id_aula_solicitada" value="id_aula_solicitada" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#475569;strokeWidth=1.5;fontSize=9;fontColor=#64748b;fontFamily=Helvetica;endArrow=ERmany;endFill=0;startArrow=ERone;startFill=0;exitX=0;exitY=0.3356;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.6500;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="tbl_solicitudes_aulas" target="tbl_aulas">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="820" y="1351" />
+              <mxPoint x="820" y="773" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fk_15_solicitudes_aulas_id_materia" value="id_materia" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#475569;strokeWidth=1.5;fontSize=9;fontColor=#64748b;fontFamily=Helvetica;endArrow=ERmany;endFill=0;startArrow=ERone;startFill=0;exitX=0.5;exitY=1.0000;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=1.0000;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="tbl_solicitudes_aulas" target="tbl_materias">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1180" y="1720" />
+              <mxPoint x="180" y="1720" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fk_16_accesos_id_usuario" value="id_usuario" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#94a3b8;strokeWidth=1.5;dashed=1;fontSize=9;fontColor=#64748b;fontFamily=Helvetica;endArrow=ERmany;endFill=0;startArrow=ERzeroToOne;startFill=0;exitX=0;exitY=0.3380;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.5000;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="tbl_accesos" target="tbl_usuarios">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="960" y="1273" />
+              <mxPoint x="960" y="234" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fk_17_accesos_id_aula" value="id_aula" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#475569;strokeWidth=1.5;fontSize=9;fontColor=#64748b;fontFamily=Helvetica;endArrow=ERmany;endFill=0;startArrow=ERone;startFill=0;exitX=0;exitY=0.4583;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.4500;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="tbl_accesos" target="tbl_aulas">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="940" y="1299" />
+              <mxPoint x="940" y="735" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fk_18_otp_codigos_id_usuario" value="id_usuario" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#475569;strokeWidth=1.5;fontSize=9;fontColor=#64748b;fontFamily=Helvetica;endArrow=ERmany;endFill=0;startArrow=ERone;startFill=0;exitX=0.5;exitY=0.0000;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.2000;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="tbl_otp_codigos" target="tbl_usuarios">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2110" y="50" />
+              <mxPoint x="990" y="50" />
+              <mxPoint x="990" y="153" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fk_19_otp_codigos_id_aula" value="id_aula" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;strokeColor=#475569;strokeWidth=1.5;fontSize=9;fontColor=#64748b;fontFamily=Helvetica;endArrow=ERmany;endFill=0;startArrow=ERone;startFill=0;exitX=0;exitY=0.4091;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.2500;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="tbl_otp_codigos" target="tbl_aulas">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="970" y="1299" />
+              <mxPoint x="970" y="697" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

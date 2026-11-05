@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Solicitudes — Admin</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/fontawesome.min.css">
+    <link rel="stylesheet" href="css/custom.css">
+</head>
+
+<body>
+
+    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
+
+    <div class="app-wrapper">
+
+        <!-- SIDEBAR ADMIN -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <div class="sidebar-brand-icon"><i class="fas fa-fingerprint"></i></div>
+                <div class="sidebar-brand-text">
+                    <h5>Aulas Inteligentes</h5>
+                    <small>Panel Administrador</small>
+                </div>
+            </div>
+
+            <div class="sidebar-section-title">Monitor IoT</div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i><span>Dashboard
+                        General</span></a>
+            </nav>
+
+            <div class="sidebar-section-title">Gestión Académica</div>
+            <nav class="sidebar-nav">
+                <a href="admin_horarios.html" class="nav-link"><i class="fas fa-calendar-alt"></i><span>Carga
+                        Académica</span></a>
+                <a href="admin_solicitudes.html" class="nav-link active">
+                    <i class="fas fa-inbox"></i><span>Solicitudes</span>
+                    <span class="badge bg-warning sidebar-badge" id="badgePendientes">0</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-section-title">Sesión</div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-link" style="color:#e74c5e;" onclick="apiLogout(); return false;">
+                    <i class="fas fa-sign-out-alt"></i><span>Cerrar Sesión</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+
+            <header class="top-navbar">
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-sm btn-outline-secondary d-lg-none" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="page-title">Gestión de Solicitudes
+                        <small class="d-none d-md-inline">Revisar y aprobar peticiones de docentes</small>
+                    </h1>
+                </div>
+                <div class="navbar-actions">
+                    <div class="user-profile-btn">
+                        <div class="user-avatar" id="userAvatar">--</div>
+                        <div class="user-info d-none d-md-block">
+                            <div class="user-name" id="userName">Cargando...</div>
+                            <div class="user-role">Administrador</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content animate-fade-in">
+
+                <ul class="nav nav-pills mb-4" id="tabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" data-estado="pendiente" onclick="cambiarTab(this, event)">
+                            <i class="fas fa-clock me-1"></i>Pendientes <span class="badge bg-warning text-dark ms-1"
+                                id="cntPendiente">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-estado="aprobada" onclick="cambiarTab(this, event)">
+                            <i class="fas fa-check me-1"></i>Aprobadas <span class="badge bg-success ms-1"
+                                id="cntAprobada">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-estado="rechazada" onclick="cambiarTab(this, event)">
+                            <i class="fas fa-times me-1"></i>Rechazadas <span class="badge bg-danger ms-1"
+                                id="cntRechazada">0</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <div id="listaSolicitudes">
+                    <p class="text-muted">Cargando...</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Aprobar -->
+    <div class="modal fade" id="modalAprobar" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius:16px;">
+                <div class="modal-header"
+                    style="background:linear-gradient(135deg,#0fcc92,#0aad7a);color:white;border-radius:16px 16px 0 0;">
+                    <h5 class="modal-title"><i class="fas fa-check-circle me-2"></i>Aprobar Solicitud</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-3">¿Confirmas aprobar esta solicitud?</p>
+                    <label class="form-label">Comentario para el docente (opcional)</label>
+                    <textarea class="form-control" id="comentarioAprobacion" rows="2"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" onclick="confirmarAprobacion()"><i
+                            class="fas fa-check me-1"></i>Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Rechazar -->
+    <div class="modal fade" id="modalRechazar" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius:16px;">
+                <div class="modal-header"
+                    style="background:linear-gradient(135deg,#e74c5e,#c93d4f);color:white;border-radius:16px 16px 0 0;">
+                    <h5 class="modal-title"><i class="fas fa-times-circle me-2"></i>Rechazar Solicitud</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label class="form-label">Explicación para el docente (obligatoria)</label>
+                    <textarea class="form-control" id="explicacionRechazo" rows="3"></textarea>
+                    <div id="rechazoError" class="text-danger small mt-2" style="display:none;"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" onclick="confirmarRechazo()"><i
+                            class="fas fa-times me-1"></i>Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Éxito -->
+    <div class="modal fade" id="modalExito" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius:16px;">
+                <div class="modal-body text-center py-5">
+                    <i class="fas fa-check-circle fa-4x text-success mb-3" id="exitoIcono"></i>
+                    <h5 id="exitoTitulo">Operación Exitosa</h5>
+                    <p class="text-muted" id="exitoMensaje"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">Entendido</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        let ESTADO_ACTUAL = 'pendiente';
+        let SOLICITUD_SEL = null;
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('sidebarBackdrop').classList.toggle('active');
+        }
+
+        function iniciales(nombre) {
+            return nombre.split(/\s+/).slice(0, 2).map(p => p[0] || '').join('').toUpperCase();
+        }
+
+        function modalExito(titulo, msg, exito = true) {
+            const icono = document.getElementById('exitoIcono');
+            icono.className = exito
+                ? 'fas fa-check-circle fa-4x text-success mb-3'
+                : 'fas fa-times-circle fa-4x text-danger mb-3';
+            document.getElementById('exitoTitulo').textContent = titulo;
+            document.getElementById('exitoMensaje').textContent = msg;
+            new bootstrap.Modal(document.getElementById('modalExito')).show();
+        }
+
+        async function init() {
+            const u = await apiExigirSesion('admin');
+            document.getElementById('userName').textContent = u.nombre;
+            document.getElementById('userAvatar').textContent = iniciales(u.nombre);
+            await cargarConteos();
+            await cargarLista();
+        }
+
+        async function cargarConteos() {
+            const d = await apiFetch('solicitudes.php');
+            const c = { pendiente: 0, aprobada: 0, rechazada: 0 };
+            d.solicitudes.forEach(s => { if (c[s.estado] !== undefined) c[s.estado]++; });
+            document.getElementById('cntPendiente').textContent = c.pendiente;
+            document.getElementById('cntAprobada').textContent = c.aprobada;
+            document.getElementById('cntRechazada').textContent = c.rechazada;
+            document.getElementById('badgePendientes').textContent = c.pendiente;
+        }
+
+        function cambiarTab(el, event) {
+            event.preventDefault();
+            document.querySelectorAll('#tabs .nav-link').forEach(l => l.classList.remove('active'));
+            el.classList.add('active');
+            ESTADO_ACTUAL = el.dataset.estado;
+            cargarLista();
+        }
+
+        const BORDE = { pendiente: 'var(--warning-color)', aprobada: 'var(--accent)', rechazada: '#e74c5e' };
+
+        async function cargarLista() {
+            const cont = document.getElementById('listaSolicitudes');
+            cont.innerHTML = '<p class="text-muted">Cargando...</p>';
+            try {
+                const d = await apiFetch('solicitudes.php?estado=' + ESTADO_ACTUAL);
+                if (!d.solicitudes.length) {
+                    cont.innerHTML = `<div class="content-card"><div class="content-card-body text-center py-5 text-muted">
+                        <i class="fas fa-inbox fa-3x mb-3 d-block"></i>No hay solicitudes ${esc(ESTADO_ACTUAL)}s.</div></div>`;
+                    return;
+                }
+                cont.innerHTML = d.solicitudes.map(s => tarjeta(s)).join('');
+            } catch (e) {
+                cont.innerHTML = `<p class="text-danger">${esc(e.message)}</p>`;
+            }
+        }
+
+        function tarjeta(s) {
+            const esCambio = s.tipo === 'cambio_aula';
+            const acciones = s.estado === 'pendiente' ? `
+                <div class="d-flex gap-2 justify-content-end mt-3">
+                    <button class="btn btn-danger" onclick="abrirRechazar(${s.id})"><i class="fas fa-times me-1"></i>Rechazar</button>
+                    <button class="btn btn-success" onclick="abrirAprobar(${s.id})"><i class="fas fa-check me-1"></i>Aprobar</button>
+                </div>` : (s.comentarios_admin
+                ? `<div class="alert alert-light mt-2 mb-0"><i class="fas fa-comment me-1"></i>${esc(s.comentarios_admin)}</div>` : '');
+            return `<div class="content-card mb-4" style="border-left:5px solid ${BORDE[s.estado]};">
+                <div class="content-card-header">
+                    <div class="d-flex justify-content-between align-items-center w-100">
+                        <div class="d-flex align-items-center gap-3">
+                            <div style="width:46px;height:46px;border-radius:50%;background:var(--secondary);display:flex;align-items:center;justify-content:center;font-weight:bold;color:white;">${esc(iniciales(s.docente))}</div>
+                            <div><h6 class="mb-0">${esc(s.docente)}</h6>
+                            <small class="text-muted">${esc(esCambio ? 'Cambio de aula' : 'Aula adicional')}</small></div>
+                        </div>
+                        <span class="badge ${esCambio ? 'bg-warning text-dark' : 'bg-info'}">${esCambio ? 'Cambio de Aula' : 'Aula Adicional'}</span>
+                    </div>
+                </div>
+                <div class="content-card-body">
+                    <div class="row g-3 mb-2">
+                        ${esCambio ? `<div class="col-md-6"><strong><i class="fas fa-door-closed me-2"></i>Aula original:</strong> ${esc(s.aula_original || '—')}</div>` : ''}
+                        <div class="col-md-6"><strong><i class="fas fa-door-open me-2" style="color:var(--accent);"></i>Aula solicitada:</strong> ${esc(s.aula_solicitada)}</div>
+                        <div class="col-md-6"><strong><i class="fas fa-calendar me-2"></i>Fecha y hora:</strong> ${esc(s.fecha)} · ${esc(s.hora_inicio)}-${esc(s.hora_fin)}</div>
+                    </div>
+                    <div class="p-3 rounded mb-2" style="background:var(--surface-alt);">
+                        <strong>Motivo:</strong> ${esc(s.motivo)}
+                        ${s.justificacion ? `<p class="mb-0 mt-1 text-muted">${esc(s.justificacion)}</p>` : ''}
+                    </div>
+                    <small class="text-muted"><i class="fas fa-paper-plane me-1"></i>Enviada: ${esc(s.fecha_solicitud)}</small>
+                    ${acciones}
+                </div>
+            </div>`;
+        }
+
+        function abrirAprobar(id) {
+            SOLICITUD_SEL = id;
+            document.getElementById('comentarioAprobacion').value = '';
+            new bootstrap.Modal(document.getElementById('modalAprobar')).show();
+        }
+
+        async function confirmarAprobacion() {
+            try {
+                await apiFetch('solicitud_responder.php', {
+                    metodo: 'POST', datos: {
+                        id: SOLICITUD_SEL, accion: 'aprobar',
+                        comentarios: document.getElementById('comentarioAprobacion').value.trim(),
+                    }
+                });
+                bootstrap.Modal.getInstance(document.getElementById('modalAprobar')).hide();
+                modalExito('Solicitud Aprobada', 'El acceso quedó habilitado. Se notificará al docente.');
+                await cargarConteos(); await cargarLista();
+            } catch (e) {
+                bootstrap.Modal.getInstance(document.getElementById('modalAprobar')).hide();
+                modalExito('No se pudo aprobar', e.message, false);
+            }
+        }
+
+        function abrirRechazar(id) {
+            SOLICITUD_SEL = id;
+            document.getElementById('explicacionRechazo').value = '';
+            document.getElementById('rechazoError').style.display = 'none';
+            new bootstrap.Modal(document.getElementById('modalRechazar')).show();
+        }
+
+        async function confirmarRechazo() {
+            const exp = document.getElementById('explicacionRechazo').value.trim();
+            const errBox = document.getElementById('rechazoError');
+            if (exp.length < 1) { errBox.textContent = 'Debes indicar el motivo del rechazo.'; errBox.style.display = 'block'; return; }
+            try {
+                await apiFetch('solicitud_responder.php', {
+                    metodo: 'POST', datos: {
+                        id: SOLICITUD_SEL, accion: 'rechazar', comentarios: exp,
+                    }
+                });
+                bootstrap.Modal.getInstance(document.getElementById('modalRechazar')).hide();
+                modalExito('Solicitud Rechazada', 'Se notificará al docente con el motivo.');
+                await cargarConteos(); await cargarLista();
+            } catch (e) {
+                errBox.textContent = e.message; errBox.style.display = 'block';
+            }
+        }
+
+        init();
+    </script>
+
+</body>
+
+</html>

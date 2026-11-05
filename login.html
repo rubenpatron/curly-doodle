@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Iniciar sesión en el Sistema de Aulas Inteligentes Biométricas.">
+    <title>Iniciar Sesión — AulaSync</title>
+
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/fontawesome.min.css">
+    
+    <!-- Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <style>
+        :root {
+            --primary: #0f172a;
+            --accent: #0fcc92;
+            --surface: #ffffff;
+            --surface-alt: #f8fafc;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--surface);
+            color: var(--text-primary);
+            font-family: var(--font-family);
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+            overflow: hidden; /* Prevent scroll on login */
+        }
+
+        /* Split Layout */
+        .split-layout {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Visual Left Side */
+        .login-visual {
+            flex: 1;
+            position: relative;
+            background-color: var(--primary);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 4rem;
+            color: white;
+        }
+
+        .login-visual-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.8;
+            z-index: 1;
+        }
+
+        .login-visual-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .login-visual h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            letter-spacing: -0.03em;
+        }
+
+        .login-visual p {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 400px;
+        }
+
+        /* Form Right Side */
+        .login-form-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--surface-alt);
+            /* Subtle dot pattern for SaaS look */
+            background-image: radial-gradient(rgba(15, 23, 42, 0.08) 1px, transparent 1px);
+            background-size: 24px 24px;
+            padding: 2rem;
+            position: relative;
+            box-shadow: -20px 0 50px rgba(0,0,0,0.05);
+            z-index: 10;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 440px;
+            text-align: center;
+            background: var(--surface);
+            padding: 3rem;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08), 0 4px 6px -1px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .login-brand-icon {
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(135deg, rgba(15, 204, 146, 0.1), rgba(10, 173, 122, 0.2));
+            color: var(--accent);
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: inset 0 0 0 1px rgba(15, 204, 146, 0.2);
+        }
+
+        .login-card h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.03em;
+            color: var(--primary);
+        }
+
+        .login-card p.subtitle {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            margin-bottom: 3rem;
+            line-height: 1.5;
+        }
+
+        .btn-login {
+            background: var(--surface);
+            color: var(--text-primary);
+            border: 1px solid #cbd5e1;
+            padding: 0.85rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .btn-login:hover {
+            border-color: var(--primary);
+            box-shadow: 0 10px 20px -10px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+
+        .login-footer {
+            margin-top: 4rem;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .split-layout { flex-direction: column; overflow-y: auto; }
+            .login-visual { flex: none; height: 35vh; padding: 2rem; }
+            .login-visual h1 { font-size: 2.5rem; }
+            .login-form-container { flex: none; height: 65vh; box-shadow: 0 -20px 50px rgba(0,0,0,0.05); border-radius: 32px 32px 0 0; margin-top: -32px; }
+        }
+
+        /* Modals (Clean Style) */
+        .modal-content {
+            border-radius: 24px;
+            border: none;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .modal-header { border-bottom: 1px solid #f1f5f9; padding: 1.5rem 2rem; }
+        .modal-body { padding: 2rem; }
+        .modal-footer { border-top: none; padding: 1.5rem 2rem; }
+    </style>
+</head>
+<body>
+
+    <div class="split-layout">
+        <!-- Visual Side (Left) -->
+        <div class="login-visual">
+            <img src="images/duotone_bg.png" alt="Architecture Background" class="login-visual-bg">
+            <div class="login-visual-content">
+                <!-- Top Logo -->
+                <a href="index.html" style="font-weight: 800; font-size: 1.25rem; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 4rem; color: white; text-decoration: none; width: fit-content;">
+                    <div style="width: 10px; height: 10px; background: var(--accent); border-radius: 50%;"></div>
+                    AulaSync
+                </a>
+            </div>
+            
+            <div class="login-visual-content" style="margin-bottom: 15vh;">
+                <h1>Infraestructura invisible.</h1>
+                <p>Ingresa a tu portal para gestionar tus horarios académicos, solicitar espacios, o administrar la infraestructura inteligente de todo el campus.</p>
+            </div>
+        </div>
+
+        <!-- Form Side (Right) -->
+        <div class="login-form-container">
+            <div class="login-card">
+                <div class="login-brand-icon">
+                    <i class="fas fa-fingerprint"></i>
+                </div>
+                <h2>Bienvenido de nuevo</h2>
+                <p class="subtitle">Ingresa tus credenciales para continuar</p>
+
+                <!-- Botón real de Google (aparece si hay Client ID configurado) -->
+                <div id="g_id_signin" class="d-flex justify-content-center mb-2"></div>
+
+                <!-- Botón de Google simulado (respaldo si no hay OAuth configurado) -->
+                <button class="btn-login" id="btnGoogle" onclick="abrirSelectorGoogle()" style="display:none;">
+                    <i class="fab fa-google" style="color: #4285F4; font-size: 1.2rem;"></i> Continuar con Google
+                </button>
+
+                <p class="text-center text-muted mt-4 mb-0" style="font-size:0.85rem;">
+                    Acceso exclusivo para personal autorizado de la universidad.
+                </p>
+
+                <div class="login-footer">
+                    <a href="mailto:soporte@aulasync.com" style="color: #64748b; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#0f172a'" onmouseout="this.style.color='#64748b'">
+                        ¿Problemas de acceso? Contacta a Soporte Técnico
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: selector de cuenta de Google (simulado) -->
+    <div class="modal fade" id="googleModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" style="font-weight: 700; color: #0f172a;">
+                        <i class="fab fa-google me-2" style="color:#4285F4;"></i>Cuenta de Google
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted small mb-4">
+                        Entorno de desarrollo. Aquí ingresas tus datos para simular el inicio de sesión. Si es tu primer ingreso, la cuenta se <strong>creará automáticamente</strong> con el rol correspondiente.
+                    </p>
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight: 600; font-size: 0.9rem;">Nombre completo</label>
+                        <input type="text" class="form-control" id="gNombre" placeholder="Ej: Dra. Ana Torres Ruiz" style="border-radius: 8px; padding: 0.75rem;">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight: 600; font-size: 0.9rem;">Correo Institucional</label>
+                        <input type="email" class="form-control" id="gEmail" placeholder="ana.torres@universidad.edu" style="border-radius: 8px; padding: 0.75rem;">
+                    </div>
+                    <div id="gError" class="alert alert-danger py-2 mt-3" style="display:none; border-radius: 8px;"></div>
+                    <div id="gInfo" class="alert alert-success py-2 mt-3" style="display:none; border-radius: 8px;"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="border-radius: 100px; font-weight: 600; padding: 0.5rem 1.5rem;">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="continuarGoogleSimulado()" style="border-radius: 100px; font-weight: 600; padding: 0.5rem 1.5rem; background: #0f172a; border: none;">
+                        Autorizar Acceso
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Error genérico -->
+    <div class="modal fade" id="errorModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="overflow: hidden;">
+                <div class="modal-header" style="background: #ef4444; color: white;">
+                    <h5 class="modal-title" style="font-weight: 700;"><i class="fas fa-shield-cat me-2"></i>Acceso Denegado</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center" style="padding: 3rem 2rem;">
+                    <i class="fas fa-lock fa-3x text-danger mb-4"></i>
+                    <p class="mb-0" id="errorModalText" style="font-weight: 500;">Ocurrió un error de autenticación.</p>
+                </div>
+                <div class="modal-footer" style="justify-content: center;">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="border-radius: 100px; font-weight: 600; padding: 0.5rem 2rem; background: #f1f5f9;">Reintentar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        function mostrarError(msg) {
+            document.getElementById('errorModalText').textContent = msg;
+            new bootstrap.Modal(document.getElementById('errorModal')).show();
+        }
+
+        function irSegunRol(data) {
+            window.location.href = data.redireccion || 'usuario.html';
+        }
+
+        // --- Google real (Identity Services) ---
+        async function handleGoogleCredential(response) {
+            try {
+                const data = await apiFetch('auth_google.php', {
+                    metodo: 'POST', datos: { credential: response.credential },
+                });
+                irSegunRol(data);
+            } catch (e) { mostrarError(e.message); }
+        }
+
+        // --- Google simulado ---
+        function abrirSelectorGoogle() {
+            document.getElementById('gError').style.display = 'none';
+            document.getElementById('gInfo').style.display = 'none';
+            new bootstrap.Modal(document.getElementById('googleModal')).show();
+        }
+
+        async function continuarGoogleSimulado() {
+            const nombre = document.getElementById('gNombre').value.trim();
+            const email = document.getElementById('gEmail').value.trim();
+            const err = document.getElementById('gError');
+            const info = document.getElementById('gInfo');
+            err.style.display = 'none'; info.style.display = 'none';
+
+            if (nombre.length < 3) { err.textContent = 'Escribe tu nombre completo.'; err.style.display = 'block'; return; }
+            if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { err.textContent = 'Escribe un correo válido.'; err.style.display = 'block'; return; }
+
+            try {
+                const data = await apiFetch('auth_google.php', {
+                    metodo: 'POST', datos: { perfil: { nombre, email } },
+                });
+                info.innerHTML = (data.nuevo ? 'Cuenta creada. ' : 'Acceso Autorizado. ') +
+                    'Redirigiendo a <strong>' + esc(data.usuario.nombre) + '</strong>...';
+                info.style.display = 'block';
+                setTimeout(() => irSegunRol(data), 900);
+            } catch (e) {
+                err.textContent = e.message; err.style.display = 'block';
+            }
+        }
+
+        window.addEventListener('load', async () => {
+            let clientId = '';
+            try {
+                const cfg = await apiFetch('config_publico.php');
+                clientId = cfg.google_client_id || '';
+            } catch { /* usa modo simulado */ }
+
+            const iniciarGoogle = () => {
+                if (clientId && window.google) {
+                    google.accounts.id.initialize({ client_id: clientId, callback: handleGoogleCredential });
+                    google.accounts.id.renderButton(
+                        document.getElementById('g_id_signin'),
+                        { theme: 'outline', size: 'large', width: 340, text: 'continue_with' }
+                    );
+                } else {
+                    document.getElementById('btnGoogle').style.display = 'flex';
+                }
+            };
+
+            if (clientId && !window.google) {
+                let intentos = 0;
+                const t = setInterval(() => {
+                    if (window.google || ++intentos > 20) { clearInterval(t); iniciarGoogle(); }
+                }, 150);
+            } else {
+                iniciarGoogle();
+            }
+        });
+    </script>
+</body>
+</html>

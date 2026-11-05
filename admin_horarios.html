@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carga Académica — Admin</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/fontawesome.min.css">
+    <link rel="stylesheet" href="css/custom.css">
+</head>
+<body>
+
+    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
+
+    <div class="app-wrapper">
+
+        <!-- SIDEBAR ADMIN -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <div class="sidebar-brand-icon"><i class="fas fa-fingerprint"></i></div>
+                <div class="sidebar-brand-text">
+                    <h5>Aulas Inteligentes</h5>
+                    <small>Panel Administrador</small>
+                </div>
+            </div>
+
+            <div class="sidebar-section-title">Monitor IoT</div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i><span>Dashboard General</span></a>
+            </nav>
+
+            <div class="sidebar-section-title">Gestión Académica</div>
+            <nav class="sidebar-nav">
+                <a href="admin_horarios.html" class="nav-link active"><i class="fas fa-calendar-alt"></i><span>Carga Académica</span></a>
+                <a href="admin_solicitudes.html" class="nav-link">
+                    <i class="fas fa-inbox"></i><span>Solicitudes</span>
+                    <span class="badge bg-warning sidebar-badge" id="badgePendientes">0</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-section-title">Sesión</div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-link" style="color:#e74c5e;" onclick="apiLogout(); return false;">
+                    <i class="fas fa-sign-out-alt"></i><span>Cerrar Sesión</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+
+            <header class="top-navbar">
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-sm btn-outline-secondary d-lg-none" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="page-title">Carga Académica
+                        <small class="d-none d-md-inline">Alta y baja de horarios (persistido en MariaDB)</small>
+                    </h1>
+                </div>
+                <div class="navbar-actions">
+                    <div class="user-profile-btn">
+                        <div class="user-avatar" id="userAvatar">--</div>
+                        <div class="user-info d-none d-md-block">
+                            <div class="user-name" id="userName">Cargando...</div>
+                            <div class="user-role">Administrador</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content animate-fade-in">
+
+                <!-- Estadísticas en vivo -->
+                <div class="row g-3 mb-4" id="statsRow"></div>
+
+                <!-- Formulario de alta -->
+                <div class="content-card mb-4">
+                    <div class="content-card-header"><h6 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Agregar Clase al Horario</h6></div>
+                    <div class="content-card-body">
+                        <form id="formClase" onsubmit="guardarClase(event)" novalidate>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Docente</label>
+                                    <select class="form-select" id="fDocente"></select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Materia</label>
+                                    <select class="form-select" id="fMateria"></select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Aula</label>
+                                    <select class="form-select" id="fAula"></select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Día de la semana</label>
+                                    <select class="form-select" id="fDia">
+                                        <option value="1">Lunes</option>
+                                        <option value="2">Martes</option>
+                                        <option value="3">Miércoles</option>
+                                        <option value="4">Jueves</option>
+                                        <option value="5">Viernes</option>
+                                        <option value="6">Sábado</option>
+                                        <option value="7">Domingo</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Hora inicio</label>
+                                    <input type="time" class="form-control" id="fHoraInicio">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Hora fin</label>
+                                    <input type="time" class="form-control" id="fHoraFin">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Fecha inicio</label>
+                                    <input type="date" class="form-control" id="fFechaInicio">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Fecha fin</label>
+                                    <input type="date" class="form-control" id="fFechaFin">
+                                </div>
+                            </div>
+                            <div id="claseError" class="alert alert-danger mt-3" style="display:none;"></div>
+                            <div id="claseOk" class="alert alert-success mt-3" style="display:none;"></div>
+                            <div class="d-flex justify-content-end mt-3">
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i>Guardar en la base de datos</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Tabla de clases -->
+                <div class="content-card">
+                    <div class="content-card-header d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0"><i class="fas fa-table me-2"></i>Horarios registrados</h6>
+                        <span class="badge bg-secondary" id="totalClases">0</span>
+                    </div>
+                    <div class="content-card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Docente</th><th>Materia</th><th>Aula</th>
+                                        <th>Día</th><th>Horario</th><th>Vigencia</th><th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaClases">
+                                    <tr><td colspan="7" class="text-muted text-center py-4">Cargando...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal aviso -->
+    <div class="modal fade" id="modalAviso" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius:16px;">
+                <div class="modal-body text-center py-5">
+                    <i class="fa-4x mb-3" id="avisoIcono"></i>
+                    <h5 id="avisoTitulo"></h5>
+                    <p class="text-muted" id="avisoMensaje"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Entendido</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('sidebarBackdrop').classList.toggle('active');
+        }
+        function iniciales(n) { return n.split(/\s+/).slice(0,2).map(p=>p[0]||'').join('').toUpperCase(); }
+
+        function aviso(exito, titulo, msg) {
+            const ic = document.getElementById('avisoIcono');
+            ic.className = exito ? 'fas fa-check-circle fa-4x mb-3 text-success' : 'fas fa-times-circle fa-4x mb-3 text-danger';
+            document.getElementById('avisoTitulo').textContent = titulo;
+            document.getElementById('avisoMensaje').textContent = msg;
+            new bootstrap.Modal(document.getElementById('modalAviso')).show();
+        }
+
+        async function init() {
+            const u = await apiExigirSesion('admin');
+            document.getElementById('userName').textContent = u.nombre;
+            document.getElementById('userAvatar').textContent = iniciales(u.nombre);
+            await Promise.all([cargarStats(), cargarCombos(), cargarClases()]);
+        }
+
+        // ---- Stats en vivo (prueba de persistencia) ----
+        async function cargarStats() {
+            const d = await apiFetch('admin_stats.php');
+            const s = d.stats;
+            const tarjetas = [
+                ['fa-chalkboard-teacher', 'Docentes', s.docentes, 'var(--secondary)'],
+                ['fa-door-open', 'Aulas', s.aulas, 'var(--accent)'],
+                ['fa-calendar-check', 'Clases registradas', s.clases, '#4e8cff'],
+                ['fa-inbox', 'Solicitudes pendientes', s.solicitudes_pend, 'var(--warning-color)'],
+                ['fa-right-to-bracket', 'Accesos hoy', s.accesos_hoy, '#0aad7a'],
+            ];
+            document.getElementById('statsRow').innerHTML = tarjetas.map(([ic,t,v,c]) => `
+                <div class="col-6 col-md">
+                    <div class="content-card text-center h-100"><div class="content-card-body">
+                        <i class="fas ${ic} fa-2x mb-2" style="color:${c};"></i>
+                        <h4 class="mb-0">${v}</h4>
+                        <small class="text-muted">${t}</small>
+                    </div></div>
+                </div>`).join('');
+            document.getElementById('badgePendientes').textContent = s.solicitudes_pend;
+        }
+
+        // ---- Combos del formulario ----
+        async function cargarCombos() {
+            const [doc, mat, aul] = await Promise.all([
+                apiFetch('docentes.php'), apiFetch('materias.php'), apiFetch('aulas.php'),
+            ]);
+            document.getElementById('fDocente').innerHTML = doc.docentes
+                .map(d => `<option value="${d.id}">${esc(d.nombre)}${d.matricula ? ' (' + esc(d.matricula) + ')' : ''}</option>`).join('');
+            document.getElementById('fMateria').innerHTML = mat.materias
+                .map(m => `<option value="${m.id}">${esc(m.codigo)} — ${esc(m.nombre)}</option>`).join('');
+            document.getElementById('fAula').innerHTML = aul.aulas
+                .map(a => `<option value="${a.id}">${esc(a.codigo)} — ${esc(a.edificio)}</option>`).join('');
+        }
+
+        // ---- Tabla ----
+        const DIAS = {1:'Lunes',2:'Martes',3:'Miércoles',4:'Jueves',5:'Viernes',6:'Sábado',7:'Domingo'};
+        async function cargarClases() {
+            const tbody = document.getElementById('tablaClases');
+            try {
+                const d = await apiFetch('carga_academica.php');
+                document.getElementById('totalClases').textContent = d.clases.length;
+                if (!d.clases.length) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="text-muted text-center py-4">Sin clases registradas.</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = d.clases.map(c => `
+                    <tr>
+                        <td>${esc(c.docente)}</td>
+                        <td><span class="text-muted small">${esc(c.materia_codigo)}</span><br>${esc(c.materia)}</td>
+                        <td>${esc(c.aula)}</td>
+                        <td>${esc(DIAS[c.dia_semana] || c.dia_semana)}</td>
+                        <td>${esc(c.hora_inicio)}–${esc(c.hora_fin)}</td>
+                        <td class="small text-muted">${esc(c.fecha_inicio)} → ${esc(c.fecha_fin)}</td>
+                        <td class="text-end">
+                            <button class="btn btn-sm btn-outline-danger" onclick="eliminarClase(${c.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>`).join('');
+            } catch (e) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-danger text-center py-4">${esc(e.message)}</td></tr>`;
+            }
+        }
+
+        // ---- Alta ----
+        function validarCliente() {
+            const hi = document.getElementById('fHoraInicio').value;
+            const hf = document.getElementById('fHoraFin').value;
+            const fi = document.getElementById('fFechaInicio').value;
+            const ff = document.getElementById('fFechaFin').value;
+            if (!hi || !hf) return 'Las horas son obligatorias.';
+            if (!fi || !ff) return 'Indica fecha de inicio y fin.';
+            if (ff < fi) return 'La fecha de fin no puede ser anterior a la de inicio.';
+            return null;
+        }
+
+        async function guardarClase(event) {
+            event.preventDefault();
+            const err = document.getElementById('claseError');
+            const ok = document.getElementById('claseOk');
+            err.style.display = 'none'; ok.style.display = 'none';
+            const errC = validarCliente();
+            if (errC) { err.textContent = errC; err.style.display = 'block'; return; }
+
+            const datos = {
+                id_usuario: parseInt(document.getElementById('fDocente').value, 10),
+                id_materia: parseInt(document.getElementById('fMateria').value, 10),
+                id_aula: parseInt(document.getElementById('fAula').value, 10),
+                dia_semana: parseInt(document.getElementById('fDia').value, 10),
+                hora_inicio: document.getElementById('fHoraInicio').value,
+                hora_fin: document.getElementById('fHoraFin').value,
+                fecha_inicio: document.getElementById('fFechaInicio').value,
+                fecha_fin: document.getElementById('fFechaFin').value,
+            };
+            try {
+                const r = await apiFetch('carga_academica.php', { metodo: 'POST', datos });
+                ok.textContent = r.mensaje + ' (ID #' + r.id + ')';
+                ok.style.display = 'block';
+                document.getElementById('fHoraInicio').value = '';
+                document.getElementById('fHoraFin').value = '';
+                await Promise.all([cargarClases(), cargarStats()]);
+            } catch (e) {
+                err.textContent = e.message;
+                err.style.display = 'block';
+            }
+        }
+
+        async function eliminarClase(id) {
+            try {
+                await apiFetch('carga_academica.php?id=' + id, { metodo: 'DELETE' });
+                aviso(true, 'Eliminada', 'La clase se eliminó de la base de datos.');
+                await Promise.all([cargarClases(), cargarStats()]);
+            } catch (e) {
+                aviso(false, 'No se pudo eliminar', e.message);
+            }
+        }
+
+        init();
+    </script>
+
+</body>
+</html>
