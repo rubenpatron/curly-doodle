@@ -7,7 +7,7 @@ exigir_admin();
 
 $pdo = db();
 $stats = [
-    'docentes'            => (int) $pdo->query("SELECT COUNT(*) FROM usuarios WHERE id_rol = (SELECT id_rol FROM roles WHERE nombre='docente')")->fetchColumn(),
+    'docentes'            => (int) $pdo->query("SELECT COUNT(*) FROM usuarios WHERE id_rol = (SELECT id_rol FROM roles WHERE nombre='usuario')")->fetchColumn(),
     'aulas'               => (int) $pdo->query('SELECT COUNT(*) FROM aulas')->fetchColumn(),
     'clases'              => (int) $pdo->query('SELECT COUNT(*) FROM carga_academica WHERE activo=1')->fetchColumn(),
     'solicitudes_pend'    => (int) $pdo->query("SELECT COUNT(*) FROM solicitudes_aulas WHERE estado='pendiente'")->fetchColumn(),

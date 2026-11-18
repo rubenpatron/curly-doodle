@@ -284,11 +284,11 @@
                         comentarios: document.getElementById('comentarioAprobacion').value.trim(),
                     }
                 });
-                bootstrap.Modal.getInstance(document.getElementById('modalAprobar')).hide();
+                bootstrap.Modal.getOrCreateInstance(document.getElementById('modalAprobar')).hide();
                 modalExito('Solicitud Aprobada', 'El acceso quedó habilitado. Se notificará al docente.');
                 await cargarConteos(); await cargarLista();
             } catch (e) {
-                bootstrap.Modal.getInstance(document.getElementById('modalAprobar')).hide();
+                bootstrap.Modal.getOrCreateInstance(document.getElementById('modalAprobar')).hide();
                 modalExito('No se pudo aprobar', e.message, false);
             }
         }
@@ -310,7 +310,7 @@
                         id: SOLICITUD_SEL, accion: 'rechazar', comentarios: exp,
                     }
                 });
-                bootstrap.Modal.getInstance(document.getElementById('modalRechazar')).hide();
+                bootstrap.Modal.getOrCreateInstance(document.getElementById('modalRechazar')).hide();
                 modalExito('Solicitud Rechazada', 'Se notificará al docente con el motivo.');
                 await cargarConteos(); await cargarLista();
             } catch (e) {

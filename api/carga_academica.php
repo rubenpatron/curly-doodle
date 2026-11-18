@@ -56,6 +56,7 @@ if ($metodo === 'POST') {
         $hf        = v_hora($in['hora_fin'] ?? null, 'hora_fin');
         $fi        = v_fecha($in['fecha_inicio'] ?? null, 'fecha_inicio');
         $ff        = v_fecha($in['fecha_fin'] ?? null, 'fecha_fin');
+        if ($hf <= $hi) throw new ValidacionException('La hora de fin debe ser posterior a la de inicio.');
         if ($ff < $fi) throw new ValidacionException('La fecha de fin no puede ser anterior a la de inicio.');
     } catch (ValidacionException $e) {
         json_error($e->getMessage(), 422);
@@ -98,6 +99,74 @@ if ($metodo === 'POST') {
     );
     $ins->execute([$idUsuario, $idMateria, $idAula, $dia, $hi, $hf, $fi, $ff]);
     json_ok(['id' => (int) $pdo->lastInsertId(), 'mensaje' => 'Clase guardada en la base de datos.'], 201);
+}
+
+// ---------------------------------------------------------------- PUT / PATCH
+if ($metodo === 'PUT' || $metodo === 'PATCH') {
+    $in = leer_json();
+    try {
+        $idClase = v_entero($in['id'] ?? $in['id_carga_academica'] ?? ($_GET['id'] ?? null), 'id', ['min' => 1]);
+        $idUsuario = v_entero($in['id_usuario'] ?? null, 'id_usuario', ['min' => 1]);
+        $idMateria = v_entero($in['id_materia'] ?? null, 'id_materia', ['min' => 1]);
+        $idAula    = v_entero($in['id_aula'] ?? null, 'id_aula', ['min' => 1]);
+        $dia       = v_entero($in['dia_semana'] ?? null, 'dia_semana', ['min' => 1, 'max' => 7]);
+        $hi        = v_hora($in['hora_inicio'] ?? null, 'hora_inicio');
+        $hf        = v_hora($in['hora_fin'] ?? null, 'hora_fin');
+        $fi        = v_fecha($in['fecha_inicio'] ?? null, 'fecha_inicio');
+        $ff        = v_fecha($in['fecha_fin'] ?? null, 'fecha_fin');
+        $activo    = isset($in['activo']) ? (int)(bool)$in['activo'] : 1;
+        if ($hf <= $hi) throw new ValidacionException('La hora de fin debe ser posterior a la de inicio.');
+        if ($ff < $fi) throw new ValidacionException('La fecha de fin no puede ser anterior a la de inicio.');
+    } catch (ValidacionException $e) {
+        json_error($e->getMessage(), 422);
+    }
+
+    // Comprobar existencia
+    $chk = $pdo->prepare('SELECT 1 FROM carga_academica WHERE id_carga_academica = ?');
+    $chk->execute([$idClase]);
+    if (!$chk->fetchColumn()) {
+        json_error('La clase que intentas actualizar no existe.', 404);
+    }
+
+    // Validar existencia de llaves foráneas
+    $existe = function (string $tabla, string $pkCol, int $id) use ($pdo): bool {
+        $s = $pdo->prepare("SELECT 1 FROM $tabla WHERE $pkCol = ?");
+        $s->execute([$id]);
+        return (bool) $s->fetchColumn();
+    };
+    if (!$existe('usuarios', 'id_usuario', $idUsuario)) json_error('El docente no existe.', 404);
+    if (!$existe('materias', 'id_materia', $idMateria)) json_error('La materia no existe.', 404);
+    if (!$existe('aulas', 'id_aula', $idAula))       json_error('El aula no existe.', 404);
+
+    // Detección de colisiones excluyendo el registro actual
+    $conf = $pdo->prepare(
+        'SELECT m.nombre AS materia, u.nombre AS docente, ca.hora_inicio, ca.hora_fin
+           FROM carga_academica ca
+           JOIN materias m ON m.id_materia = ca.id_materia
+           JOIN usuarios u ON u.id_usuario = ca.id_usuario
+          WHERE ca.id_aula = ? AND ca.activo = 1 AND ca.dia_semana = ?
+            AND ca.hora_inicio < ? AND ca.hora_fin > ?
+            AND ca.fecha_inicio <= ? AND ca.fecha_fin >= ?
+            AND ca.id_carga_academica != ?
+          LIMIT 1'
+    );
+    $conf->execute([$idAula, $dia, $hf, $hi, $ff, $fi, $idClase]);
+    if ($c = $conf->fetch()) {
+        json_error(
+            'Conflicto de aula: ya existe "' . $c['materia'] . '" (' . $c['docente'] . ') de '
+            . substr($c['hora_inicio'], 0, 5) . ' a ' . substr($c['hora_fin'], 0, 5) . ' ese día.',
+            409
+        );
+    }
+
+    $upd = $pdo->prepare(
+        'UPDATE carga_academica
+            SET id_usuario = ?, id_materia = ?, id_aula = ?, dia_semana = ?,
+                hora_inicio = ?, hora_fin = ?, fecha_inicio = ?, fecha_fin = ?, activo = ?
+          WHERE id_carga_academica = ?'
+    );
+    $upd->execute([$idUsuario, $idMateria, $idAula, $dia, $hi, $hf, $fi, $ff, $activo, $idClase]);
+    json_ok(['id' => $idClase, 'mensaje' => 'Clase actualizada exitosamente en la base de datos.']);
 }
 
 // ---------------------------------------------------------------- DELETE

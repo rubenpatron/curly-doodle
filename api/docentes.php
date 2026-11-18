@@ -9,7 +9,7 @@ $st = db()->query("
     SELECT u.id_usuario AS id, u.nombre, u.email, u.matricula 
     FROM usuarios u 
     JOIN roles r ON u.id_rol = r.id_rol 
-    WHERE r.nombre = 'docente' AND u.activo = 1 
+    WHERE r.nombre = 'usuario' AND u.activo = 1 
     ORDER BY u.nombre
 ");
 json_ok(['docentes' => $st->fetchAll()]);

@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AulaSync — Organigrama, Plan de Sesiones y Minutas</title>
+<style>
+  :root {
+    --ink: #102030;
+    --muted: #55687a;
+    --line: #d1dde6;
+    --brand: #0f4c81;
+    --brand-dark: #0b2f4f;
+    --teal: #127a6b;
+    --teal-light: #e6f6f3;
+    --accent: #e8f2f9;
+    --ok: #0e7041;
+    --ok-bg: #e8f7ee;
+    --warn: #966100;
+    --warn-bg: #fff8e8;
+    --paper: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #edf2f7;
+    color: var(--ink);
+    font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 13.5px;
+    line-height: 1.55;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 20px auto;
+    background: var(--paper);
+    padding: 18mm 18mm 16mm 18mm;
+    box-shadow: 0 8px 32px rgba(16,32,48,.12);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  /* Portada */
+  .cover {
+    background: linear-gradient(145deg, #071f35 0%, #0b395d 50%, #0f5b51 100%);
+    color: #fff;
+    padding: 24mm 20mm;
+  }
+  .cover-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid rgba(255,255,255,0.22);
+    padding-bottom: 16px;
+  }
+  .cover-univ {
+    font-size: 13px;
+    letter-spacing: .25em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: #9cd5c8;
+  }
+  .cover-subuniv {
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    opacity: .85;
+    margin-top: 3px;
+  }
+  .badge-tag {
+    display: inline-block;
+    padding: 5px 12px;
+    border: 1px solid rgba(255,255,255,0.4);
+    border-radius: 20px;
+    font-size: 10.5px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    background: rgba(255,255,255,0.08);
+  }
+  .cover-main {
+    margin: 40px 0;
+  }
+  .cover-badge-doc {
+    font-size: 12px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: #7ce2ce;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .cover h1 {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 42px;
+    line-height: 1.1;
+    margin: 0 0 12px;
+    font-weight: 700;
+    color: #ffffff;
+  }
+  .cover h2 {
+    font-size: 17px;
+    font-weight: 400;
+    margin: 0;
+    opacity: .92;
+    line-height: 1.45;
+    max-width: 160mm;
+    color: #d8ecf8;
+  }
+  .cover-rule {
+    width: 80px;
+    height: 4px;
+    background: #4ed8b7;
+    margin: 24px 0;
+    border-radius: 2px;
+  }
+  .cover-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px 28px;
+    background: rgba(255,255,255,0.06);
+    padding: 18px 20px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  .meta-item span {
+    display: block;
+    font-size: 10px;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    opacity: .7;
+    margin-bottom: 2px;
+  }
+  .meta-item b {
+    font-size: 13px;
+    color: #fff;
+  }
+  .team-list {
+    margin-top: 4px;
+    font-size: 12.5px;
+    line-height: 1.4;
+  }
+  .team-list span {
+    display: inline-block;
+    background: rgba(255,255,255,0.14);
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin: 2px 4px 2px 0;
+    font-size: 11.5px;
+  }
+  .cover-foot {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10.5px;
+    opacity: .8;
+    border-top: 1px solid rgba(255,255,255,0.18);
+    padding-top: 14px;
+  }
+
+  /* Encabezados y títulos comunes */
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--brand);
+    padding-bottom: 6px;
+    margin-bottom: 10px;
+  }
+  .header-left .univ-title {
+    font-size: 10.5px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--brand);
+    font-weight: 700;
+  }
+  .header-left .prog-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .header-right {
+    text-align: right;
+    font-size: 10px;
+    color: var(--muted);
+  }
+  .page-footer {
+    border-top: 1px solid var(--line);
+    padding-top: 6px;
+    margin-top: 8px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 9.5px;
+    color: var(--muted);
+  }
+
+  h2.sec-title {
+    font-family: Georgia, serif;
+    font-size: 19px;
+    color: var(--brand-dark);
+    margin: 0 0 3px;
+    line-height: 1.2;
+  }
+  .sec-subtitle {
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  /* Tablas */
+  table.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 6px 0 8px;
+    font-size: 10.5px;
+  }
+  table.data-table th {
+    background: var(--brand-dark);
+    color: #fff;
+    padding: 5px 7px;
+    text-align: left;
+    font-size: 9.5px;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+  }
+  table.data-table td {
+    padding: 4px 7px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: middle;
+  }
+  table.data-table tr:nth-child(even) td {
+    background: #f8fafc;
+  }
+
+  /* Tarjetas y Contenedores */
+  .card-box {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 10px 12px;
+    background: #ffffff;
+    margin-bottom: 10px;
+  }
+  .card-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--brand);
+    margin: 0 0 4px;
+  }
+
+  /* Chips y estados */
+  .chip {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 10px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+  }
+  .chip-ok { background: var(--ok-bg); color: var(--ok); border: 1px solid #b6e2c9; }
+  .chip-cur { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+  .chip-rec { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+  .chip-plan { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+  .chip-crit { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+
+  /* Diagrama de organigrama */
+  .phases-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin: 8px 0 10px;
+  }
+  .phase-card {
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 6px 9px;
+    background: #fafcfe;
+    border-top: 3px solid var(--brand);
+  }
+  .phase-num {
+    font-size: 9.5px;
+    font-weight: 700;
+    color: var(--teal);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .phase-name {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--brand-dark);
+    margin: 1px 0 2px;
+  }
+  .phase-pts {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--brand);
+    background: var(--accent);
+    display: inline-block;
+    padding: 0 5px;
+    border-radius: 3px;
+    margin-bottom: 2px;
+  }
+  .phase-desc {
+    font-size: 10px;
+    color: var(--muted);
+    line-height: 1.3;
+  }
+
+  /* Minuta específica por sesión */
+  .session-header-card {
+    background: linear-gradient(135deg, #f0f6fa 0%, #e6eff5 100%);
+    border: 1px solid #c7d8e6;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+  }
+  .session-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .session-tag {
+    font-size: 10.5px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--brand);
+  }
+  .session-title {
+    font-family: Georgia, serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--brand-dark);
+    margin: 0 0 6px;
+  }
+  .session-meta-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    font-size: 11px;
+    background: rgba(255,255,255,0.7);
+    padding: 6px 10px;
+    border-radius: 6px;
+  }
+  .meta-col span {
+    display: block;
+    color: var(--muted);
+    font-size: 9.5px;
+    text-transform: uppercase;
+  }
+  .meta-col b {
+    color: var(--ink);
+  }
+
+  .minuta-body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .minuta-block {
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 10px 14px;
+  }
+  .minuta-block h4 {
+    margin: 0 0 6px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--brand);
+    border-bottom: 1px solid #eef2f5;
+    padding-bottom: 4px;
+  }
+  .minuta-list {
+    margin: 4px 0 0 16px;
+    padding: 0;
+    font-size: 11.5px;
+    line-height: 1.45;
+  }
+  .minuta-list li {
+    margin-bottom: 4px;
+  }
+
+  /* Sección de Firmas */
+  .signatures-container {
+    background: #fbfdfe;
+    border: 1px solid #c8d8e5;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-top: 10px;
+  }
+  .signatures-title {
+    font-size: 10.5px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--brand-dark);
+    margin-bottom: 10px;
+    text-align: center;
+    border-bottom: 1px dashed var(--line);
+    padding-bottom: 4px;
+  }
+  .sig-prof-box {
+    width: 220px;
+    margin: 0 auto 14px;
+    text-align: center;
+  }
+  .sig-line {
+    border-top: 1.5px solid #233749;
+    padding-top: 4px;
+    margin-top: 32px;
+  }
+  .sig-name {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .sig-role {
+    font-size: 9.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+  .sig-date-placeholder {
+    font-size: 9px;
+    color: #64748b;
+    margin-top: 2px;
+  }
+
+  .students-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  .student-sig-card {
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 6px 8px;
+    text-align: center;
+  }
+  .student-sig-space {
+    height: 30px;
+  }
+
+  /* Reglas de Impresión */
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+  @media print {
+    body {
+      background: #fff;
+    }
+    .page {
+      margin: 0;
+      box-shadow: none;
+      width: 210mm;
+      min-height: 297mm;
+      page-break-after: always;
+      padding: 14mm 16mm 12mm 16mm;
+    }
+    .page:last-child {
+      page-break-after: auto;
+    }
+    .cover {
+      min-height: 297mm;
+      padding: 24mm 20mm;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- ========================================================
+     PÁGINA 1: PORTADA INSTITUCIONAL
+======================================================== -->
+<div class="page cover">
+  <div class="cover-top">
+    <div>
+      <div class="cover-univ">Universidad Tecnológica Metropolitana</div>
+      <div class="cover-subuniv">División de Tecnologías de la Información y Comunicación</div>
+    </div>
+    <div class="badge-tag">Instrumento F-SGC-033</div>
+  </div>
+
+  <div class="cover-main">
+    <div class="cover-badge-doc">Organigrama Oficial de Trabajo y Minutas con Registro de Firmas</div>
+    <h1>AulaSync</h1>
+    <h2>Sistema Administrativo Web y Móvil para la Gestión y Control de Acceso Mediante Cerraduras Digitales IoT para Laboratorios y Espacios Académicos</h2>
+    <div class="cover-rule"></div>
+
+    <div class="cover-meta">
+      <div class="meta-item">
+        <span>Asignatura & Cuatrimestre</span>
+        <b>Programación de Redes — 4° Cuatrimestre</b>
+      </div>
+      <div class="meta-item">
+        <span>Carrera</span>
+        <b>TSU en Infraestructura de Redes Digitales</b>
+      </div>
+      <div class="meta-item">
+        <span>Profesor Titular</span>
+        <b>Dr. Aurelio Mex Mex</b>
+      </div>
+      <div class="meta-item">
+        <span>Puntaje de Evaluación</span>
+        <b>40 Puntos (100% de la Rúbrica Integradora)</b>
+      </div>
+      <div class="meta-item" style="grid-column: span 2;">
+        <span>Integrantes del Equipo de Desarrollo</span>
+        <div class="team-list">
+          <span>Edgar Patron</span>
+          <span>Valeria Almeida</span>
+          <span>Juan Aké</span>
+          <span>Kevin Ehrenzweig</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cover-foot">
+    <div>Mérida, Yucatán, México • Noviembre 2026</div>
+    <div>Grupo 4A-IRD • Ecosistema AulaSync (Web, API REST, MariaDB & Flutter)</div>
+  </div>
+</div>
+
+<!-- ========================================================
+     PÁGINA 2: ORGANIGRAMA Y CRONOGRAMA MAESTRO
+======================================================== -->
+<div class="page">
+  <div>
+    <div class="page-header">
+      <div class="header-left">
+        <div class="univ-title">Universidad Tecnológica Metropolitana</div>
+        <div class="prog-title">Programación de Redes • Proyecto Integrador AulaSync</div>
+      </div>
+      <div class="header-right">
+        <div>Instrumento: F-SGC-033</div>
+        <div>Cierre: 26 de Noviembre de 2026</div>
+      </div>
+    </div>
+
+    <h2 class="sec-title">Organigrama General y División de Fases del Proyecto</h2>
+    <div class="sec-subtitle">Estructuración modular de las 5 fases de ingeniería y su correspondencia con la rúbrica oficial (100% / 40 Pts).</div>
+
+    <div class="phases-grid">
+      <div class="phase-card">
+        <div class="phase-num">Fase 1</div>
+        <div class="phase-name">Base de Datos Centralizada</div>
+        <div class="phase-pts">Ponderación: 10 %</div>
+        <div class="phase-desc">13 tablas relacionadas en MariaDB (InnoDB, UTF-8), claves PK/FK, roles `admin`/`usuario`, restricciones CHECK y datos de prueba.</div>
+      </div>
+      <div class="phase-card">
+        <div class="phase-num">Fase 2</div>
+        <div class="phase-name">Desarrollo API REST</div>
+        <div class="phase-pts">Ponderación: 20 %</div>
+        <div class="phase-desc">Servicios HTTP en PHP (GET, POST, PUT, DELETE) para 3 módulos: Horarios, Solicitudes y Aulas/OTP, con validación y códigos HTTP.</div>
+      </div>
+      <div class="phase-card">
+        <div class="phase-num">Fase 3</div>
+        <div class="phase-name">Plataforma Web</div>
+        <div class="phase-pts">Ponderación: 20 %</div>
+        <div class="phase-desc">Interfaz adaptable en HTML5/Bootstrap/JS, Dashboard administrativo, portal de docentes, formularios validados y filtros.</div>
+      </div>
+      <div class="phase-card">
+        <div class="phase-num">Fase 4</div>
+        <div class="phase-name">App Móvil Flutter</div>
+        <div class="phase-pts">Ponderación: 20 %</div>
+        <div class="phase-desc">Aplicación móvil en Dart/Flutter, autenticación, consumo de la misma API REST, réplica de los 3 módulos y navegación nativa.</div>
+      </div>
+      <div class="phase-card">
+        <div class="phase-num">Fase 5</div>
+        <div class="phase-name">Integración & Sincronización</div>
+        <div class="phase-pts">Ponderación: 15 %</div>
+        <div class="phase-desc">Sincronización bidireccional Web ↔ API ↔ BD ↔ Móvil, pruebas de consistencia y compilación de APK Android funcional.</div>
+      </div>
+      <div class="phase-card">
+        <div class="phase-num">Fase 6</div>
+        <div class="phase-name">Seguridad, Doc & Demo</div>
+        <div class="phase-pts">Ponderación: 15 %</div>
+        <div class="phase-desc">Seguridad y hash (5%), Documentación técnica institucional (5%) y Demostración práctica ante el Dr. Aurelio Mex Mex (5%).</div>
+      </div>
+    </div>
+
+    <h2 class="sec-title" style="font-size: 16px; margin-top: 14px;">Cronograma Maestro por Sesiones (Google Calendar Oficial)</h2>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th># Sesión</th>
+          <th>Fecha & Horario</th>
+          <th>Ubicación</th>
+          <th>Eje Temático / Entregables Clave</th>
+          <th>Ponderación</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>Base</b></td>
+          <td>Jueves 05/Nov (09:00 - 10:40)</td>
+          <td>Lab 9 (C-114)</td>
+          <td>Diseño ER (13 tablas), Script SQL MariaDB y evidencia FASE 1.</td>
+          <td>10 %</td>
+          <td><span class="chip chip-ok">Concluida</span></td>
+        </tr>
+        <tr>
+          <td><b>S1</b></td>
+          <td>Martes 10/Nov (11:50 - 12:40)</td>
+          <td>Lab IOT (F-107)</td>
+          <td>API REST: Endpoints JSON y CRUD Módulo 1 (Carga Académica y Horarios).</td>
+          <td>7 %</td>
+          <td><span class="chip chip-rec">Recuperada</span></td>
+        </tr>
+        <tr>
+          <td><b>Incidencia</b></td>
+          <td>Miércoles 11/Nov (09:00 - 10:40)</td>
+          <td>—</td>
+          <td>Suspensión oficial de actividades escolares (sin clase programada).</td>
+          <td>—</td>
+          <td><span class="chip chip-plan">Asueto</span></td>
+        </tr>
+        <tr>
+          <td><b>S2</b></td>
+          <td><b>Jueves 12/Nov (09:00 - 10:40)</b></td>
+          <td>Lab 9 (C-114)</td>
+          <td><b>API REST Módulos 2 (Solicitudes) y 3 (Aulas/OTP) + Enlace Web XAMPP.</b></td>
+          <td>7 %</td>
+          <td><span class="chip chip-cur">Sesión de Hoy</span></td>
+        </tr>
+        <tr>
+          <td><b>S3</b></td>
+          <td>Martes 17/Nov (11:50 - 12:40)</td>
+          <td>Lab IOT (F-107)</td>
+          <td>Plataforma Web: Dashboard administrativo, vistas de usuario y roles.</td>
+          <td>10 %</td>
+          <td><span class="chip chip-plan">Programada</span></td>
+        </tr>
+        <tr>
+          <td><b>S4</b></td>
+          <td>Miércoles 18/Nov (09:00 - 10:40)</td>
+          <td>Lab 9 (C-114)</td>
+          <td>Pruebas de API REST: Colección Postman, códigos HTTP y documentación.</td>
+          <td>6 %</td>
+          <td><span class="chip chip-plan">Programada</span></td>
+        </tr>
+        <tr>
+          <td><b>S5</b></td>
+          <td>Jueves 19/Nov (09:00 - 10:40)</td>
+          <td>Lab 9 (C-114)</td>
+          <td>App Móvil Flutter: Estructura, pantalla de Login y navegación base.</td>
+          <td>10 %</td>
+          <td><span class="chip chip-plan">Programada</span></td>
+        </tr>
+        <tr>
+          <td><b>S6</b></td>
+          <td>Martes 24/Nov (11:50 - 12:40)</td>
+          <td>Lab IOT (F-107)</td>
+          <td>App Móvil Flutter: CRUD completo de los 3 módulos sincronizados con la API.</td>
+          <td>10 %</td>
+          <td><span class="chip chip-plan">Programada</span></td>
+        </tr>
+        <tr>
+          <td><b>S7</b></td>
+          <td>Miércoles 25/Nov (09:00 - 10:40)</td>
+          <td>Lab 9 (C-114)</td>
+          <td>Integración total Web ↔ API ↔ BD ↔ Móvil y compilación de APK Android.</td>
+          <td>15 %</td>
+          <td><span class="chip chip-plan">Programada</span></td>
+        </tr>
+        <tr>
+          <td><b>S8</b></td>
+          <td><b>Jueves 26/Nov (09:00 - 10:40)</b></td>
+          <td>Lab 9 (C-114)</td>
+          <td><b>EVALUACIÓN FINAL (40 Pts):</b> Entrega de Documentación y Demostración en vivo.</td>
+          <td>25 %</td>
+          <td><span class="chip chip-crit">Cierre Oficial</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="page-footer">
+    <div>AulaSync • Plan de Trabajo Autorizado</div>
+    <div>Página 2 de 10</div>
+  </div>
+</div>
+
+<!-- ========================================================
+     PÁGINA 3: MINUTA SESIÓN 1 (MARTES 10 DE NOVIEMBRE)
+======================================================== -->
+<div class="page">
+  <div>
+    <div class="page-header">
+      <div class="header-left">
+        <div class="univ-title">Universidad Tecnológica Metropolitana</div>
+        <div class="prog-title">Minuta de Sesión de Trabajo Presencial</div>
+      </div>
+      <div class="header-right">
+        <div>Asignatura: Programación de Redes</div>
+        <div>Código: F-SGC-033</div>
+      </div>
+    </div>
+
+    <div class="session-header-card">
+      <div class="session-top">
+        <span class="session-tag">Sesión #01 • Fase 2.1 (Recuperación)</span>
+        <span class="chip chip-rec">Sesión Recuperada</span>
+      </div>
+      <div class="session-title">API REST: Estandarización de Endpoints y CRUD de Horarios</div>
+      <div class="session-meta-row">
+        <div class="meta-col"><span>Fecha</span><b>Martes 10/Nov/2026</b></div>
+        <div class="meta-col"><span>Horario</span><b>11:50 – 12:40 h</b></div>
+        <div class="meta-col"><span>Ubicación</span><b>Lab IOT (F-107)</b></div>
+        <div class="meta-col"><span>Fase</span><b>API REST (Módulo 1)</b></div>
+      </div>
+    </div>
+
+    <div class="minuta-body">
+      <div class="minuta-block">
+        <h4>1. Objetivos Técnicos y Pedagógicos</h4>
+        <ul class="minuta-list">
+          <li>Definir la arquitectura de servicios web REST en PHP bajo el servidor local Apache de XAMPP.</li>
+          <li>Implementar capa de validación de entrada con tipos estrictos (enteros, fechas ISO, horas 24h y enums) en <code>api/helpers.php</code>.</li>
+          <li>Desarrollar el CRUD del **Módulo 1: Carga Académica y Horarios** (<code>api/carga_academica.php</code>) con detección de conflictos por solapamiento de aulas.</li>
+        </ul>
+      </div>
+
+      <div class="minuta-block">
+        <h4>2. Actividades Desarrolladas y Entregables</h4>
+        <ul class="minuta-list">
+          <li>Programación de endpoints <code>GET</code>, <code>POST</code>, <code>PUT</code> y <code>DELETE</code> consumiendo la base de datos MariaDB <code>aulas_inteligentes</code>.</li>
+          <li>Algoritmo SQL de prevención de colisiones horarias: validación estricta de cruce de días, horas y rangos de fechas lectivas.</li>
+          <li>Respuestas estándar en formato JSON con cabeceras HTTP adecuadas (<code>200 OK</code>, <code>201 Created</code>, <code>400 Bad Request</code>, <code>409 Conflict</code>, <code>422 Unprocessable</code>).</li>
+        </ul>
+      </div>
+
+      <div class="minuta-block">
+        <h4>3. Observaciones y Cumplimiento</h4>
+        <ul class="minuta-list">
+          <li>Se verificó el funcionamiento local en XAMPP. La sesión se da por acreditada y lista para el enlace del frontend y los módulos subsiguientes.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="signatures-container">
+    <div class="signatures-title">Validación y Firmas de Conformidad de la Sesión</div>
+    
+    <div class="sig-prof-box">
+      <div class="sig-line">
+        <div class="sig-name">Dr. Aurelio Mex Mex</div>
+        <div class="sig-role">Docente Titular • Programación de Redes</div>
+        <div class="sig-date-placeholder">Fecha de revisión: ____ / ____ / 2026</div>
+      </div>
+    </div>
+
+    <div class="students-grid">
+      <div class="student-sig-card">
+        <div class="student-sig-space"></div>
+        <div class="sig-line" style="margin-top:0;">
+          <div class="sig-name">Edgar Patron</div>
+          <div class="sig-role">Alumno / Integrante</div>
+        </div>
+      </div>
+      <div class="student-sig-card">
+        <div class="student-sig-space"></div>
+        <div class="sig-line" style="margin-top:0;">
+          <div class="sig-name">Valeria Almeida</div>
+          <div class="sig-role">Alumna / Integrante</div>
+        </div>
+      </div>
+      <div class="student-sig-card">
+        <div class="student-sig-space"></div>
+        <div class="sig-line" style="margin-top:0;">
+          <div class="sig-name">Juan Aké</div>
+          <div class="sig-role">Alumno / Integrante</div>
+        </div>
+      </div>
+      <div class="student-sig-card">
+        <div class="student-sig-space"></div>
+        <div class="sig-line" style="margin-top:0;">
+          <div class="sig-name">Kevin Ehrenzweig</div>
+          <div class="sig-role">Alumno / Integrante</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div>AulaSync • Minuta de Trabajo Presencial</div>
+    <div>Página 3 de 10</div>
+  </div>
+</div>
+
+<!-- ========================================================
+     PÁGINA 4: MINUTA SESIÓN 2 (JUEVES 12 DE NOVIEMBRE - HOY)
+======================================================== -->
+<div class="page">
+  <div>
+    <div class="page-header">
+      <div class="header-left">
+        <div class="univ-title">Universidad Tecnológica Metropolitana</div>
+        <div class="prog-title">Minuta de Sesión de Trabajo Presencial</div>
+      </div>
+      <div class="header-right">
+        <div>Asignatura: Programación de Redes</div>
+        <div>Código: F-SGC-033</div>
+      </div>
+    </div>
+
+    <div class="session-header-card">
+      <div class="session-top">
+        <span class="session-tag">Sesión #02 • Fase 2.2</span>
+        <span class="chip chip-cur">Sesión de Hoy (12/Nov)</span>
+      </div>
+      <div class="session-title">API REST: Solicitudes de Aulas, Cerraduras IoT y Enlace Web</div>
+      <div class="session-meta-row">
+        <div class="meta-col"><span>Fecha</span><b>Jueves 12/Nov/2026</b></div>
+        <div class="meta-col"><span>Horario</span><b>09:00 – 10:40 h</b></div>
+        <div class="meta-col"><span>Ubicación</span><b>Lab 9 (C-114)</b></div>
+        <div class="meta-col"><span>Fase</span><b>API REST (Módulos 2 y 3)</b></div>
+      </div>
+    </div>
+
+    <div class="minuta-body">
+      <div class="minuta-block">
+        <h4>1. Justificación de Calendario & Objetivos</h4>
+        <ul class="minuta-list">
+          <li><b>Nota de calendario:</b> El Miércoles 11 de noviembre hubo suspensión oficial de actividades escolares; se retoma de forma continua hoy 12 de noviembre.</li>
+          <li>Desarrollar el flujo del **Módulo 2: Solicitudes de Aulas** (<code>api/solicitudes.php</code> y <code>api/solicitud_responder.php</code>) para cambios de aula o peticiones extraordinarias.</li>
+          <li>Implementar el **Módulo 3: Aulas, Cerraduras y OTP** (<code>api/aulas.php</code>, <code>api/otp_solicitar.php</code> y <code>api/cerradura_abrir.php</code>) con bitácora de accesos.</li>
+          <li>Enlazar y verificar el consumo directo de la API REST desde el frontend Web servido por Apache en XAMPP.</li>
+        </ul>
+      </div>
+
+      <div class="minuta-block">
+        <h4>2. Actividades Desarrolladas y Entregables</h4>
+        <ul class="minuta-list">
+          <li>Creación de endpoints para registro de solicitudes por parte de docentes y aprobación/rechazo por administradores con comentarios de auditoría.</li>
+          <li>Mecanismo de generación de código temporal OTP de 6 dígitos con expiración automática (5 minutos) y registro de evento en la tabla <code>accesos</code>.</li>
+          <li>Configuración de la pila de servicios en XAMPP con Apache activo en puerto local y MariaDB conectado en puerto 3306.</li>
+        </ul>
+      </div>
+
+      <div class="minuta-block">
+        <h4>3. Observaciones y Cumplimiento</h4>
+        <ul class="minuta-list">
+          <li>Se consolidaron 2 de los 3 módulos administrativos exigidos por la rúbrica. Los servicios quedan listos para su integración y pruebas en la siguiente sesión de frontend y Postman.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="signatures-container">
+    <div class="signatures-title">Validación y Firmas de Conformidad de la Sesión</div>
+    
+    <div class="sig-prof-box">
+      <div class="sig-line">
+        <div class="sig-name">Dr. Aurelio Mex Mex</div>
+        <div class="sig-role">Docente Titular • Programación de Redes</div>
+        <div class="sig-date-placeholder">Fecha de revisión: ____ / ____ / 2026</div>
+      </div>
+    </div>
+
+    <div class="students-grid">
+      <div class="student-sig-card">
+        <div class="student-sig-space"></div>
+        <div class="sig-line" style="margin-top:0;">
+          <div class="sig-name">Edgar Patron</div>
+          <div class="sig-role">Alumno / Integrante</div>
+        </div>
+      </div>
+      <div class="student-sig-card">
+        <div class="student-sig-space"></div>
+        <div class="sig-line" style="margin-top:0;">
+          <div class="sig-name">Valeria Almeida</div>
+          <div class="sig-role">Alumna / Integrante</div>
+        </div>
+      </div>
+      <div class="student-sig-card">
+        <div class="student-sig-space"></div>
+        <div class="sig-line" style="margin-top:0;">
+          <div class="sig-name">Juan Aké</div>
+          <div class="sig-role">Alumno / Integrante</div>
+        </div>
+      </div>
+      <div class="student-sig-card">
+        <div class="student-sig-space"></div>
+        <div class="sig-line" style="margin-top:0;">
+          <div class="sig-name">Kevin Ehrenzweig</div>
+          <div class="sig-role">Alumno / Integrante</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div>AulaSync • Minuta de Trabajo Presencial</div>
+    <div>Página 4 de 10</div>
+  </div>
+</div>
+
+<!-- ========================================================
+     PÁGINA 5: MINUTA SESIÓN 3 (MARTES 17 DE NOVIEMBRE)
+======================================================== -->
+<div class="page">
+  <div>
+    <div class="page-header">
+      <div class="header-left">
+        <div class="univ-title">Universidad Tecnológica Metropolitana</div>
+        <div class="prog-title">Minuta de Sesión de Trabajo Presencial</div>
+      </div>
+      <div class="header-right">
+        <div>Asignatura: Programación de Redes</div>
+        <div>Código: F-SGC-033</div>
+      </div>
+    </div>
+
+    <div class="session-header-card">
+      <div class="session-top">
+        <span class="session-tag">Sesión #03 • Fase 3</span>
+        <span class="chip chip-plan">Programada</span>
+      </div>
+      <div class="session-title">Plataforma Web: Dashboard Administrativo y Portal Docente</div>
+      <div class="session-meta-row">
+        <div class="meta-col"><span>Fecha</span><b>Martes 17/Nov/2026</b></div>
+        <div class="meta-col"><span>Horario</span><b>11:50 – 12:40 h</b></div>
+        <div class="meta-col"><span>Ubicación</span><b>Lab IOT (F-107)</b></div>
+        <div class="meta-col"><span>Fase</span><b>Plataforma Web (20%)</b></div>
+      </div>
+    </div>
+
+    <div class="minuta-body">
+      <div class="minuta-block">
+        <h4>1. Objetivos Técnicos y Pedagógicos</h4>
+        <ul class="minuta-list">
+          <li>Completar la interfaz de usuario web responsiva y adaptada a dispositivos según el Requisito A del instrumento F-SGC-033.</li>
+          <li>Implementar la vista del Dashboard administrativo con indicadores clave: total de aulas, porcentaje de ocupación, solicitudes pendientes y eventos de seguridad.</li>
+          <li>Establecer la segregación de vistas y niveles de acceso entre Administrador y Docente/Usuario.</li>
+        </ul>
+      </div>
+
+      <div class="minuta-block">
+        <h4>2. Actividades Previstas y Entregables</h4>
+        <ul class="minuta-list">
+          <li>Validación gráfica de formularios (retroalimentación visual de errores y mensajes de confirmación).</li>
+          <li>Integración de filtros y barras de búsqueda en tiempo real en las tablas de horarios y solicitudes.</li>
+          <li>Pruebas de cierre e inicio de sesión y persistencia segura de la sesión.</li>
+        </ul>
+      </div>
+
+      <div class="minuta-block">
+        <h4>3. Observaciones y Acuerdos de Trabajo</h4>
+        <ul class="minuta-list">
+          <li>Verificación de la consistencia visual y ergonomía de usuario antes de proceder a la sesión de pruebas en Postman.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="signatures-container">
+    <div class="signatures-title">Validación y Firmas de Conformidad de la Sesión</div>
+    
+    <div class="sig-prof-box">
+      <div class="sig-line">
+        <div class="sig-name">Dr. Aurelio Mex Mex</div>
+        <div class="sig-role">Docente Titular • Programación de Redes</div>
+        <div class="sig-date-placeholder">Fecha de revisión: ____ / ____ / 2026</div>
+      </div>
+    </div>
+
+    <div class="students-grid">
+      <div class="student-sig-card">
+        <div class="student-sig-space"></div>
+        <div class="sig-line" style="margin-top:0;">
+          <div class="sig-name">Edgar Patron</div>
+          <div class="sig-role">Alumno / Integrante</div>
+        </div>
+      </div>
+      <div class="student-sig-card">
+        <div class="student-sig-space"></div>
+        <div class="sig-line" style="margin-top:0;">
+          <div class="sig-name">Valeria Almeida</div>
+          <div class="sig-role">Alumna / Integrante</div>
+        </div>
+      </div>
+      <div class="student-sig-card">
+        <div class="student-sig-space"></div>
+        <div class="sig-line" style="margin-top:0;">
+          <div class="sig-name">Juan Aké</div>
+          <div class="sig-role">Alumno / Integrante</div>
+        </div>
+      </div>
+      <div class="student-sig-card">
+        <div class="student-sig-space"></div>
+        <div class="sig-line" style="margin-top:0;">
+          <div class="sig-name">Kevin Ehrenzweig</div>
+          <div class="sig-role">Alumno / Integrante</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div>AulaSync • Minuta de Trabajo Presencial</div>
+    <div>Página 5 de 10</div>
+  </div>
+</div>
+
+<!-- ========================================================
+     PÁGINA 6: MINUTA SESIÓN 4 (MIÉRCOLES 18 DE NOVIEMBRE)
+======================================================== -->
+<div class="page">
+  <div>
+    <div class="page-header">
+      <div class="header-left">
+        <div class="univ-title">Universidad Tecnológica Metropolitana</div>
+        <div class="prog-title">Minuta de Sesión de Trabajo Presencial</div>
+      </div>
+      <div class="header-right">
+        <div>Asignatura: Programación de Redes</div>
+        <div>Código: F-SGC-033</div>
+      </div>
+    </div>
+
+    <div class="session-header-card">
+      <div class="session-top">
+        <span class="session-tag">Sesión #04 • Fase 2.3</span>
+        <span class="chip chip-plan">Programada</span>
+      </div>
+      <div class="session-title">Pruebas Integrales de API REST y Colección Postman</div>
+      <div class="session-meta-row">
+        <div class="meta-col"><span>Fecha</span><b>Miércoles 18/Nov/2026</b></div>
+        <div class="meta-col"><span>Horario</span><b>09:00 – 10:40 h</b></div>
+        <div class="meta-col"><span>Ubicación</span><b>Lab 9 (C-114)</b></div>
+        <div class="meta-col"><span>Fase</span><b>API REST & Postman (20%)</b></div>
+      </div>
+    </div>
+
+    <div class="minuta-body">
+      <div class="minuta-block">
+        <h4>1. Objetivos Técnicos y Pedagógicos</h4>
+        <ul class="minuta-list">
+          <li>Diseñar y documentar la colección de pruebas en **Postman** exigida como entregable obligatorio en la rúbrica institucional.</li>
+          <li>Verificar la totalidad de métodos HTTP implementados (<code>GET</code>, <code>POST</code>, <code>PUT/PATCH</code>, <code>DELETE</code>) con casos de éxito y pruebas de estrés.</li>
+          <li>Comprobar el rechazo adecuado de datos no válidos (inyección SQL, tipos de datos erróneos y códigos de error HTTP 400/404/409/422).</li>
+        </ul>
+      </div>
+
+      <div class="minuta-block">
+        <h4>2. Actividades Previstas y Entregables</h4>
+        <ul class="minuta-list">
+          <li>Exportación del archivo de colección Postman (<code>AulaSync_API.postman_collection.json</code>) y ambiente de variables.</li>
+          <li>Generación de evidencias fotográficas / capturas de pantalla de la ejecución de pruebas para la documentación técnica final.</li>
+        </ul>
+      </div>
+
+      <div class="minuta-block">
+        <h4>3. Observaciones y Acuerdos de Trabajo</h4>
+        <ul class="minuta-list">
+          <li>Garantizar que la API se encuentre 100% blindada antes de iniciar el desarrollo de la aplicación cliente en Flutter.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="signatures-container">
+    <div class="signatures-title">Validación y Firmas de Conformidad de la Sesión</div>
+    
+    <div class="sig-prof-box">
+      <div class="sig-line">
+        <div class="sig-name">Dr. Aurelio Mex Mex</div>
+        <div class="sig-role">Docente Titular • Programación de Redes</div>
+        <div class="sig-date-placeholder">Fecha de revisión: ____ / ____ / 2026</div>
+      </div>
+    </div>
+
+    <div class="students-grid">
+      <div class="student-sig-card">
+        <div class="student-sig-space"></div>
+        <div class="sig-line" style="margin-top:0;">
+          <div class="sig-name">Edgar Patron</div>
+          <div class="sig-role">Alumno / Integrante</div>
+        </div>
+      </div>
+      <div class="student-sig-card">
+        <div class="student-sig-space"></div>
+        <div class="sig-line" style="margin-top:0;">
+          <div class="sig-name">Valeria Almeida</div>
+          <div class="sig-role">Alumna / Integrante</div>
+        </div>
+      </div>
+      <div class="student-sig-card">
+        <div class="student-sig-space"></div>
+        <div class="sig-line" style="margin-top:0;">
+          <div class="sig-name">Juan Aké</div>
+          <div class="sig-role">Alumno / Integrante</div>
+        </div>
+      </div>
+      <div class="student-sig-card">
+        <div class="student-sig-space"></div>
+        <div class="sig-line" style="margin-top:0;">
+          <div class="sig-name">Kevin Ehrenzweig</div>
+          <div class="sig-role">Alumno / Integrante</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div>AulaSync • Minuta de Trabajo Presencial</div>
+    <div>Página 6 de 10</div>
+  </div>
+</div>
+
+<!-- ========================================================
+     PÁGINA 7: MINUTA SESIÓN 5 (JUEVES 19 DE NOVIEMBRE)
+======================================================== -->
+<div class="page">
+  <div>
+    <div class="page-header">
+      <div class="header-left">
+        <div class="univ-title">Universidad Tecnológica Metropolitana</div>
+        <div class="prog-title">Minuta de Sesión de Trabajo Presencial</div>
+      </div>
+      <div class="header-right">
+        <div>Asignatura: Programación de Redes</div>
+        <div>Código: F-SGC-033</div>
+      </div>
+    </div>
+
+    <div class="session-header-card">
+      <div class="session-top">
+        <span class="session-tag">Sesión #05 • Fase 4.1</span>
+        <span class="chip chip-plan">Programada</span>
+      </div>
+      <div class="session-title">App Móvil Flutter: Estructura, Autenticación y Navegación</div>
+      <div class="session-meta-row">
+        <div class="meta-col"><span>Fecha</span><b>Jueves 19/Nov/2026</b></div>
+        <div class="meta-col"><span>Horario</span><b>09:00 – 10:40 h</b></div>
+        <div class="meta-col"><span>Ubicación</span><b>Lab 9 (C-114)</b></div>
+        <div class="meta-col"><span>Fase</span><b>App Móvil Flutter (20%)</b></div>
+      </div>
+    </div>
+
+    <div class="minuta-body">
+      <div class="minuta-block">
+        <h4>1. Objetivos Técnicos y Pedagógicos</h4>
+        <ul class="minuta-list">
+          <li>Crear el proyecto base en **Flutter** estructurado por capas (servicios HTTP, modelos de datos, widgets y vistas).</li>
+          <li>Diseñar una interfaz móvil limpia adaptada a pantallas táctiles (Material Design 3).</li>
+          <li>Implementar el sistema de autenticación móvil consumiendo el endpoint de login de la API REST y almacenamiento del token.</li>
+        </ul>
+      </div>
+
+      <div class="minuta-block">
+        <h4>2. Actividades Previstas y Entregables</h4>
+        <ul class="minuta-list">
+          <li>Pantalla de inicio de sesión con validación de credenciales.</li>
+          <li>Enrutamiento y navegación entre pantallas mediante menú principal / drawer inferior.</li>
+          <li>Manejo de estados de carga (indicadores de progreso y captura de fallos de red).</li>
+        </ul>
+      </div>
+
+      <div class="minuta-block">
+        <h4>3. Observaciones y Acuerdos de Trabajo</h4>
+        <ul class="minuta-list">
+          <li>Configurar la dirección IP local de la API REST para permitir la conexión desde dispositivos físicos o emuladores en la misma subred.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="signatures-container">
+    <div class="signatures-title">Validación y Firmas de Conformidad de la Sesión</div>
+    
+    <div class="sig-prof-box">
+      <div class="sig-line">
+        <div class="sig-name">Dr. Aurelio Mex Mex</div>
+        <div class="sig-role">Docente Titular • Programación de Redes</div>
+        <div class="sig-date-placeholder">Fecha de revisión: ____ / ____ / 2026</div>
+      </div>
+    </div>
+
+    <div class="students-grid">
+      <div class="student-sig-card">
+        <div class="student-sig-space"></div>
+        <div class="sig-line" style="margin-top:0;">
+          <div class="sig-name">Edgar Patron</div>
+          <div class="sig-role">Alumno / Integrante</div>
+        </div>
+      </div>
+      <div class="student-sig-card">
+        <div class="student-sig-space"></div>
+        <div class="sig-line" style="margin-top:0;">
+          <div class="sig-name">Valeria Almeida</div>
+          <div class="sig-role">Alumna / Integrante</div>
+        </div>
+      </div>
+      <div class="student-sig-card">
+        <div class="student-sig-space"></div>
+        <div class="sig-line" style="margin-top:0;">
+          <div class="sig-name">Juan Aké</div>
+          <div class="sig-role">Alumno / Integrante</div>
+        </div>
+      </div>
+      <div class="student-sig-card">
+        <div class="student-sig-space"></div>
+        <div class="sig-line" style="margin-top:0;">
+          <div class="sig-name">Kevin Ehrenzweig</div>
+          <div class="sig-role">Alumno / Integrante</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div>AulaSync • Minuta de Trabajo Presencial</div>
+    <div>Página 7 de 10</div>
+  </div>
+</div>
+
+<!-- ========================================================
+     PÁGINA 8: MINUTA SESIÓN 6 (MARTES 24 DE NOVIEMBRE)
+======================================================== -->
+<div class="page">
+  <div>
+    <div class="page-header">
+      <div class="header-left">
+        <div class="univ-title">Universidad Tecnológica Metropolitana</div>
+        <div class="prog-title">Minuta de Sesión de Trabajo Presencial</div>
+      </div>
+      <div class="header-right">
+        <div>Asignatura: Programación de Redes</div>
+        <div>Código: F-SGC-033</div>
+      </div>
+    </div>
+
+    <div class="session-header-card">
+      <div class="session-top">
+        <span class="session-tag">Sesión #06 • Fase 4.2</span>
+        <span class="chip chip-plan">Programada</span>
+      </div>
+      <div class="session-title">App Móvil Flutter: Módulos CRUD y Consumo de la API REST</div>
+      <div class="session-meta-row">
+        <div class="meta-col"><span>Fecha</span><b>Martes 24/Nov/2026</b></div>
+        <div class="meta-col"><span>Horario</span><b>11:50 – 12:40 h</b></div>
+        <div class="meta-col"><span>Ubicación</span><b>Lab IOT (F-107)</b></div>
+        <div class="meta-col"><span>Fase</span><b>App Móvil Flutter (20%)</b></div>
+      </div>
+    </div>
+
+    <div class="minuta-body">
+      <div class="minuta-block">
+        <h4>1. Objetivos Técnicos y Pedagógicos</h4>
+        <ul class="minuta-list">
+          <li>Incorporar en Flutter los mismos 3 módulos administrativos de la web: Horarios, Solicitudes y Apertura con OTP.</li>
+          <li>Implementar operaciones CRUD completas directamente contra los endpoints de la API REST.</li>
+          <li>Garantizar que la información consultada en la app móvil coincida exactamente con la base de datos centralizada.</li>
+        </ul>
+      </div>
+
+      <div class="minuta-block">
+        <h4>2. Actividades Previstas y Entregables</h4>
+        <ul class="minuta-list">
+          <li>Formularios móviles con validación de campos obligatorios, fechas y selección de aulas.</li>
+          <li>Funcionalidad móvil para solicitar y visualizar el código OTP de apertura de cerraduras inteligentes.</li>
+          <li>Diálogos nativos de confirmación para acciones críticas (cancelaciones o eliminaciones).</li>
+        </ul>
+      </div>
+
+      <div class="minuta-block">
+        <h4>3. Observaciones y Acuerdos de Trabajo</h4>
+        <ul class="minuta-list">
+          <li>Preparar el entorno para las pruebas de sincronización cruzada en la siguiente sesión.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="signatures-container">
+    <div class="signatures-title">Validación y Firmas de Conformidad de la Sesión</div>
+    
+    <div class="sig-prof-box">
+      <div class="sig-line">
+        <div class="sig-name">Dr. Aurelio Mex Mex</div>
+        <div class="sig-role">Docente Titular • Programación de Redes</div>
+        <div class="sig-date-placeholder">Fecha de revisión: ____ / ____ / 2026</div>
+      </div>
+    </div>
+
+    <div class="students-grid">
+      <div class="student-sig-card">
+        <div class="student-sig-space"></div>
+        <div class="sig-line" style="margin-top:0;">
+          <div class="sig-name">Edgar Patron</div>
+          <div class="sig-role">Alumno / Integrante</div>
+        </div>
+      </div>
+      <div class="student-sig-card">
+        <div class="student-sig-space"></div>
+        <div class="sig-line" style="margin-top:0;">
+          <div class="sig-name">Valeria Almeida</div>
+          <div class="sig-role">Alumna / Integrante</div>
+        </div>
+      </div>
+      <div class="student-sig-card">
+        <div class="student-sig-space"></div>
+        <div class="sig-line" style="margin-top:0;">
+          <div class="sig-name">Juan Aké</div>
+          <div class="sig-role">Alumno / Integrante</div>
+        </div>
+      </div>
+      <div class="student-sig-card">
+        <div class="student-sig-space"></div>
+        <div class="sig-line" style="margin-top:0;">
+          <div class="sig-name">Kevin Ehrenzweig</div>
+          <div class="sig-role">Alumno / Integrante</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div>AulaSync • Minuta de Trabajo Presencial</div>
+    <div>Página 8 de 10</div>
+  </div>
+</div>
+
+<!-- ========================================================
+     PÁGINA 9: MINUTA SESIÓN 7 (MIÉRCOLES 25 DE NOVIEMBRE)
+======================================================== -->
+<div class="page">
+  <div>
+    <div class="page-header">
+      <div class="header-left">
+        <div class="univ-title">Universidad Tecnológica Metropolitana</div>
+        <div class="prog-title">Minuta de Sesión de Trabajo Presencial</div>
+      </div>
+      <div class="header-right">
+        <div>Asignatura: Programación de Redes</div>
+        <div>Código: F-SGC-033</div>
+      </div>
+    </div>
+
+    <div class="session-header-card">
+      <div class="session-top">
+        <span class="session-tag">Sesión #07 • Fase 5</span>
+        <span class="chip chip-plan">Programada</span>
+      </div>
+      <div class="session-title">Integración Cruzada y Generación del Paquete APK Android</div>
+      <div class="session-meta-row">
+        <div class="meta-col"><span>Fecha</span><b>Miércoles 25/Nov/2026</b></div>
+        <div class="meta-col"><span>Horario</span><b>09:00 – 10:40 h</b></div>
+        <div class="meta-col"><span>Ubicación</span><b>Lab 9 (C-114)</b></div>
+        <div class="meta-col"><span>Fase</span><b>Integración & APK (15%)</b></div>
+      </div>
+    </div>
+
+    <div class="minuta-body">
+      <div class="minuta-block">
+        <h4>1. Objetivos Técnicos y Pedagógicos</h4>
+        <ul class="minuta-list">
+          <li>Ejecutar pruebas de sincronización cruzada: registro de datos en Web y visualización inmediata en Móvil, y viceversa.</li>
+          <li>Comprobar la integridad de los datos en MariaDB sin permitir conexiones directas fuera de la API REST.</li>
+          <li>Compilar y validar el paquete ejecutable **APK funcional para Android** exigido en los entregables.</li>
+        </ul>
+      </div>
+
+      <div class="minuta-block">
+        <h4>2. Actividades Previstas y Entregables</h4>
+        <ul class="minuta-list">
+          <li>Instalación del archivo APK en dispositivo físico Android y prueba de conectividad hacia el servidor local.</li>
+          <li>Pruebas de latencia y consistencia en la generación y validación de OTP.</li>
+          <li>Ensayo de la batería de pruebas para la presentación final ante el docente.</li>
+        </ul>
+      </div>
+
+      <div class="minuta-block">
+        <h4>3. Observaciones y Acuerdos de Trabajo</h4>
+        <ul class="minuta-list">
+          <li>Tener listo el instalador APK disponible en memoria o enlace directo para la demostración del día de evaluación.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="signatures-container">
+    <div class="signatures-title">Validación y Firmas de Conformidad de la Sesión</div>
+    
+    <div class="sig-prof-box">
+      <div class="sig-line">
+        <div class="sig-name">Dr. Aurelio Mex Mex</div>
+        <div class="sig-role">Docente Titular • Programación de Redes</div>
+        <div class="sig-date-placeholder">Fecha de revisión: ____ / ____ / 2026</div>
+      </div>
+    </div>
+
+    <div class="students-grid">
+      <div class="student-sig-card">
+        <div class="student-sig-space"></div>
+        <div class="sig-line" style="margin-top:0;">
+          <div class="sig-name">Edgar Patron</div>
+          <div class="sig-role">Alumno / Integrante</div>
+        </div>
+      </div>
+      <div class="student-sig-card">
+        <div class="student-sig-space"></div>
+        <div class="sig-line" style="margin-top:0;">
+          <div class="sig-name">Valeria Almeida</div>
+          <div class="sig-role">Alumna / Integrante</div>
+        </div>
+      </div>
+      <div class="student-sig-card">
+        <div class="student-sig-space"></div>
+        <div class="sig-line" style="margin-top:0;">
+          <div class="sig-name">Juan Aké</div>
+          <div class="sig-role">Alumno / Integrante</div>
+        </div>
+      </div>
+      <div class="student-sig-card">
+        <div class="student-sig-space"></div>
+        <div class="sig-line" style="margin-top:0;">
+          <div class="sig-name">Kevin Ehrenzweig</div>
+          <div class="sig-role">Alumno / Integrante</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div>AulaSync • Minuta de Trabajo Presencial</div>
+    <div>Página 9 de 10</div>
+  </div>
+</div>
+
+<!-- ========================================================
+     PÁGINA 10: MINUTA SESIÓN 8 (JUEVES 26 DE NOVIEMBRE - EVALUACIÓN FINAL)
+======================================================== -->
+<div class="page">
+  <div>
+    <div class="page-header">
+      <div class="header-left">
+        <div class="univ-title">Universidad Tecnológica Metropolitana</div>
+        <div class="prog-title">Minuta de Sesión de Trabajo Presencial</div>
+      </div>
+      <div class="header-right">
+        <div>Asignatura: Programación de Redes</div>
+        <div>Código: F-SGC-033</div>
+      </div>
+    </div>
+
+    <div class="session-header-card">
+      <div class="session-top">
+        <span class="session-tag">Sesión #08 • Cierre & Evaluación Final</span>
+        <span class="chip chip-crit">Evaluación Final (40 Pts)</span>
+      </div>
+      <div class="session-title">Entrega Técnica, Demostración Práctica y Evaluación del Proyecto</div>
+      <div class="session-meta-row">
+        <div class="meta-col"><span>Fecha</span><b>Jueves 26/Nov/2026</b></div>
+        <div class="meta-col"><span>Horario</span><b>09:00 – 10:40 h</b></div>
+        <div class="meta-col"><span>Ubicación</span><b>Lab 9 (C-114)</b></div>
+        <div class="meta-col"><span>Fase</span><b>Evaluación Final (100%)</b></div>
+      </div>
+    </div>
+
+    <div class="minuta-body">
+      <div class="minuta-block">
+        <h4>1. Puntos del Protocolo de Evaluación Institucional</h4>
+        <ul class="minuta-list">
+          <li>Presentación de la problemática institucional y la solución desarrollada con AulaSync.</li>
+          <li>Explicación de la arquitectura de tres capas: Web / Móvil ↔ API REST PHP ↔ MariaDB.</li>
+          <li>Demostración en vivo del funcionamiento de la plataforma Web y la aplicación móvil en Flutter.</li>
+          <li>Ejecución de operaciones CRUD simultáneas y comprobación de reflejo instantáneo en ambas plataformas.</li>
+          <li>Muestra de pruebas de consumo en Postman y defensa de preguntas técnicas del docente.</li>
+        </ul>
+      </div>
+
+      <div class="minuta-block">
+        <h4>2. Entregables Finales Presentados</h4>
+        <ul class="minuta-list">
+          <li>Código fuente completo del sistema Web, API REST y proyecto Flutter.</li>
+          <li>Archivo ejecutable APK para Android verificado.</li>
+          <li>Documentación técnica con portada, arquitectura, diseño de base de datos, módulos y evidencias.</li>
+          <li>Script SQL de la base de datos MariaDB con datos de prueba cargados.</li>
+        </ul>
+      </div>
+
+      <div class="minuta-block">
+        <h4>3. Dictamen y Calificación Final Obtenida</h4>
+        <div style="margin-top: 6px; font-size: 11.5px; background: #f8fafc; padding: 6px 10px; border-radius: 4px; border: 1px solid var(--line);">
+          <b>Calificación Asignada:</b> ________ / 40 Pts &nbsp;&nbsp;•&nbsp;&nbsp; <b>Dictamen:</b> ( &nbsp; ) Aprobado &nbsp;&nbsp; ( &nbsp; ) No Aprobado
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="signatures-container">
+    <div class="signatures-title">Cierre Oficial de Evaluación y Firmas Finales</div>
+    
+    <div class="sig-prof-box">
+      <div class="sig-line">
+        <div class="sig-name">Dr. Aurelio Mex Mex</div>
+        <div class="sig-role">Docente Titular • Evaluación Definitiva</div>
+        <div class="sig-date-placeholder">Fecha de evaluación: 26 / 11 / 2026</div>
+      </div>
+    </div>
+
+    <div class="students-grid">
+      <div class="student-sig-card">
+        <div class="student-sig-space"></div>
+        <div class="sig-line" style="margin-top:0;">
+          <div class="sig-name">Edgar Patron</div>
+          <div class="sig-role">Alumno / Integrante</div>
+        </div>
+      </div>
+      <div class="student-sig-card">
+        <div class="student-sig-space"></div>
+        <div class="sig-line" style="margin-top:0;">
+          <div class="sig-name">Valeria Almeida</div>
+          <div class="sig-role">Alumna / Integrante</div>
+        </div>
+      </div>
+      <div class="student-sig-card">
+        <div class="student-sig-space"></div>
+        <div class="sig-line" style="margin-top:0;">
+          <div class="sig-name">Juan Aké</div>
+          <div class="sig-role">Alumno / Integrante</div>
+        </div>
+      </div>
+      <div class="student-sig-card">
+        <div class="student-sig-space"></div>
+        <div class="sig-line" style="margin-top:0;">
+          <div class="sig-name">Kevin Ehrenzweig</div>
+          <div class="sig-role">Alumno / Integrante</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div>AulaSync • Minuta de Trabajo Presencial</div>
+    <div>Página 10 de 10</div>
+  </div>
+</div>
+
+</body>
+</html>

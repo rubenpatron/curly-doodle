@@ -1,0 +1,146 @@
+﻿erDiagram
+    ROLES ||--o{ USUARIOS : "id_rol"
+    USUARIOS ||--o{ SESIONES : "id_usuario"
+    USUARIOS ||--o{ CARGA_ACADEMICA : "id_usuario"
+    USUARIOS ||--o{ SOLICITUDES_AULAS : "solicita"
+    USUARIOS ||--o{ SOLICITUDES_AULAS : "aprueba"
+    USUARIOS ||--o{ ACCESOS : "id_usuario"
+    USUARIOS ||--o{ OTP_CODIGOS : "id_usuario"
+    USUARIOS ||--o{ ALERTAS_SEGURIDAD : "provoca / resuelve"
+    EDIFICIOS ||--o{ AULAS : "id_edificio"
+    AULAS ||--o{ NODOS_IOT : "id_aula"
+    AULAS ||--o{ CARGA_ACADEMICA : "id_aula"
+    AULAS ||--o{ SOLICITUDES_AULAS : "original / solicitada"
+    AULAS ||--o{ ACCESOS : "id_aula"
+    AULAS ||--o{ OTP_CODIGOS : "id_aula"
+    MATERIAS ||--o{ CARGA_ACADEMICA : "id_materia"
+    MATERIAS ||--o{ SOLICITUDES_AULAS : "id_materia"
+    NODOS_IOT ||--o{ TELEMETRIA : "id_nodo"
+    NODOS_IOT ||--o{ ALERTAS_SEGURIDAD : "id_nodo"
+
+    ROLES {
+        int id_rol PK
+        varchar nombre UK
+        varchar descripcion
+        timestamp creado_en
+    }
+    USUARIOS {
+        int id_usuario PK
+        varchar google_sub UK
+        varchar email UK
+        varchar nombre
+        varchar matricula UK
+        int id_rol FK
+        varchar foto_url
+        tinyint activo
+        timestamp creado_en
+    }
+    SESIONES {
+        int id_sesion PK
+        int id_usuario FK
+        varchar token UK
+        varchar ip
+        varchar user_agent
+        datetime creada_en
+        datetime expira_en
+    }
+    EDIFICIOS {
+        int id_edificio PK
+        varchar codigo UK
+        varchar nombre
+        varchar descripcion
+        tinyint activo
+    }
+    AULAS {
+        int id_aula PK
+        int id_edificio FK
+        varchar codigo UK
+        smallint capacidad
+        enum tipo
+        enum estado
+    }
+    NODOS_IOT {
+        int id_nodo PK
+        int id_aula FK
+        varchar mac_address UK
+        enum tipo_nodo
+        varchar firmware_version
+        enum estado
+        tinyint bateria_pct
+        datetime ultimo_ping
+        timestamp registrado_en
+    }
+    MATERIAS {
+        int id_materia PK
+        varchar codigo UK
+        varchar nombre
+        varchar departamento
+    }
+    CARGA_ACADEMICA {
+        int id_carga_academica PK
+        int id_usuario FK
+        int id_materia FK
+        int id_aula FK
+        tinyint dia_semana
+        time hora_inicio
+        time hora_fin
+        date fecha_inicio
+        date fecha_fin
+        tinyint activo
+    }
+    SOLICITUDES_AULAS {
+        int id_solicitud PK
+        int id_usuario FK
+        enum tipo
+        int id_aula_original FK
+        int id_aula_solicitada FK
+        int id_materia FK
+        date fecha
+        time hora_inicio
+        time hora_fin
+        varchar motivo
+        text justificacion
+        enum estado
+        int id_aprobador FK
+        datetime fecha_solicitud
+        datetime fecha_respuesta
+        text comentarios_admin
+    }
+    ACCESOS {
+        int id_acceso PK
+        int id_usuario FK
+        int id_aula FK
+        datetime fecha_hora
+        enum tipo_acceso
+        enum resultado
+        varchar detalle
+    }
+    OTP_CODIGOS {
+        int id_otp PK
+        int id_usuario FK
+        int id_aula FK
+        char codigo
+        datetime creado_en
+        datetime expira_en
+        tinyint usado
+        datetime usado_en
+    }
+    TELEMETRIA {
+        int id_telemetria PK
+        int id_nodo FK
+        enum tipo_evento
+        varchar valor
+        datetime fecha_hora
+    }
+    ALERTAS_SEGURIDAD {
+        int id_alerta PK
+        int id_nodo FK
+        int id_usuario FK
+        enum tipo_alerta
+        enum severidad
+        varchar descripcion
+        enum estado
+        int resuelta_por FK
+        datetime creada_en
+        datetime resuelta_en
+    }

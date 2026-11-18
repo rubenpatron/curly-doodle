@@ -322,7 +322,7 @@
 
         // ---------- Carga inicial ----------
         async function init() {
-            const u = await apiExigirSesion('docente');
+            const u = await apiExigirSesion('usuario');
             document.getElementById('userName').textContent = u.nombre;
             const avatar = document.getElementById('userAvatar');
             if (u.foto) {
@@ -427,6 +427,15 @@
             const dmat = await apiFetch('materias.php');
             document.getElementById('solMateria').innerHTML = dmat.materias.map(m => `<option value="${m.id}">${esc(m.codigo)} — ${esc(m.nombre)}</option>`).join('');
 
+            // Pre-llenar valores sugeridos para facilitar demostración
+            if (!document.getElementById('solFecha').value) {
+                const manana = new Date();
+                manana.setDate(manana.getDate() + 1);
+                document.getElementById('solFecha').value = manana.toISOString().split('T')[0];
+                document.getElementById('solHoraInicio').value = '10:00';
+                document.getElementById('solHoraFin').value = '12:00';
+            }
+
             // Solo aulas autorizadas -> apertura de puerta (OTP)
             const da = await apiFetch('aulas_autorizadas.php');
             AULAS_AUT = da.aulas;
@@ -463,12 +472,24 @@
         }
 
         function validarSolicitudCliente() {
+            const materia = document.getElementById('solMateria').value;
+            const aulaSol = document.getElementById('solAulaSolicitada').value;
+            const esCambio = document.getElementById('tipoCambio').checked;
+            const aulaOrig = document.getElementById('solAulaOriginal').value;
             const motivo = document.getElementById('solMotivo').value.trim();
             const fecha = document.getElementById('solFecha').value;
             const hi = document.getElementById('solHoraInicio').value;
             const hf = document.getElementById('solHoraFin').value;
+
+            if (!materia) return 'Selecciona una materia.';
+            if (!aulaSol) return 'Selecciona el aula solicitada.';
+            if (esCambio) {
+                if (!aulaOrig) return 'Selecciona el aula original.';
+                if (aulaOrig === aulaSol) return 'El aula solicitada no puede ser la misma que el aula original.';
+            }
             if (!fecha) return 'Selecciona una fecha.';
             if (!hi || !hf) return 'Indica la hora de inicio y fin.';
+            if (hf <= hi) return 'La hora de fin debe ser posterior a la de inicio.';
             if (motivo.length < 3) return 'El motivo debe tener al menos 3 caracteres.';
             return null;
         }

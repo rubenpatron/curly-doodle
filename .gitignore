@@ -1,0 +1,30 @@
+# Gradle & Android build artifacts
+.gradle/
+**/.gradle/
+build/
+**/build/
+local.properties
+**/local.properties
+.idea/
+**/.idea/
+*.iml
+**/*.iml
+
+# Flutter / Dart
+.dart_tool/
+**/.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+
+# Python cache
+__pycache__/
+**/__pycache__/
+*.py[cod]
+
+# OS & Editor files
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log

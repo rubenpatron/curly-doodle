@@ -10,8 +10,19 @@ require_once __DIR__ . '/db.php';
 // ---------------------------------------------------------------------------
 function api_boot(): void
 {
+    // Soporte CORS integral para Flutter Web (Chrome), Postman y dispositivos móviles
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
     header('Content-Type: application/json; charset=utf-8');
     header('X-Content-Type-Options: nosniff');
+
+    // Manejo de peticiones preflight OPTIONS requeridas por navegadores en Flutter Web
+    if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
+        http_response_code(200);
+        exit;
+    }
+
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
@@ -188,20 +199,56 @@ function v_digitos($valor, string $campo, int $longitud): string
 }
 
 // ---------------------------------------------------------------------------
-//  Sesión / autenticación
+//  Sesión / autenticación (compatible con Cookies Web y Bearer Token para Móvil/Flutter)
 // ---------------------------------------------------------------------------
 function usuario_actual(): ?array
 {
-    if (!isset($_SESSION['usuario']) || !is_array($_SESSION['usuario'])) {
-        return null;
+    if (isset($_SESSION['usuario']) && is_array($_SESSION['usuario'])) {
+        $u = $_SESSION['usuario'];
+        $id = $u['id'] ?? $u['id_usuario'] ?? null;
+        if ($id !== null) {
+            $u['id'] = (int) $id;
+            $u['id_usuario'] = (int) $id;
+        }
+        return $u;
     }
-    $u = $_SESSION['usuario'];
-    $id = $u['id'] ?? $u['id_usuario'] ?? null;
-    if ($id !== null) {
-        $u['id'] = (int) $id;
-        $u['id_usuario'] = (int) $id;
+
+    // Soporte para Bearer Token (App Móvil Flutter / Postman)
+    $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+    if (!$authHeader && function_exists('apache_request_headers')) {
+        $headers = apache_request_headers();
+        $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? '';
     }
-    return $u;
+    if (preg_match('/Bearer\s+(\S+)/i', $authHeader, $m)) {
+        $token = $m[1];
+        $pdo = db();
+        $st = $pdo->prepare(
+            'SELECT u.*, r.nombre AS rol_nombre
+             FROM sesiones s
+             JOIN usuarios u ON u.id_usuario = s.id_usuario
+             JOIN roles r ON r.id_rol = u.id_rol
+             WHERE s.token = ? AND s.expira_en > NOW() AND u.activo = 1
+             LIMIT 1'
+        );
+        $st->execute([$token]);
+        $u = $st->fetch();
+        if ($u) {
+            $userSession = [
+                'id'        => (int) $u['id_usuario'],
+                'id_usuario'=> (int) $u['id_usuario'],
+                'email'     => $u['email'],
+                'nombre'    => $u['nombre'],
+                'matricula' => $u['matricula'],
+                'rol'       => $u['rol_nombre'],
+                'foto'      => $u['foto_url'],
+                'token'     => $token,
+            ];
+            $_SESSION['usuario'] = $userSession;
+            return $userSession;
+        }
+    }
+
+    return null;
 }
 
 function exigir_login(): array

@@ -219,6 +219,33 @@
                 <h2>Bienvenido de nuevo</h2>
                 <p class="subtitle">Ingresa tus credenciales para continuar</p>
 
+                <!-- Formulario de inicio de sesión local con contraseña bcrypt -->
+                <form id="formLoginLocal" onsubmit="iniciarSesionLocal(event)" class="mb-3 text-start">
+                    <div class="mb-3">
+                        <label class="form-label" style="font-size: 0.85rem; font-weight: 600; color: #334155;">Correo Institucional</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white" style="border-right: none; border-radius: 8px 0 0 8px;"><i class="fas fa-envelope text-muted"></i></span>
+                            <input type="email" class="form-control" id="localEmail" placeholder="admin@universidad.edu" required style="border-left: none; border-radius: 0 8px 8px 0; padding: 0.65rem;">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="font-size: 0.85rem; font-weight: 600; color: #334155;">Contraseña</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white" style="border-right: none; border-radius: 8px 0 0 8px;"><i class="fas fa-key text-muted"></i></span>
+                            <input type="password" class="form-control" id="localPassword" placeholder="••••••••" required style="border-left: none; border-radius: 0 8px 8px 0; padding: 0.65rem;">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 py-2" id="btnSubmitLocal" style="background: #0f172a; border: none; border-radius: 8px; font-weight: 600;">
+                        <i class="fas fa-sign-in-alt me-2"></i> Iniciar Sesión
+                    </button>
+                </form>
+
+                <div class="d-flex align-items-center my-3">
+                    <hr class="flex-grow-1 my-0">
+                    <span class="px-3 text-muted" style="font-size: 0.75rem; text-transform: uppercase; font-weight: 600;">o continuar con</span>
+                    <hr class="flex-grow-1 my-0">
+                </div>
+
                 <!-- Botón real de Google (aparece si hay Client ID configurado) -->
                 <div id="g_id_signin" class="d-flex justify-content-center mb-2"></div>
 
@@ -227,8 +254,21 @@
                     <i class="fab fa-google" style="color: #4285F4; font-size: 1.2rem;"></i> Continuar con Google
                 </button>
 
-                <p class="text-center text-muted mt-4 mb-0" style="font-size:0.85rem;">
-                    Acceso exclusivo para personal autorizado de la universidad.
+                <!-- Acceso Rápido de Prueba -->
+                <div class="p-2 mt-3 rounded" style="background: #f1f5f9; border: 1px dashed #cbd5e1; font-size: 0.8rem;">
+                    <div class="text-muted fw-bold mb-1" style="font-size: 0.75rem;">Accesos rápidos de evaluación:</div>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-sm btn-outline-dark flex-fill py-1" onclick="llenarDemo('admin@universidad.edu', 'admin123')">
+                            <i class="fas fa-user-shield me-1"></i> Admin
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-primary flex-fill py-1" onclick="llenarDemo('usuario@universidad.edu', 'usuario123')">
+                            <i class="fas fa-chalkboard-teacher me-1"></i> Docente
+                        </button>
+                    </div>
+                </div>
+
+                <p class="text-center text-muted mt-3 mb-0" style="font-size:0.8rem;">
+                    Acceso protegido mediante tokens de sesión y hash bcrypt.
                 </p>
 
                 <div class="login-footer">
@@ -305,6 +345,37 @@
 
         function irSegunRol(data) {
             window.location.href = data.redireccion || 'usuario.html';
+        }
+
+        // --- Inicio de Sesión Local con Bcrypt ---
+        function llenarDemo(email, pass) {
+            document.getElementById('localEmail').value = email;
+            document.getElementById('localPassword').value = pass;
+        }
+
+        async function iniciarSesionLocal(e) {
+            e.preventDefault();
+            const email = document.getElementById('localEmail').value.trim();
+            const password = document.getElementById('localPassword').value;
+            const btn = document.getElementById('btnSubmitLocal');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Verificando...';
+
+            try {
+                const res = await apiFetch('auth_login.php', {
+                    metodo: 'POST',
+                    datos: { email, password }
+                });
+                if (res.token) {
+                    localStorage.setItem('aulasync_token', res.token);
+                }
+                irSegunRol(res);
+            } catch (err) {
+                mostrarError(err.message || 'Credenciales inválidas.');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i> Iniciar Sesión';
+            }
         }
 
         // --- Google real (Identity Services) ---

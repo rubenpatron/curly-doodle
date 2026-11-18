@@ -68,6 +68,12 @@ if ($metodo === 'POST') {
         $fecha       = v_fecha($in['fecha'] ?? null, 'fecha');
         $horaInicio  = v_hora($in['hora_inicio'] ?? null, 'hora_inicio');
         $horaFin     = v_hora($in['hora_fin'] ?? null, 'hora_fin');
+        if ($horaFin <= $horaInicio) {
+            throw new ValidacionException('La hora de fin debe ser posterior a la de inicio.');
+        }
+        if ($tipo === 'cambio_aula' && $idAulaOriginal === $idAulaSolicitada) {
+            throw new ValidacionException('El aula solicitada no puede ser igual al aula original.');
+        }
         
         $motivo = v_texto($in['motivo'] ?? null, 'motivo', ['min' => 3, 'max' => 500]);
         $justificacion = isset($in['justificacion']) && $in['justificacion'] !== ''
@@ -104,6 +110,76 @@ if ($metodo === 'POST') {
     $ins->execute([$u['id'], $tipo, $idMateria, $idAulaOriginal, $idAulaSolicitada, $fecha, $horaInicio, $horaFin, $motivo, $justificacion]);
 
     json_ok(['id' => (int) $pdo->lastInsertId(), 'mensaje' => 'Solicitud enviada correctamente.'], 201);
+}
+
+// ---------------------------------------------------------------- PUT / PATCH
+if ($metodo === 'PUT' || $metodo === 'PATCH') {
+    $in = leer_json();
+    try {
+        $idSolicitud = v_entero($in['id'] ?? $in['id_solicitud'] ?? ($_GET['id'] ?? null), 'id', ['min' => 1]);
+        $tipo = v_enum($in['tipo'] ?? null, 'tipo', ['aula_adicional', 'cambio_aula']);
+        $idMateria = v_entero($in['id_materia'] ?? null, 'id_materia', ['min' => 1]);
+        $idAulaSolicitada = v_entero($in['id_aula_solicitada'] ?? null, 'id_aula_solicitada', ['min' => 1]);
+        $idAulaOriginal = $tipo === 'cambio_aula' ? v_entero($in['id_aula_original'] ?? null, 'id_aula_original', ['min' => 1]) : null;
+        $fecha = v_fecha($in['fecha'] ?? null, 'fecha');
+        $horaInicio = v_hora($in['hora_inicio'] ?? null, 'hora_inicio');
+        $horaFin = v_hora($in['hora_fin'] ?? null, 'hora_fin');
+        if ($horaFin <= $horaInicio) {
+            throw new ValidacionException('La hora de fin debe ser posterior a la de inicio.');
+        }
+        if ($tipo === 'cambio_aula' && $idAulaOriginal === $idAulaSolicitada) {
+            throw new ValidacionException('El aula solicitada no puede ser igual al aula original.');
+        }
+        $motivo = v_texto($in['motivo'] ?? null, 'motivo', ['min' => 3, 'max' => 500]);
+        $justificacion = isset($in['justificacion']) && $in['justificacion'] !== ''
+            ? v_texto($in['justificacion'], 'justificacion', ['min' => 3, 'max' => 2000])
+            : null;
+    } catch (ValidacionException $e) {
+        json_error($e->getMessage(), 422);
+    }
+
+    $st = $pdo->prepare('SELECT * FROM solicitudes_aulas WHERE id_solicitud = ?');
+    $st->execute([$idSolicitud]);
+    $sol = $st->fetch();
+    if (!$sol) json_error('La solicitud no existe.', 404);
+
+    if ($u['rol'] !== 'admin' && (int)$sol['id_usuario'] !== (int)$u['id']) {
+        json_error('No tienes permisos para modificar esta solicitud.', 403);
+    }
+    if ($sol['estado'] !== 'pendiente') {
+        json_error('Solo se pueden modificar solicitudes en estado pendiente.', 409);
+    }
+
+    $upd = $pdo->prepare(
+        'UPDATE solicitudes_aulas
+            SET tipo = ?, id_materia = ?, id_aula_original = ?, id_aula_solicitada = ?,
+                fecha = ?, hora_inicio = ?, hora_fin = ?, motivo = ?, justificacion = ?
+          WHERE id_solicitud = ?'
+    );
+    $upd->execute([$tipo, $idMateria, $idAulaOriginal, $idAulaSolicitada, $fecha, $horaInicio, $horaFin, $motivo, $justificacion, $idSolicitud]);
+    json_ok(['id' => $idSolicitud, 'mensaje' => 'Solicitud actualizada correctamente.']);
+}
+
+// ---------------------------------------------------------------- DELETE
+if ($metodo === 'DELETE') {
+    try {
+        $idSolicitud = v_entero($_GET['id'] ?? ($_GET['id_solicitud'] ?? null), 'id', ['min' => 1]);
+    } catch (ValidacionException $e) {
+        json_error($e->getMessage(), 422);
+    }
+
+    $st = $pdo->prepare('SELECT * FROM solicitudes_aulas WHERE id_solicitud = ?');
+    $st->execute([$idSolicitud]);
+    $sol = $st->fetch();
+    if (!$sol) json_error('La solicitud no existe.', 404);
+
+    if ($u['rol'] !== 'admin' && (int)$sol['id_usuario'] !== (int)$u['id']) {
+        json_error('No tienes permisos para eliminar esta solicitud.', 403);
+    }
+
+    $del = $pdo->prepare('DELETE FROM solicitudes_aulas WHERE id_solicitud = ?');
+    $del->execute([$idSolicitud]);
+    json_ok(['eliminada' => true, 'mensaje' => 'Solicitud eliminada de la base de datos.']);
 }
 
 json_error('Método no permitido.', 405);

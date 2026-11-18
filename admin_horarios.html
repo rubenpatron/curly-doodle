@@ -194,6 +194,16 @@
             const u = await apiExigirSesion('admin');
             document.getElementById('userName').textContent = u.nombre;
             document.getElementById('userAvatar').textContent = iniciales(u.nombre);
+
+            // Fechas sugeridas para facilidad de evaluación
+            const hoy = new Date();
+            const fin = new Date();
+            fin.setMonth(fin.getMonth() + 4);
+            document.getElementById('fFechaInicio').value = hoy.toISOString().split('T')[0];
+            document.getElementById('fFechaFin').value = fin.toISOString().split('T')[0];
+            document.getElementById('fHoraInicio').value = '08:00';
+            document.getElementById('fHoraFin').value = '10:00';
+
             await Promise.all([cargarStats(), cargarCombos(), cargarClases()]);
         }
 
@@ -264,11 +274,16 @@
 
         // ---- Alta ----
         function validarCliente() {
+            const doc = document.getElementById('fDocente').value;
+            const mat = document.getElementById('fMateria').value;
+            const aul = document.getElementById('fAula').value;
             const hi = document.getElementById('fHoraInicio').value;
             const hf = document.getElementById('fHoraFin').value;
             const fi = document.getElementById('fFechaInicio').value;
             const ff = document.getElementById('fFechaFin').value;
+            if (!doc || !mat || !aul) return 'Debes seleccionar docente, materia y aula.';
             if (!hi || !hf) return 'Las horas son obligatorias.';
+            if (hf <= hi) return 'La hora de fin debe ser posterior a la hora de inicio.';
             if (!fi || !ff) return 'Indica fecha de inicio y fin.';
             if (ff < fi) return 'La fecha de fin no puede ser anterior a la de inicio.';
             return null;

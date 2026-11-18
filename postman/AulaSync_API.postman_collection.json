@@ -1,0 +1,1203 @@
+{
+  "info": {
+    "_postman_id": "aulasync-api-collection-2026",
+    "name": "AulaSync — Colección Oficial API REST (UTM - Sesión 4)",
+    "description": "Colección completa de endpoints con pruebas automatizadas integradas (pm.test) para la rúbrica de evaluación de Programación de Redes. Cubre todos los flujos 200 OK, 201 Created, 401 Unauthorized, 403 Forbidden, 409 Conflict y 422 Unprocessable Entity.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost/aulasync",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "docenteToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "claseId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "solicitudId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "aulaId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "otpCodigo",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "0. Autenticación y Control de Acceso",
+      "item": [
+        {
+          "name": "01. Login Admin Exitoso (200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Inicio de sesión exitoso y token generado\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(true);",
+                  "    pm.expect(json.data.token).to.be.a('string');",
+                  "    pm.collectionVariables.set(\"token\", json.data.token);",
+                  "    pm.collectionVariables.set(\"adminToken\", json.data.token);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@universidad.edu\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth_login.php", "host": ["{{baseUrl}}"], "path": ["api", "auth_login.php"] }
+          }
+        },
+        {
+          "name": "02. Login Docente Exitoso (200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Docente autenticado con rol usuario\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(true);",
+                  "    pm.expect(json.data.token).to.be.a('string');",
+                  "    pm.collectionVariables.set(\"docenteToken\", json.data.token);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"usuario@universidad.edu\",\n  \"password\": \"usuario123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth_login.php", "host": ["{{baseUrl}}"], "path": ["api", "auth_login.php"] }
+          }
+        },
+        {
+          "name": "03. Consultar Identidad Actual (/me.php 200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Usuario autenticado verificado\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(true);",
+                  "    pm.expect(json.data.autenticado).to.eql(true);",
+                  "    pm.expect(json.data.usuario.rol).to.eql('admin');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/me.php", "host": ["{{baseUrl}}"], "path": ["api", "me.php"] }
+          }
+        },
+        {
+          "name": "04. Error 401: Login con contraseña incorrecta",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 401 Unauthorized\", function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});",
+                  "pm.test(\"Respuesta ok=false por credenciales inválidas\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(false);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@universidad.edu\",\n  \"password\": \"clave_erronea_xyz\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth_login.php", "host": ["{{baseUrl}}"], "path": ["api", "auth_login.php"] }
+          }
+        },
+        {
+          "name": "05. Error 401: Petición sin Header Authorization",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 401 Unauthorized\", function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});",
+                  "pm.test(\"Acceso rechazado por falta de autenticación\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(false);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/admin_stats.php", "host": ["{{baseUrl}}"], "path": ["api", "admin_stats.php"] }
+          }
+        },
+        {
+          "name": "06. Error 422: Login sin campos obligatorios",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 422 Unprocessable Entity\", function () {",
+                  "    pm.response.to.have.status(422);",
+                  "});",
+                  "pm.test(\"Error de validación por falta de password\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(false);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@universidad.edu\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth_login.php", "host": ["{{baseUrl}}"], "path": ["api", "auth_login.php"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "1. Módulo Horarios y Carga Académica",
+      "item": [
+        {
+          "name": "07. Listar Carga Académica (Admin 200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Lista de clases obtenida\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(true);",
+                  "    pm.expect(json.data.clases).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/carga_academica.php", "host": ["{{baseUrl}}"], "path": ["api", "carga_academica.php"] }
+          }
+        },
+        {
+          "name": "08. Consultar Horario Propio del Docente (200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Horario docente recibido\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(true);",
+                  "    pm.expect(json.data.horario).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{docenteToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/horarios.php", "host": ["{{baseUrl}}"], "path": ["api", "horarios.php"] }
+          }
+        },
+        {
+          "name": "09. Registrar Nueva Clase (201 Created)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201 Created\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test(\"Clase guardada con ID generado\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(true);",
+                  "    pm.expect(json.data.id).to.be.a('number');",
+                  "    pm.collectionVariables.set(\"claseId\", json.data.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_usuario\": 1,\n  \"id_materia\": 2,\n  \"id_aula\": 5,\n  \"dia_semana\": 7,\n  \"hora_inicio\": \"16:00\",\n  \"hora_fin\": \"18:00\",\n  \"fecha_inicio\": \"2026-11-01\",\n  \"fecha_fin\": \"2026-11-30\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/carga_academica.php", "host": ["{{baseUrl}}"], "path": ["api", "carga_academica.php"] }
+          }
+        },
+        {
+          "name": "10. Error 409: Detección de Colisión en misma Aula y Horario",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 409 Conflict\", function () {",
+                  "    pm.response.to.have.status(409);",
+                  "});",
+                  "pm.test(\"Conflicto de traslape detectado\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(false);",
+                  "    pm.expect(json.error).to.include(\"Conflicto de aula\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_usuario\": 1,\n  \"id_materia\": 1,\n  \"id_aula\": 1,\n  \"dia_semana\": 4,\n  \"hora_inicio\": \"08:00\",\n  \"hora_fin\": \"10:00\",\n  \"fecha_inicio\": \"2026-11-01\",\n  \"fecha_fin\": \"2026-11-30\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/carga_academica.php", "host": ["{{baseUrl}}"], "path": ["api", "carga_academica.php"] }
+          }
+        },
+        {
+          "name": "11. Error 403: Docente intentando dar de alta clase",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 403 Forbidden\", function () {",
+                  "    pm.response.to.have.status(403);",
+                  "});",
+                  "pm.test(\"Permiso denegado por rol no administrador\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(false);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{docenteToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_usuario\": 1,\n  \"id_materia\": 2,\n  \"id_aula\": 5,\n  \"dia_semana\": 7,\n  \"hora_inicio\": \"16:00\",\n  \"hora_fin\": \"18:00\",\n  \"fecha_inicio\": \"2026-11-01\",\n  \"fecha_fin\": \"2026-11-30\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/carga_academica.php", "host": ["{{baseUrl}}"], "path": ["api", "carga_academica.php"] }
+          }
+        },
+        {
+          "name": "12. Error 422: Validación de horas invertidas",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 422 Unprocessable Entity\", function () {",
+                  "    pm.response.to.have.status(422);",
+                  "});",
+                  "pm.test(\"Hora de fin debe ser posterior a inicio\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(false);",
+                  "    pm.expect(json.error).to.include(\"posterior\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_usuario\": 1,\n  \"id_materia\": 2,\n  \"id_aula\": 5,\n  \"dia_semana\": 7,\n  \"hora_inicio\": \"18:00\",\n  \"hora_fin\": \"16:00\",\n  \"fecha_inicio\": \"2026-11-01\",\n  \"fecha_fin\": \"2026-11-30\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/carga_academica.php", "host": ["{{baseUrl}}"], "path": ["api", "carga_academica.php"] }
+          }
+        },
+        {
+          "name": "13. Actualizar Clase Registrada (PUT 200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Clase actualizada exitosamente\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(true);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{claseId}},\n  \"id_usuario\": 1,\n  \"id_materia\": 2,\n  \"id_aula\": 5,\n  \"dia_semana\": 7,\n  \"hora_inicio\": \"17:00\",\n  \"hora_fin\": \"19:00\",\n  \"fecha_inicio\": \"2026-11-01\",\n  \"fecha_fin\": \"2026-11-30\",\n  \"activo\": 1\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/carga_academica.php", "host": ["{{baseUrl}}"], "path": ["api", "carga_academica.php"] }
+          }
+        },
+        {
+          "name": "14. Eliminar Clase Registrada (DELETE 200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Clase eliminada de MariaDB\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(true);",
+                  "    pm.expect(json.data.eliminada).to.eql(true);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/carga_academica.php?id={{claseId}}", "host": ["{{baseUrl}}"], "path": ["api", "carga_academica.php"], "query": [{ "key": "id", "value": "{{claseId}}" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Módulo Solicitudes de Aulas",
+      "item": [
+        {
+          "name": "15. Listar Solicitudes del Docente (200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Listado de solicitudes retornado\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(true);",
+                  "    pm.expect(json.data.solicitudes).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{docenteToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/solicitudes.php", "host": ["{{baseUrl}}"], "path": ["api", "solicitudes.php"] }
+          }
+        },
+        {
+          "name": "16. Crear Solicitud de Aula Adicional (201 Created)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201 Created\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test(\"Solicitud creada con ID asignado\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(true);",
+                  "    pm.expect(json.data.id).to.be.a('number');",
+                  "    pm.collectionVariables.set(\"solicitudId\", json.data.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{docenteToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"aula_adicional\",\n  \"id_materia\": 1,\n  \"id_aula_solicitada\": 3,\n  \"fecha\": \"2026-11-28\",\n  \"hora_inicio\": \"10:00\",\n  \"hora_fin\": \"12:00\",\n  \"motivo\": \"Taller práctico evaluativo de redes\",\n  \"justificacion\": \"Espacio requerido para laboratorio extendido\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/solicitudes.php", "host": ["{{baseUrl}}"], "path": ["api", "solicitudes.php"] }
+          }
+        },
+        {
+          "name": "17. Error 422: Motivo menor a 3 caracteres",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 422 Unprocessable Entity\", function () {",
+                  "    pm.response.to.have.status(422);",
+                  "});",
+                  "pm.test(\"Validación de longitud mínima de motivo\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(false);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{docenteToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"aula_adicional\",\n  \"id_materia\": 1,\n  \"id_aula_solicitada\": 3,\n  \"fecha\": \"2026-11-28\",\n  \"hora_inicio\": \"10:00\",\n  \"hora_fin\": \"12:00\",\n  \"motivo\": \"x\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/solicitudes.php", "host": ["{{baseUrl}}"], "path": ["api", "solicitudes.php"] }
+          }
+        },
+        {
+          "name": "18. Modificar Solicitud Pendiente (PUT 200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Solicitud actualizada correctamente\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(true);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{docenteToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{solicitudId}},\n  \"tipo\": \"aula_adicional\",\n  \"id_materia\": 1,\n  \"id_aula_solicitada\": 4,\n  \"fecha\": \"2026-11-28\",\n  \"hora_inicio\": \"10:00\",\n  \"hora_fin\": \"12:00\",\n  \"motivo\": \"Taller práctico evaluativo de redes (Ajustado)\",\n  \"justificacion\": \"Mayor disponibilidad en Aula A-104\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/solicitudes.php", "host": ["{{baseUrl}}"], "path": ["api", "solicitudes.php"] }
+          }
+        },
+        {
+          "name": "19. Administrador Aprueba Solicitud (200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Estado de solicitud cambiado a aprobada\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(true);",
+                  "    pm.expect(json.data.estado).to.eql('aprobada');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{solicitudId}},\n  \"accion\": \"aprobar\",\n  \"comentarios\": \"Aprobado por administración escolar\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/solicitud_responder.php", "host": ["{{baseUrl}}"], "path": ["api", "solicitud_responder.php"] }
+          }
+        },
+        {
+          "name": "20. Error 409: Intentar responder solicitud ya procesada",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 409 Conflict\", function () {",
+                  "    pm.response.to.have.status(409);",
+                  "});",
+                  "pm.test(\"Conflicto de estado terminal\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(false);",
+                  "    pm.expect(json.error).to.include(\"ya fue procesada\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{solicitudId}},\n  \"accion\": \"rechazar\",\n  \"comentarios\": \"Intento no permitido\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/solicitud_responder.php", "host": ["{{baseUrl}}"], "path": ["api", "solicitud_responder.php"] }
+          }
+        },
+        {
+          "name": "21. Eliminar Solicitud de Prueba (DELETE 200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Solicitud eliminada de MariaDB\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(true);",
+                  "    pm.expect(json.data.eliminada).to.eql(true);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Authorization", "value": "Bearer {{adminToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/solicitudes.php?id={{solicitudId}}", "host": ["{{baseUrl}}"], "path": ["api", "solicitudes.php"], "query": [{ "key": "id", "value": "{{solicitudId}}" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Módulo Aulas, Cerraduras y Simulación IoT",
+      "item": [
+        {
+          "name": "22. Listar Catálogo de Aulas Físicas (200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Aulas registradas en el campus\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(true);",
+                  "    pm.expect(json.data.aulas.length).to.be.above(0);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/aulas.php", "host": ["{{baseUrl}}"], "path": ["api", "aulas.php"] }
+          }
+        },
+        {
+          "name": "23. Listar Nodos IoT / Cerraduras (200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Nodos IoT obtenidos\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(true);",
+                  "    pm.expect(json.data.nodos).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/nodos.php", "host": ["{{baseUrl}}"], "path": ["api", "nodos.php"] }
+          }
+        },
+        {
+          "name": "24. Listar Aulas Autorizadas del Docente (200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Aulas autorizadas recibidas con estado activa_ahora\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(true);",
+                  "    pm.expect(json.data.aulas).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{docenteToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/aulas_autorizadas.php", "host": ["{{baseUrl}}"], "path": ["api", "aulas_autorizadas.php"] }
+          }
+        },
+        {
+          "name": "25. Crear Nueva Aula Física (Admin 201 Created)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201 Created\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test(\"Aula registrada con ID\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(true);",
+                  "    pm.expect(json.data.id).to.be.a('number');",
+                  "    pm.collectionVariables.set(\"aulaId\", json.data.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigo\": \"P-999\",\n  \"id_edificio\": 1,\n  \"capacidad\": 40,\n  \"tipo\": \"aula\",\n  \"estado\": \"disponible\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/aulas.php", "host": ["{{baseUrl}}"], "path": ["api", "aulas.php"] }
+          }
+        },
+        {
+          "name": "26. Error 409: Crear Aula con Código Duplicado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 409 Conflict\", function () {",
+                  "    pm.response.to.have.status(409);",
+                  "});",
+                  "pm.test(\"Código de aula duplicado rechazado\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(false);",
+                  "    pm.expect(json.error).to.include(\"ya se encuentra registrado\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigo\": \"P-999\",\n  \"id_edificio\": 1,\n  \"capacidad\": 40,\n  \"tipo\": \"aula\",\n  \"estado\": \"disponible\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/aulas.php", "host": ["{{baseUrl}}"], "path": ["api", "aulas.php"] }
+          }
+        },
+        {
+          "name": "27. Error 403: Generar OTP para Aula No Autorizada",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 403 Forbidden\", function () {",
+                  "    pm.response.to.have.status(403);",
+                  "});",
+                  "pm.test(\"Acceso denegado fuera de horario / aula no autorizada\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(false);",
+                  "    pm.expect(json.error).to.include(\"No tienes autorización\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{docenteToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_aula\": 10\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/otp_solicitar.php", "host": ["{{baseUrl}}"], "path": ["api", "otp_solicitar.php"] }
+          }
+        },
+        {
+          "name": "28. Generar PIN OTP para Aula Activa (200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Código OTP de 6 dígitos generado\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(true);",
+                  "    pm.expect(json.data.codigo).to.have.lengthOf(6);",
+                  "    pm.collectionVariables.set(\"otpCodigo\", json.data.codigo);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{docenteToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_aula\": 2\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/otp_solicitar.php", "host": ["{{baseUrl}}"], "path": ["api", "otp_solicitar.php"] }
+          }
+        },
+        {
+          "name": "29. Abrir Cerradura IoT con Código OTP (200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Cerradura desbloqueada exitosamente\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(true);",
+                  "    pm.expect(json.data.abierta).to.eql(true);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_aula\": 2,\n  \"codigo\": \"{{otpCodigo}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/cerradura_abrir.php", "host": ["{{baseUrl}}"], "path": ["api", "cerradura_abrir.php"] }
+          }
+        },
+        {
+          "name": "30. Error 401: Abrir Cerradura con OTP Incorrecto",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 401 Unauthorized\", function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});",
+                  "pm.test(\"Rechazo de apertura por código no válido\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(false);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_aula\": 2,\n  \"codigo\": \"000000\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/cerradura_abrir.php", "host": ["{{baseUrl}}"], "path": ["api", "cerradura_abrir.php"] }
+          }
+        },
+        {
+          "name": "31. Control Remoto Administrativo - Abrir (200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Apertura remota ejecutada\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(true);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_aula\": 2,\n  \"accion\": \"abrir\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/nodo_control.php", "host": ["{{baseUrl}}"], "path": ["api", "nodo_control.php"] }
+          }
+        },
+        {
+          "name": "32. Control Remoto Administrativo - Cerrar (200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Cierre remoto ejecutado con éxito\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(true);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_aula\": 2,\n  \"accion\": \"cerrar\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/nodo_control.php", "host": ["{{baseUrl}}"], "path": ["api", "nodo_control.php"] }
+          }
+        },
+        {
+          "name": "33. Consultar Bitácora de Accesos (/accesos.php 200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Eventos de acceso persistidos en MariaDB\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(true);",
+                  "    pm.expect(json.data.accesos.length).to.be.above(0);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{adminToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/accesos.php?limite=10", "host": ["{{baseUrl}}"], "path": ["api", "accesos.php"], "query": [{ "key": "limite", "value": "10" }] }
+          }
+        },
+        {
+          "name": "34. Eliminar Aula de Prueba (DELETE 200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Aula eliminada de MariaDB\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(true);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Authorization", "value": "Bearer {{adminToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/aulas.php?id={{aulaId}}", "host": ["{{baseUrl}}"], "path": ["api", "aulas.php"], "query": [{ "key": "id", "value": "{{aulaId}}" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Dashboard y Métricas en Tiempo Real",
+      "item": [
+        {
+          "name": "35. Consultar Estadísticas del Dashboard (Admin 200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Métricas de dashboard calculadas\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(true);",
+                  "    pm.expect(json.data.stats).to.have.property('docentes');",
+                  "    pm.expect(json.data.stats).to.have.property('aulas');",
+                  "    pm.expect(json.data.stats).to.have.property('clases');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{adminToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/admin_stats.php", "host": ["{{baseUrl}}"], "path": ["api", "admin_stats.php"] }
+          }
+        },
+        {
+          "name": "36. Error 403: Docente intentando ver métricas Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 403 Forbidden\", function () {",
+                  "    pm.response.to.have.status(403);",
+                  "});",
+                  "pm.test(\"Acceso restringido a superusuario\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(false);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{docenteToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/admin_stats.php", "host": ["{{baseUrl}}"], "path": ["api", "admin_stats.php"] }
+          }
+        },
+        {
+          "name": "37. Consultar Feed de Telemetría IoT en Vivo (200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Feed de telemetría reciente obtenido\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(true);",
+                  "    pm.expect(json.data.telemetria).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/telemetria.php?limite=10", "host": ["{{baseUrl}}"], "path": ["api", "telemetria.php"], "query": [{ "key": "limite", "value": "10" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Cierre de Sesión",
+      "item": [
+        {
+          "name": "38. Cerrar Sesión (Logout 200 OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Sesión cerrada y token revocado\", function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.eql(true);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/logout.php", "host": ["{{baseUrl}}"], "path": ["api", "logout.php"] }
+          }
+        }
+      ]
+    }
+  ]
+}

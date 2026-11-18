@@ -11,6 +11,10 @@ async function apiFetch(ruta, { metodo = 'GET', datos = null } = {}) {
     headers: {},
     credentials: 'same-origin',
   };
+  const token = localStorage.getItem('aulasync_token');
+  if (token) {
+    opciones.headers['Authorization'] = `Bearer ${token}`;
+  }
   if (datos !== null) {
     opciones.headers['Content-Type'] = 'application/json';
     opciones.body = JSON.stringify(datos);
@@ -59,6 +63,7 @@ async function apiLogout() {
   try {
     await apiFetch('logout.php', { metodo: 'POST' });
   } finally {
+    localStorage.removeItem('aulasync_token');
     window.location.href = 'login.html';
   }
 }

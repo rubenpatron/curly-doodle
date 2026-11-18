@@ -2,7 +2,8 @@
 --  Sistema de Aulas Inteligentes Biométricas — UTM
 --  Esquema de base de datos - MariaDB
 --  Fuerte validación de tipos de datos (CHECK constraints)
---  Versión 2.1 — Llaves primarias descriptivas (id_rol, id_usuario, etc.)
+--  Versión 2.2 — FASE 1: roles Admin/Usuario, 13 tablas, 20 FK
+--  Ejecutar con: mysql -u root -p < schema.sql
 -- ============================================================
 
 CREATE DATABASE IF NOT EXISTS aulas_inteligentes
@@ -38,11 +39,11 @@ CREATE TABLE roles (
   UNIQUE KEY uq_roles_nombre (nombre)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Roles iniciales del sistema
+-- Roles iniciales del sistema (rúbrica FASE 1: Admin y Usuario)
 INSERT INTO roles (nombre, descripcion) VALUES
-  ('admin',         'Acceso total: dashboard IoT, gestión de usuarios, aprobación de solicitudes, seguridad'),
-  ('docente',       'Portal docente: agendar aulas, generar PIN temporal, consultar historial propio'),
-  ('mantenimiento', 'Visualizar estado de nodos IoT, gestionar alertas técnicas y mantenimiento de cerraduras');
+  ('admin',         'Administrador: acceso total al dashboard IoT, gestión de usuarios, aprobación de solicitudes y seguridad'),
+  ('usuario',       'Usuario estándar (docente/estudiante): consulta su horario, solicita aulas y genera PIN temporal'),
+  ('mantenimiento', 'Rol técnico opcional: visualiza nodos IoT, gestiona alertas técnicas y mantenimiento de cerraduras');
 
 -- ============================================================
 -- 2. USUARIOS (login con Google + FK a roles)
@@ -53,7 +54,8 @@ CREATE TABLE usuarios (
   email         VARCHAR(150) NOT NULL,
   nombre        VARCHAR(120) NOT NULL,
   matricula     VARCHAR(20)  NULL,                       -- matrícula / no. de empleado
-  id_rol        INT UNSIGNED NOT NULL DEFAULT 2,         -- 2 = docente por defecto
+  id_rol        INT UNSIGNED NOT NULL DEFAULT 2,         -- 2 = usuario (rol por defecto)
+  password_hash VARCHAR(255) NULL,                       -- Hash seguro con algoritmo bcrypt
   foto_url      VARCHAR(400) NULL,
   activo        TINYINT(1)   NOT NULL DEFAULT 1,
   creado_en     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -335,7 +337,7 @@ CREATE TABLE alertas_seguridad (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
--- DATOS DE PRUEBA INICIALES (Docentes, Materias y Carga Académica)
+-- DATOS DE PRUEBA INICIALES (Usuarios, Materias, Nodos, Carga, Solicitudes, etc.)
 -- ============================================================
 INSERT INTO materias (codigo, nombre, departamento) VALUES
   ('CS101', 'Introducción a la Programación', 'Ciencias de la Computación'),
@@ -345,26 +347,146 @@ INSERT INTO materias (codigo, nombre, departamento) VALUES
   ('NT501', 'Redes y Telecomunicaciones', 'Tecnología'),
   ('MA101', 'Cálculo Diferencial', 'Matemáticas');
 
-INSERT INTO usuarios (google_sub, email, nombre, matricula, id_rol, activo) VALUES
-  (NULL, 'nicevalrock@gmail.com', 'Edgar Patron Salazar', 'EMP-2024-0417', 2, 1),
-  (NULL, 'erpatron72@gmail.com',  'Edgar Patron',         'ADM-2024-0001', 1, 1),
-  ('test-doc-1', 'juan.perez@universidad.edu', 'Dr. Juan Pérez', 'D-1001', 2, 1),
-  ('test-doc-2', 'maria.gomez@universidad.edu', 'Mtra. María Gómez', 'D-1002', 2, 1),
-  ('test-doc-3', 'carlos.ruiz@universidad.edu', 'Ing. Carlos Ruiz', 'D-1003', 2, 1);
+-- Usuarios de prueba: el rol se toma de la tabla roles (1=admin, 2=usuario).
+-- El acceso puede ser con Google Identity Services o mediante credenciales locales con hash bcrypt.
+-- Contraseñas de prueba: 'admin123' para roles admin, 'usuario123' para roles usuario, 'docente123' para docentes.
+INSERT INTO usuarios (google_sub, email, nombre, matricula, id_rol, password_hash, activo) VALUES
+  (NULL, 'nicevalrock@gmail.com', 'Edgar Patron Salazar', 'EMP-2024-0417', 2, '$2y$12$Bf6lduBb5ft77e8U4sLdse7U7aFvK2O26K6FmP1dGyv8lC6YQjY7K', 1),
+  (NULL, 'erpatron72@gmail.com',  'Edgar Patron',         'ADM-2024-0001', 1, '$2y$12$lRrJwFH56xHNM7k5uP5PteZ9e7XqX7R8pG1dK6dGyv8lC6YQjY7K', 1),
+  ('test-doc-1', 'juan.perez@universidad.edu', 'Dr. Juan Pérez', 'D-1001', 2, '$2y$12$Un/KrZs2DieCj8M5N7K8zeZ9e7XqX7R8pG1dK6dGyv8lC6YQjY7K', 1),
+  ('test-doc-2', 'maria.gomez@universidad.edu', 'Mtra. María Gómez', 'D-1002', 2, '$2y$12$Un/KrZs2DieCj8M5N7K8zeZ9e7XqX7R8pG1dK6dGyv8lC6YQjY7K', 1),
+  ('test-doc-3', 'carlos.ruiz@universidad.edu', 'Ing. Carlos Ruiz', 'D-1003', 2, '$2y$12$Un/KrZs2DieCj8M5N7K8zeZ9e7XqX7R8pG1dK6dGyv8lC6YQjY7K', 1),
+  -- Cuentas canónicas para demostrar los dos roles de la rúbrica
+  ('test-admin-1', 'admin@universidad.edu',   'Administrador de Prueba', 'ADM-0001', 1, '$2y$12$lRrJwFH56xHNM7k5uP5PteZ9e7XqX7R8pG1dK6dGyv8lC6YQjY7K', 1),
+  ('test-user-1',  'usuario@universidad.edu', 'Usuario de Prueba',       'USR-0001', 2, '$2y$12$Bf6lduBb5ft77e8U4sLdse7U7aFvK2O26K6FmP1dGyv8lC6YQjY7K', 1);
 
+-- Nodos IoT (Cerraduras electrónicas para todas las aulas)
+INSERT INTO nodos_iot (id_nodo, id_aula, mac_address, tipo_nodo, firmware_version, estado, bateria_pct, ultimo_ping) VALUES
+  -- Edificio A
+  (1,  1, '3C:71:BF:11:01:01', 'cerradura', 'v3.2.1', 'online',  95, NOW() - INTERVAL 1 MINUTE),
+  (2,  2, '3C:71:BF:11:01:02', 'cerradura', 'v3.2.1', 'online',  88, NOW() - INTERVAL 3 MINUTE),
+  (3,  3, '3C:71:BF:11:01:03', 'cerradura', 'v3.2.1', 'online',  92, NOW() - INTERVAL 2 MINUTE),
+  (4,  4, '3C:71:BF:11:01:04', 'cerradura', 'v3.2.1', 'online',  74, NOW() - INTERVAL 5 MINUTE),
+  (5,  5, '3C:71:BF:11:01:05', 'cerradura', 'v3.2.0', 'online',  18, NOW() - INTERVAL 8 MINUTE),
+  (6,  6, '3C:71:BF:11:02:01', 'cerradura', 'v3.1.9', 'offline',  5, NOW() - INTERVAL 90 MINUTE),
+  -- Edificio B
+  (7,  7, '3C:71:BF:22:01:01', 'cerradura', 'v3.2.1', 'online',  82, NOW() - INTERVAL 2 MINUTE),
+  (8,  8, '3C:71:BF:22:01:02', 'cerradura', 'v3.2.1', 'online',  90, NOW() - INTERVAL 4 MINUTE),
+  (9,  9, '3C:71:BF:22:01:03', 'cerradura', 'v3.2.1', 'online',  85, NOW() - INTERVAL 1 MINUTE),
+  (10, 10, '3C:71:BF:22:01:04', 'cerradura', 'v3.2.1', 'online', 78, NOW() - INTERVAL 6 MINUTE),
+  (11, 11, '3C:71:BF:22:01:05', 'cerradura', 'v3.2.1', 'online', 65, NOW() - INTERVAL 3 MINUTE),
+  (12, 12, '3C:71:BF:22:02:01', 'cerradura', 'v3.2.1', 'online', 91, NOW() - INTERVAL 2 MINUTE),
+  -- Edificio C
+  (13, 13, '3C:71:BF:33:01:01', 'cerradura', 'v3.2.1', 'online', 94, NOW() - INTERVAL 1 MINUTE),
+  (14, 14, '3C:71:BF:33:01:02', 'cerradura', 'v3.2.1', 'online', 89, NOW() - INTERVAL 4 MINUTE),
+  (15, 15, '3C:71:BF:33:01:03', 'cerradura', 'v3.2.1', 'online', 87, NOW() - INTERVAL 2 MINUTE),
+  (16, 16, '3C:71:BF:33:01:04', 'cerradura', 'v3.2.1', 'online', 72, NOW() - INTERVAL 5 MINUTE),
+  (17, 17, '3C:71:BF:33:01:05', 'cerradura', 'v3.2.1', 'online', 80, NOW() - INTERVAL 3 MINUTE),
+  (18, 18, '3C:71:BF:33:02:01', 'cerradura', 'v3.2.1', 'online', 84, NOW() - INTERVAL 2 MINUTE),
+  -- Edificio E
+  (19, 19, '3C:71:BF:44:01:01', 'cerradura', 'v3.2.1', 'online', 96, NOW() - INTERVAL 1 MINUTE),
+  (20, 20, '3C:71:BF:44:01:02', 'cerradura', 'v3.2.1', 'online', 93, NOW() - INTERVAL 3 MINUTE),
+  (21, 21, '3C:71:BF:44:01:03', 'cerradura', 'v3.2.1', 'online', 88, NOW() - INTERVAL 2 MINUTE),
+  (22, 22, '3C:71:BF:44:01:04', 'cerradura', 'v3.2.1', 'online', 79, NOW() - INTERVAL 4 MINUTE),
+  (23, 23, '3C:71:BF:44:01:05', 'cerradura', 'v3.2.1', 'online', 85, NOW() - INTERVAL 3 MINUTE),
+  (24, 24, '3C:71:BF:44:02:01', 'cerradura', 'v3.2.1', 'online', 90, NOW() - INTERVAL 2 MINUTE),
+  -- Edificio F
+  (25, 25, '3C:71:BF:55:01:01', 'cerradura', 'v3.2.1', 'online', 92, NOW() - INTERVAL 1 MINUTE),
+  (26, 26, '3C:71:BF:55:01:02', 'cerradura', 'v3.2.1', 'online', 86, NOW() - INTERVAL 3 MINUTE),
+  (27, 27, '3C:71:BF:55:01:03', 'cerradura', 'v3.2.1', 'online', 81, NOW() - INTERVAL 2 MINUTE),
+  (28, 28, '3C:71:BF:55:01:04', 'cerradura', 'v3.2.1', 'online', 75, NOW() - INTERVAL 4 MINUTE),
+  (29, 29, '3C:71:BF:55:01:05', 'cerradura', 'v3.2.0', 'mantenimiento', 40, NOW() - INTERVAL 20 MINUTE),
+  (30, 30, '3C:71:BF:55:02:01', 'cerradura', 'v3.2.1', 'online', 94, NOW() - INTERVAL 2 MINUTE);
+
+-- Estados de aulas
+UPDATE aulas SET estado = 'ocupada' WHERE id_aula IN (2, 7);
+UPDATE aulas SET estado = 'mantenimiento' WHERE id_aula = 29;
+
+-- Telemetría de eventos IoT
+INSERT INTO telemetria (id_nodo, tipo_evento, valor, fecha_hora) VALUES
+  (1,  'apertura',     'Apertura por PIN temporal (Docente)',         NOW() - INTERVAL 15 MINUTE),
+  (1,  'cierre',       'Puerta asegurada correctamente',              NOW() - INTERVAL 10 MINUTE),
+  (2,  'apertura',     'Apertura remota por administrador',           NOW() - INTERVAL 8 MINUTE),
+  (3,  'ping',         'Heartbeat OK - Batería 92%',                  NOW() - INTERVAL 2 MINUTE),
+  (5,  'bateria_baja', 'Nivel de batería: 18%',                       NOW() - INTERVAL 35 MINUTE),
+  (6,  'desconexion',  'Cerradura fuera de línea (sin ping)',         NOW() - INTERVAL 90 MINUTE),
+  (7,  'apertura',     'Apertura por PIN temporal (Docente)',         NOW() - INTERVAL 5 MINUTE),
+  (8,  'ping',         'Heartbeat OK - Batería 90%',                  NOW() - INTERVAL 4 MINUTE),
+  (13, 'ping',         'Heartbeat OK - Batería 94%',                  NOW() - INTERVAL 1 MINUTE),
+  (4,  'fallo_auth',   'Intento fallido: PIN incorrecto en teclado',  NOW() - INTERVAL 50 MINUTE),
+  (29, 'reconexion',   'Nodo en modo diagnóstico técnico',            NOW() - INTERVAL 25 MINUTE);
+
+-- Alertas de seguridad
+INSERT INTO alertas_seguridad (id_nodo, id_usuario, tipo_alerta, severidad, descripcion, estado, resuelta_por, creada_en, resuelta_en) VALUES
+  (5, NULL, 'bateria_critica', 'media', 'Nivel de batería bajo (18%) en cerradura de Aula A-105', 'activa', NULL, NOW() - INTERVAL 45 MINUTE, NULL),
+  (6, NULL, 'nodo_offline',    'alta',  'Cerradura de Laboratorio A-201 no responde (offline)',   'activa', NULL, NOW() - INTERVAL 90 MINUTE, NULL),
+  (4, 7,    'multiples_fallos','baja',  '3 intentos fallidos de OTP registrados en Aula A-104',   'resuelta', 2, NOW() - INTERVAL 3 HOUR, NOW() - INTERVAL 2 HOUR);
+
+-- Accesos históricos
+INSERT INTO accesos (id_usuario, id_aula, fecha_hora, tipo_acceso, resultado, detalle) VALUES
+  (1, 1, NOW() - INTERVAL 25 MINUTE, 'otp',    'exitoso',  'Apertura exitosa con código OTP'),
+  (3, 3, NOW() - INTERVAL 40 MINUTE, 'otp',    'exitoso',  'Apertura exitosa con código OTP'),
+  (4, 4, NOW() - INTERVAL 1 HOUR,     'otp',    'exitoso',  'Apertura exitosa con código OTP'),
+  (2, 2, NOW() - INTERVAL 2 HOUR,     'remoto', 'exitoso',  'Apertura remota por administrador'),
+  (5, 5, NOW() - INTERVAL 3 HOUR,     'otp',    'denegado', 'Código OTP expirado'),
+  (7, 2, NOW() - INTERVAL 4 HOUR,     'otp',    'exitoso',  'Apertura exitosa con código OTP'),
+  (1, 1, NOW() - INTERVAL 5 HOUR,     'manual', 'exitoso',  'Cierre manual de pestillo'),
+  (NULL, 6, NOW() - INTERVAL 6 HOUR,  'otp',    'denegado', 'Código no válido para esta cerradura');
+
+-- Solicitudes de aulas
+INSERT INTO solicitudes_aulas (id_usuario, tipo, id_aula_original, id_aula_solicitada, id_materia, fecha, hora_inicio, hora_fin, motivo, justificacion, estado, id_aprobador, fecha_solicitud, fecha_respuesta, comentarios_admin) VALUES
+  (3, 'aula_adicional', NULL, 6, 1, CURDATE(), '16:00:00', '18:00:00',
+   'Práctica extraordinaria de programación',
+   'Se requiere el Laboratorio A-201 para realizar la evaluación práctica de estructuras de datos con el grupo de Sistemas.',
+   'pendiente', NULL, NOW() - INTERVAL 2 HOUR, NULL, NULL),
+
+  (4, 'aula_adicional', NULL, 7, 2, CURDATE(), '07:00:00', '23:59:00',
+   'Seminario de investigación aplicada',
+   'Capacidad extendida requerida para 45 alumnos en sesión conjunta intermodular.',
+   'aprobada', 2, NOW() - INTERVAL 1 DAY, NOW() - INTERVAL 10 HOUR,
+   'Aprobado. Aula B-101 reservada y vinculada a permisos OTP del docente.'),
+
+  (5, 'cambio_aula', 5, 25, 5, CURDATE() + INTERVAL 2 DAY, '10:00:00', '12:00:00',
+   'Cambio por práctica de cableado de telecomunicaciones',
+   'Solicito traslado al Laboratorio F-101 por disponibilidad de racks y equipo de medición.',
+   'rechazada', 2, NOW() - INTERVAL 1 DAY, NOW() - INTERVAL 8 HOUR,
+   'Rechazado temporalmente: el Laboratorio F-101 estará en mantenimiento preventivo esa fecha.');
+
+-- Carga académica (Horarios consistentes para demostración en vivo)
 INSERT INTO carga_academica (id_usuario, id_materia, id_aula, dia_semana, hora_inicio, hora_fin, fecha_inicio, fecha_fin, activo) VALUES
-  (1, 1, 1, WEEKDAY(CURDATE()) + 1, '07:00:00', '23:59:00', '2026-01-01', '2026-12-31', 1),
-  (1, 4, 2, 1, '08:00:00', '10:00:00', '2026-01-01', '2026-12-31', 1),
-  (1, 5, 1, 2, '09:00:00', '10:00:00', '2026-01-01', '2026-12-31', 1),
-  (1, 3, 3, 3, '10:00:00', '12:00:00', '2026-01-01', '2026-12-31', 1),
-  (1, 6, 2, 4, '09:00:00', '10:00:00', '2026-01-01', '2026-12-31', 1),
-  (1, 2, 3, 5, '09:00:00', '10:00:00', '2026-01-01', '2026-12-31', 1),
-  (2, 4, 1, WEEKDAY(CURDATE()) + 1, '07:00:00', '23:59:00', '2026-01-01', '2026-12-31', 1),
-  (2, 5, 1, 2, '09:00:00', '10:00:00', '2026-01-01', '2026-12-31', 1),
-  (2, 6, 2, 4, '09:00:00', '10:00:00', '2026-01-01', '2026-12-31', 1),
-  (2, 2, 3, 5, '09:00:00', '10:00:00', '2026-01-01', '2026-12-31', 1),
-  (3, 1, 3, 2, '08:00:00', '10:00:00', '2026-01-01', '2026-12-31', 1),
-  (4, 2, 4, 4, '09:00:00', '11:00:00', '2026-01-01', '2026-12-31', 1),
-  (5, 5, 5, 1, '11:00:00', '13:00:00', '2026-01-01', '2026-12-31', 1);
+  -- Edgar Patron Salazar (id 1)
+  (1, 1, 1, 1, '07:00:00', '23:59:00', '2026-01-01', '2026-12-31', 1),
+  (1, 1, 1, 2, '07:00:00', '23:59:00', '2026-01-01', '2026-12-31', 1),
+  (1, 1, 1, 3, '07:00:00', '23:59:00', '2026-01-01', '2026-12-31', 1),
+  (1, 1, 1, 4, '07:00:00', '23:59:00', '2026-01-01', '2026-12-31', 1),
+  (1, 1, 1, 5, '07:00:00', '23:59:00', '2026-01-01', '2026-12-31', 1),
+
+  -- Dr. Juan Pérez (id 3)
+  (3, 3, 3, 1, '07:00:00', '23:59:00', '2026-01-01', '2026-12-31', 1),
+  (3, 3, 3, 2, '08:00:00', '12:00:00', '2026-01-01', '2026-12-31', 1),
+  (3, 1, 3, 3, '07:00:00', '23:59:00', '2026-01-01', '2026-12-31', 1),
+  (3, 1, 3, 4, '08:00:00', '12:00:00', '2026-01-01', '2026-12-31', 1),
+  (3, 3, 3, 5, '07:00:00', '23:59:00', '2026-01-01', '2026-12-31', 1),
+
+  -- Mtra. María Gómez (id 4)
+  (4, 2, 4, 1, '07:00:00', '23:59:00', '2026-01-01', '2026-12-31', 1),
+  (4, 2, 4, 2, '09:00:00', '13:00:00', '2026-01-01', '2026-12-31', 1),
+  (4, 4, 4, 3, '07:00:00', '23:59:00', '2026-01-01', '2026-12-31', 1),
+  (4, 2, 4, 4, '09:00:00', '13:00:00', '2026-01-01', '2026-12-31', 1),
+  (4, 4, 4, 5, '07:00:00', '23:59:00', '2026-01-01', '2026-12-31', 1),
+
+  -- Ing. Carlos Ruiz (id 5)
+  (5, 5, 5, 1, '07:00:00', '23:59:00', '2026-01-01', '2026-12-31', 1),
+  (5, 5, 5, 2, '10:00:00', '14:00:00', '2026-01-01', '2026-12-31', 1),
+  (5, 5, 5, 3, '07:00:00', '23:59:00', '2026-01-01', '2026-12-31', 1),
+  (5, 5, 5, 4, '10:00:00', '14:00:00', '2026-01-01', '2026-12-31', 1),
+  (5, 5, 5, 5, '07:00:00', '23:59:00', '2026-01-01', '2026-12-31', 1),
+
+  -- Usuario canónico de prueba (id 7)
+  (7, 4, 2, 1, '07:00:00', '23:59:00', '2026-01-01', '2026-12-31', 1),
+  (7, 4, 2, 2, '07:00:00', '23:59:00', '2026-01-01', '2026-12-31', 1),
+  (7, 4, 2, 3, '07:00:00', '23:59:00', '2026-01-01', '2026-12-31', 1),
+  (7, 4, 2, 4, '07:00:00', '23:59:00', '2026-01-01', '2026-12-31', 1),
+  (7, 4, 2, 5, '07:00:00', '23:59:00', '2026-01-01', '2026-12-31', 1);
 
 

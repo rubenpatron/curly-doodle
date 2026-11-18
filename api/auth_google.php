@@ -2,7 +2,7 @@
 /**
  * Inicio de sesión.
  *  - Modo Google:  recibe { "credential": "<JWT de Google Identity Services>" }
- *  - Modo demo:    recibe { "demo": "docente" | "admin" }
+ *  - Modo demo:    recibe { "demo": "usuario" | "admin" } (se acepta "docente" como alias)
  *
  * En el prototipo el JWT de Google se decodifica para extraer los datos del
  * perfil. En producción se debería verificar la firma contra las llaves de
@@ -22,7 +22,7 @@ try {
         $nombre = v_texto($payload['name'] ?? 'Usuario', 'nombre', ['max' => 120]);
         $sub = isset($payload['sub']) ? substr((string) $payload['sub'], 0, 64) : null;
         $foto = isset($payload['picture']) ? substr((string) $payload['picture'], 0, 400) : null;
-        $usuario = buscar_o_crear_usuario($email, $sub, $foto, 'docente', $nombre);
+        $usuario = buscar_o_crear_usuario($email, $sub, $foto, 'usuario', $nombre);
     } elseif (!empty($in['perfil']) && is_array($in['perfil'])) {
         // ---- Modo Google simulado: los datos que "devolvería" Google -----
         //      Sirve para dar de alta cuentas sin configurar OAuth todavía.
@@ -32,7 +32,7 @@ try {
         $foto   = isset($p['foto']) && $p['foto'] !== '' ? substr((string) $p['foto'], 0, 400) : null;
         // Identificador estable simulado (como el 'sub' de Google) derivado del correo.
         $sub = 'sim-' . substr(sha1(strtolower($email)), 0, 16);
-        $usuario = buscar_o_crear_usuario($email, $sub, $foto, 'docente', $nombre);
+        $usuario = buscar_o_crear_usuario($email, $sub, $foto, 'usuario', $nombre);
     } else {
         json_error('Falta el credential de Google.', 400);
     }
@@ -109,7 +109,7 @@ function buscar_o_crear_usuario(string $email, ?string $sub, ?string $foto, stri
     }
 
     $GLOBALS['usuario_recien_creado'] = true;
-    // Crear nuevo usuario (docente por defecto)
+    // Crear nuevo usuario (usuario estándar por defecto)
     $nombre = $nombre ?: 'Usuario Nuevo';
     
     $stRol = $pdo->prepare('SELECT id_rol FROM roles WHERE nombre = ?');
