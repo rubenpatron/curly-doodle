@@ -354,72 +354,75 @@ class _NuevaSolicitudScreenState extends State<NuevaSolicitudScreen> {
                     ),
                   ),
                 )
-              : SingleChildScrollView(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        // Selector de Tipo de Solicitud
-                        Card(
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            side: const BorderSide(color: Color(0xFFE2E8F0)),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  'Tipo de Solicitud',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF0F172A),
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                SegmentedButton<String>(
-                                  segments: const [
-                                    ButtonSegment(
-                                      value: 'aula_adicional',
-                                      label: Text('Aula Adicional'),
-                                      icon: Icon(Icons.add_home_work_outlined),
+              : Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 640),
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            // Selector de Tipo de Solicitud
+                            Card(
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                side: const BorderSide(color: Color(0xFFE2E8F0)),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Tipo de Solicitud',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFF0F172A),
+                                      ),
                                     ),
-                                    ButtonSegment(
-                                      value: 'cambio_aula',
-                                      label: Text('Cambio de Aula'),
-                                      icon: Icon(Icons.swap_horiz_outlined),
+                                    const SizedBox(height: 10),
+                                    SegmentedButton<String>(
+                                      segments: const [
+                                        ButtonSegment(
+                                          value: 'aula_adicional',
+                                          label: Text('Aula Adicional'),
+                                          icon: Icon(Icons.add_home_work_outlined),
+                                        ),
+                                        ButtonSegment(
+                                          value: 'cambio_aula',
+                                          label: Text('Cambio de Aula'),
+                                          icon: Icon(Icons.swap_horiz_outlined),
+                                        ),
+                                      ],
+                                      selected: {_tipo},
+                                      onSelectionChanged: (newSelection) {
+                                        setState(() => _tipo = newSelection.first);
+                                      },
+                                      style: ButtonStyle(
+                                        backgroundColor:
+                                            WidgetStateProperty.resolveWith((states) {
+                                          if (states.contains(WidgetState.selected)) {
+                                            return const Color(0xFF0B2F4F);
+                                          }
+                                          return Colors.white;
+                                        }),
+                                        foregroundColor:
+                                            WidgetStateProperty.resolveWith((states) {
+                                          if (states.contains(WidgetState.selected)) {
+                                            return Colors.white;
+                                          }
+                                          return const Color(0xFF0F172A);
+                                        }),
+                                      ),
                                     ),
                                   ],
-                                  selected: {_tipo},
-                                  onSelectionChanged: (newSelection) {
-                                    setState(() => _tipo = newSelection.first);
-                                  },
-                                  style: ButtonStyle(
-                                    backgroundColor:
-                                        WidgetStateProperty.resolveWith((states) {
-                                      if (states.contains(WidgetState.selected)) {
-                                        return const Color(0xFF0B2F4F);
-                                      }
-                                      return Colors.white;
-                                    }),
-                                    foregroundColor:
-                                        WidgetStateProperty.resolveWith((states) {
-                                      if (states.contains(WidgetState.selected)) {
-                                        return Colors.white;
-                                      }
-                                      return const Color(0xFF0F172A);
-                                    }),
-                                  ),
                                 ),
-                              ],
+                              ),
                             ),
-                          ),
-                        ),
                         const SizedBox(height: 16),
 
                         // Card: Materia y Aulas
@@ -817,6 +820,8 @@ class _NuevaSolicitudScreenState extends State<NuevaSolicitudScreen> {
                     ),
                   ),
                 ),
+              ),
+            ),
     );
   }
 }

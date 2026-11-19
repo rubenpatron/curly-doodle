@@ -1,0 +1,52 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /aulasync/api/
+
+    # Soporte CORS para preflight OPTIONS
+    RewriteCond %{REQUEST_METHOD} OPTIONS
+    RewriteRule ^(.*)$ index.php [QSA,L]
+
+    # 1. Si el archivo o directorio existe físicamente (ej. auth_login.php), servirlo directo
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # 2. Rutas semánticas y limpias estilo RESTful sin extensión .php
+    RewriteRule ^login/?$ auth_login.php [QSA,L]
+    RewriteRule ^auth/login/?$ auth_login.php [QSA,L]
+    RewriteRule ^logout/?$ logout.php [QSA,L]
+    RewriteRule ^me/?$ me.php [QSA,L]
+
+    RewriteRule ^usuarios/?$ usuarios.php [QSA,L]
+    RewriteRule ^docentes/?$ docentes.php [QSA,L]
+    RewriteRule ^materias/?$ materias.php [QSA,L]
+
+    RewriteRule ^aulas/?$ aulas.php [QSA,L]
+    RewriteRule ^aulas/autorizadas/?$ aulas_autorizadas.php [QSA,L]
+
+    RewriteRule ^horarios/?$ horarios.php [QSA,L]
+    RewriteRule ^carga-academica/?$ carga_academica.php [QSA,L]
+    RewriteRule ^carga_academica/?$ carga_academica.php [QSA,L]
+
+    RewriteRule ^solicitudes/?$ solicitudes.php [QSA,L]
+    RewriteRule ^solicitudes/responder/?$ solicitud_responder.php [QSA,L]
+
+    RewriteRule ^otp/?$ otp_solicitar.php [QSA,L]
+    RewriteRule ^otp/solicitar/?$ otp_solicitar.php [QSA,L]
+    RewriteRule ^cerradura/abrir/?$ cerradura_abrir.php [QSA,L]
+    RewriteRule ^cerraduras/?$ cerraduras.php [QSA,L]
+
+    RewriteRule ^nodos/?$ nodos.php [QSA,L]
+    RewriteRule ^nodos/control/?$ nodo_control.php [QSA,L]
+
+    RewriteRule ^dashboard/?$ admin_stats.php [QSA,L]
+    RewriteRule ^telemetria/?$ telemetria.php [QSA,L]
+    RewriteRule ^accesos/?$ accesos.php [QSA,L]
+
+    # 3. Mapeo genérico: si existe un archivo con ese nombre + .php
+    RewriteCond %{DOCUMENT_ROOT}/aulasync/api/$1.php -f
+    RewriteRule ^(.*)$ $1.php [QSA,L]
+
+    # 4. Router central / fallback a index.php
+    RewriteRule ^(.*)$ index.php [QSA,L]
+</IfModule>

@@ -44,33 +44,50 @@ class AulaSyncApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF0B2F4F),
           primary: const Color(0xFF0B2F4F),
-          secondary: const Color(0xFF127A6B),
+          onPrimary: Colors.white,
+          primaryContainer: const Color(0xFFD4E4F7),
+          onPrimaryContainer: const Color(0xFF001D36),
+          secondary: const Color(0xFF0F766E),
+          onSecondary: Colors.white,
+          secondaryContainer: const Color(0xFFCCFBF1),
+          onSecondaryContainer: const Color(0xFF00201B),
           tertiary: const Color(0xFF0284C7),
-          surface: Colors.white,
+          surface: const Color(0xFFF8FAFC),
+          onSurface: const Color(0xFF0F172A),
+          surfaceContainerLowest: Colors.white,
+          surfaceContainerLow: const Color(0xFFF1F5F9),
+          surfaceContainer: const Color(0xFFE2E8F0),
+          outline: const Color(0xFFCBD5E1),
+          outlineVariant: const Color(0xFFE2E8F0),
         ),
         scaffoldBackgroundColor: const Color(0xFFF8FAFC),
         appBarTheme: const AppBarTheme(
           backgroundColor: Color(0xFF0B2F4F),
           foregroundColor: Colors.white,
           elevation: 0,
-          centerTitle: true,
+          scrolledUnderElevation: 2,
+          centerTitle: false,
           titleTextStyle: TextStyle(
             fontSize: 18,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w700,
             color: Colors.white,
-            letterSpacing: 0.3,
+            letterSpacing: -0.2,
           ),
           iconTheme: IconThemeData(color: Colors.white),
         ),
         navigationBarTheme: NavigationBarThemeData(
           backgroundColor: Colors.white,
+          elevation: 3,
+          height: 70,
           indicatorColor: const Color(0xFF0B2F4F).withValues(alpha: 0.12),
+          indicatorShape: const StadiumBorder(),
           labelTextStyle: WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.selected)) {
               return const TextStyle(
                 fontSize: 12,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w700,
                 color: Color(0xFF0B2F4F),
+                letterSpacing: 0.2,
               );
             }
             return const TextStyle(
@@ -82,9 +99,9 @@ class AulaSyncApp extends StatelessWidget {
         ),
         cardTheme: CardThemeData(
           color: Colors.white,
-          elevation: 1,
+          elevation: 0,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(20),
             side: const BorderSide(color: Color(0xFFE2E8F0)),
           ),
         ),
@@ -92,25 +109,51 @@ class AulaSyncApp extends StatelessWidget {
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF0B2F4F),
             foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            textStyle: const TextStyle(fontWeight: FontWeight.bold),
+            elevation: 0,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+          ),
+        ),
+        filledButtonTheme: FilledButtonThemeData(
+          style: FilledButton.styleFrom(
+            backgroundColor: const Color(0xFF0B2F4F),
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
           ),
         ),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          fillColor: Colors.white,
+          fillColor: const Color(0xFFF8FAFC),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
             borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
             borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Color(0xFF0B2F4F), width: 1.5),
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(color: Color(0xFF0B2F4F), width: 1.8),
           ),
+        ),
+        dialogTheme: DialogThemeData(
+          backgroundColor: Colors.white,
+          elevation: 6,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          titleTextStyle: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF0F172A),
+          ),
+        ),
+        snackBarTheme: SnackBarThemeData(
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
       ),
       home: const AuthGate(),

@@ -101,34 +101,42 @@ class _HorariosTabState extends State<HorariosTab> {
   Widget _buildBarraFiltros() {
     return Container(
       color: Colors.white,
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
       child: Column(
         children: [
-          // Buscador rápido
+          // Buscador rápido estilo Material 3
           TextField(
             onChanged: (val) => setState(() => _filtroBusqueda = val.trim()),
             decoration: InputDecoration(
               hintText: 'Buscar materia, aula o edificio...',
               hintStyle: const TextStyle(fontSize: 13, color: Color(0xFF94A3B8)),
-              prefixIcon: const Icon(Icons.search, size: 20, color: Color(0xFF64748B)),
+              prefixIcon: const Icon(Icons.search_rounded, size: 20, color: Color(0xFF0B2F4F)),
               suffixIcon: _filtroBusqueda.isNotEmpty
                   ? IconButton(
-                      icon: const Icon(Icons.clear, size: 18),
+                      icon: const Icon(Icons.clear_rounded, size: 18),
                       onPressed: () => setState(() => _filtroBusqueda = ''),
                     )
                   : null,
               filled: true,
               fillColor: const Color(0xFFF1F5F9),
-              contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+              contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(28),
                 borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(28),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(28),
+                borderSide: const BorderSide(color: Color(0xFF0B2F4F), width: 1.5),
               ),
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
 
-          // Selector de Días con Chips
+          // Selector de Días con Chips Modernos
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
@@ -140,6 +148,7 @@ class _HorariosTabState extends State<HorariosTab> {
                   padding: const EdgeInsets.only(right: 6),
                   child: FilterChip(
                     selected: isSelected,
+                    showCheckmark: false,
                     label: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -147,17 +156,17 @@ class _HorariosTabState extends State<HorariosTab> {
                           dia['label'],
                           style: TextStyle(
                             fontSize: 12,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                             color: isSelected ? Colors.white : const Color(0xFF334155),
                           ),
                         ),
                         if (isToday && dia['id'] != 0) ...[
-                          const SizedBox(width: 4),
+                          const SizedBox(width: 5),
                           Container(
                             width: 6,
                             height: 6,
                             decoration: BoxDecoration(
-                              color: isSelected ? Colors.amberAccent : const Color(0xFF127A6B),
+                              color: isSelected ? const Color(0xFF34D399) : const Color(0xFF10B981),
                               shape: BoxShape.circle,
                             ),
                           ),
@@ -166,18 +175,18 @@ class _HorariosTabState extends State<HorariosTab> {
                     ),
                     backgroundColor: const Color(0xFFF8FAFC),
                     selectedColor: const Color(0xFF0B2F4F),
-                    checkmarkColor: Colors.white,
-                    showCheckmark: false,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                       side: BorderSide(
                         color: isSelected
                             ? const Color(0xFF0B2F4F)
                             : (isToday && dia['id'] != 0
-                                ? const Color(0xFF127A6B).withValues(alpha: 0.5)
+                                ? const Color(0xFF10B981)
                                 : const Color(0xFFE2E8F0)),
+                        width: isToday && !isSelected ? 1.5 : 1.0,
                       ),
                     ),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                     onSelected: (selected) {
                       setState(() {
                         _filtroDia = selected ? dia['id'] : 0;
@@ -307,34 +316,34 @@ class _HorariosTabState extends State<HorariosTab> {
     final bool esHoy = clase.diaSemana == _diaActual;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 14),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: esHoy ? const Color(0xFF127A6B).withValues(alpha: 0.4) : const Color(0xFFE2E8F0),
+          color: esHoy ? const Color(0xFF10B981).withValues(alpha: 0.5) : const Color(0xFFE2E8F0),
           width: esHoy ? 1.5 : 1.0,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 3),
+            color: esHoy ? const Color(0xFF10B981).withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(18),
         child: Container(
           decoration: BoxDecoration(
             border: Border(
               left: BorderSide(
-                color: esHoy ? const Color(0xFF127A6B) : const Color(0xFF0B2F4F),
+                color: esHoy ? const Color(0xFF10B981) : const Color(0xFF0B2F4F),
                 width: 5,
               ),
             ),
           ),
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -350,16 +359,24 @@ class _HorariosTabState extends State<HorariosTab> {
                           clase.materia,
                           style: const TextStyle(
                             fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w700,
                             color: Color(0xFF0F172A),
+                            letterSpacing: -0.2,
                           ),
                         ),
                         if (clase.materiaCodigo.isNotEmpty)
                           Padding(
-                            padding: const EdgeInsets.only(top: 2),
-                            child: Text(
-                              'Clave: ${clase.materiaCodigo}',
-                              style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                            padding: const EdgeInsets.only(top: 3),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF1F5F9),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                'Clave: ${clase.materiaCodigo}',
+                                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF64748B)),
+                              ),
                             ),
                           ),
                       ],
@@ -367,22 +384,24 @@ class _HorariosTabState extends State<HorariosTab> {
                   ),
                   if (esHoy)
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF127A6B).withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(8),
+                        color: const Color(0xFFD1FAE5),
+                        borderRadius: BorderRadius.circular(100),
+                        border: Border.all(color: const Color(0xFFA7F3D0)),
                       ),
                       child: const Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.today, size: 14, color: Color(0xFF127A6B)),
+                          Icon(Icons.bolt_rounded, size: 14, color: Color(0xFF047857)),
                           SizedBox(width: 4),
                           Text(
                             'HOY',
                             style: TextStyle(
                               fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF127A6B),
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF047857),
+                              letterSpacing: 0.5,
                             ),
                           ),
                         ],
@@ -398,25 +417,25 @@ class _HorariosTabState extends State<HorariosTab> {
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(6),
+                    padding: const EdgeInsets.all(7),
                     decoration: BoxDecoration(
                       color: const Color(0xFF0B2F4F).withValues(alpha: 0.08),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(Icons.access_time_filled, size: 16, color: Color(0xFF0B2F4F)),
+                    child: const Icon(Icons.schedule_rounded, size: 16, color: Color(0xFF0B2F4F)),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 10),
                   Text(
                     '${clase.diaNombre}  •  ${clase.horaInicio} - ${clase.horaFin} hrs',
                     style: const TextStyle(
                       fontSize: 13,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
                       color: Color(0xFF1E293B),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 12),
 
               // Badges de Ubicación: Aula, Edificio y Capacidad
               Wrap(
@@ -424,19 +443,22 @@ class _HorariosTabState extends State<HorariosTab> {
                 runSpacing: 6,
                 children: [
                   _buildPill(
-                    icon: Icons.meeting_room_outlined,
+                    icon: Icons.meeting_room_rounded,
                     label: 'Aula: ${clase.aula}',
                     color: const Color(0xFF0B2F4F),
+                    bgColor: const Color(0xFFEFF6FF),
                   ),
                   _buildPill(
-                    icon: Icons.business_outlined,
+                    icon: Icons.business_rounded,
                     label: 'Edificio: ${clase.edificio}',
                     color: const Color(0xFF475569),
+                    bgColor: const Color(0xFFF8FAFC),
                   ),
                   _buildPill(
-                    icon: Icons.people_outline,
+                    icon: Icons.people_alt_rounded,
                     label: 'Capacidad: ${clase.capacidad}',
-                    color: const Color(0xFF64748B),
+                    color: const Color(0xFF0F766E),
+                    bgColor: const Color(0xFFF0FDFA),
                   ),
                 ],
               ),
@@ -447,24 +469,24 @@ class _HorariosTabState extends State<HorariosTab> {
     );
   }
 
-  Widget _buildPill({required IconData icon, required String label, required Color color}) {
+  Widget _buildPill({required IconData icon, required String label, required Color color, Color? bgColor}) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFC),
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        color: bgColor ?? const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, size: 13, color: color),
-          const SizedBox(width: 4),
+          const SizedBox(width: 5),
           Text(
             label,
             style: TextStyle(
               fontSize: 11,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
               color: color,
             ),
           ),

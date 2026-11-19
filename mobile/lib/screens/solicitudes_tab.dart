@@ -156,14 +156,14 @@ class _SolicitudesTabState extends State<SolicitudesTab> {
 
   Widget _buildSolicitudCard(Solicitud s) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      elevation: 1,
+      margin: const EdgeInsets.only(bottom: 14),
+      elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(18),
         side: const BorderSide(color: Color(0xFFE2E8F0)),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(18.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -422,126 +422,131 @@ class _SolicitudesTabState extends State<SolicitudesTab> {
       body: RefreshIndicator(
         onRefresh: _cargarSolicitudes,
         color: const Color(0xFF0B2F4F),
-        child: Column(
-          children: [
-            // Filtros de estado
-            if (!_cargando && _error == null && _solicitudes.isNotEmpty)
-              _buildFiltrosChips(),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 720),
+            child: Column(
+              children: [
+                // Filtros de estado
+                if (!_cargando && _error == null && _solicitudes.isNotEmpty)
+                  _buildFiltrosChips(),
 
-            Expanded(
-              child: _cargando
-                  ? const Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CircularProgressIndicator(color: Color(0xFF0B2F4F)),
-                          SizedBox(height: 12),
-                          Text(
-                            'Cargando solicitudes...',
-                            style: TextStyle(color: Color(0xFF64748B)),
-                          ),
-                        ],
-                      ),
-                    )
-                  : _error != null
-                      ? Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(24.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(Icons.error_outline, size: 48, color: Colors.red),
-                                const SizedBox(height: 12),
-                                Text(
-                                  _error!,
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(color: Color(0xFF0F172A)),
-                                ),
-                                const SizedBox(height: 16),
-                                ElevatedButton.icon(
-                                  onPressed: _cargarSolicitudes,
-                                  icon: const Icon(Icons.refresh),
-                                  label: const Text('Reintentar'),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFF0B2F4F),
-                                    foregroundColor: Colors.white,
-                                  ),
-                                ),
-                              ],
-                            ),
+                Expanded(
+                  child: _cargando
+                      ? const Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CircularProgressIndicator(color: Color(0xFF0B2F4F)),
+                              SizedBox(height: 12),
+                              Text(
+                                'Cargando solicitudes...',
+                                style: TextStyle(color: Color(0xFF64748B)),
+                              ),
+                            ],
                           ),
                         )
-                      : _solicitudesFiltradas.isEmpty
-                          ? ListView(
-                              padding: const EdgeInsets.all(24.0),
-                              children: [
-                                const SizedBox(height: 60),
-                                Center(
-                                  child: Container(
-                                    width: 80,
-                                    height: 80,
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFFE2E8F0),
-                                      borderRadius: BorderRadius.circular(40),
+                      : _error != null
+                          ? Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(24.0),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                                    const SizedBox(height: 12),
+                                    Text(
+                                      _error!,
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(color: Color(0xFF0F172A)),
                                     ),
-                                    child: const Icon(
-                                      Icons.assignment_outlined,
-                                      size: 40,
-                                      color: Color(0xFF64748B),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  _filtroEstado == 'todas'
-                                      ? 'No tienes solicitudes registradas'
-                                      : 'No hay solicitudes con estado "$_filtroEstado"',
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF0F172A),
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                const Text(
-                                  'Crea una solicitud si necesitas un cambio de aula o un espacio adicional para exámenes o eventos.',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: Color(0xFF64748B),
-                                  ),
-                                ),
-                                const SizedBox(height: 20),
-                                Center(
-                                  child: ElevatedButton.icon(
-                                    onPressed: _abrirNuevaSolicitud,
-                                    icon: const Icon(Icons.add),
-                                    label: const Text('Crear Primera Solicitud'),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color(0xFF0B2F4F),
-                                      foregroundColor: Colors.white,
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 20, vertical: 12),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
+                                    const SizedBox(height: 16),
+                                    ElevatedButton.icon(
+                                      onPressed: _cargarSolicitudes,
+                                      icon: const Icon(Icons.refresh),
+                                      label: const Text('Reintentar'),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: const Color(0xFF0B2F4F),
+                                        foregroundColor: Colors.white,
                                       ),
                                     ),
-                                  ),
+                                  ],
                                 ),
-                              ],
+                              ),
                             )
-                          : ListView.builder(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 10),
-                              itemCount: _solicitudesFiltradas.length,
-                              itemBuilder: (context, index) {
-                                return _buildSolicitudCard(
-                                    _solicitudesFiltradas[index]);
-                              },
-                            ),
+                          : _solicitudesFiltradas.isEmpty
+                              ? ListView(
+                                  padding: const EdgeInsets.all(24.0),
+                                  children: [
+                                    const SizedBox(height: 60),
+                                    Center(
+                                      child: Container(
+                                        width: 80,
+                                        height: 80,
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFE2E8F0),
+                                          borderRadius: BorderRadius.circular(40),
+                                        ),
+                                        child: const Icon(
+                                          Icons.assignment_outlined,
+                                          size: 40,
+                                          color: Color(0xFF64748B),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      _filtroEstado == 'todas'
+                                          ? 'No tienes solicitudes registradas'
+                                          : 'No hay solicitudes con estado "$_filtroEstado"',
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFF0F172A),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    const Text(
+                                      'Crea una solicitud si necesitas un cambio de aula o un espacio adicional para exámenes o eventos.',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: Color(0xFF64748B),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 20),
+                                    Center(
+                                      child: ElevatedButton.icon(
+                                        onPressed: _abrirNuevaSolicitud,
+                                        icon: const Icon(Icons.add),
+                                        label: const Text('Crear Primera Solicitud'),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: const Color(0xFF0B2F4F),
+                                          foregroundColor: Colors.white,
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 20, vertical: 12),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(10),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : ListView.builder(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 10),
+                                  itemCount: _solicitudesFiltradas.length,
+                                  itemBuilder: (context, index) {
+                                    return _buildSolicitudCard(
+                                        _solicitudesFiltradas[index]);
+                                  },
+                                ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
