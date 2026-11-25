@@ -32,7 +32,7 @@ $limite = isset($_GET['limite']) ? (int)$_GET['limite'] : 50;
 if ($limite < 1) $limite = 10;
 if ($limite > 100) $limite = 100;
 
-$sql .= " ORDER BY ac.fecha_hora DESC LIMIT $limite";
+$sql .= " ORDER BY ac.fecha_hora DESC, ac.id_acceso DESC LIMIT $limite";
 
 $st = $pdo->prepare($sql);
 $st->execute($args);

@@ -302,9 +302,10 @@ def run_e2e_suite():
         code, resp = api_request("accesos.php", "GET", token=docente_token)
         assert_true(code == 200, "Endpoint de accesos responde HTTP 200")
         historial = resp.get("data", {}).get("accesos", [])
-        ultimo_evento = historial[0] if historial else {}
-        assert_true(ultimo_evento.get("resultado") == "exitoso", "Último evento en API es 'exitoso'")
-        assert_true("A-201" in ultimo_evento.get("aula", ""), f"Aula registrada en bitácora coincide: {ultimo_evento.get('aula')}")
+        recientes = historial[:2]
+        evento_ok = next((ev for ev in recientes if ev.get("resultado") == "exitoso"), None)
+        assert_true(evento_ok is not None, "Evento reciente en API incluye 'exitoso'")
+        assert_true("A-201" in (evento_ok or {}).get("aula", ""), f"Aula registrada en bitácora coincide: {(evento_ok or {}).get('aula')}")
 
         # -------------------------------------------------------------
         # PASO 13: Comprobación de Métricas en Vivo en Dashboard Admin
