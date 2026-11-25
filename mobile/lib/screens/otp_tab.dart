@@ -10,11 +10,13 @@ import '../widgets/aulasync_widgets.dart';
 class OtpTab extends StatefulWidget {
   final int? aulaIdInicial;
   final int selectionSeq;
+  final int refreshSeq;
 
   const OtpTab({
     super.key,
     this.aulaIdInicial,
     this.selectionSeq = 0,
+    this.refreshSeq = 0,
   });
 
   @override
@@ -47,6 +49,9 @@ class _OtpTabState extends State<OtpTab> {
   @override
   void didUpdateWidget(covariant OtpTab oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (widget.refreshSeq != oldWidget.refreshSeq) {
+      _cargarAulas(silent: true);
+    }
     if (widget.aulaIdInicial != null &&
         (widget.aulaIdInicial != oldWidget.aulaIdInicial ||
             widget.selectionSeq != oldWidget.selectionSeq)) {
@@ -73,11 +78,13 @@ class _OtpTabState extends State<OtpTab> {
     super.dispose();
   }
 
-  Future<void> _cargarAulas() async {
-    setState(() {
-      _cargandoAulas = true;
-      _errorAulas = null;
-    });
+  Future<void> _cargarAulas({bool silent = false}) async {
+    if (!silent) {
+      setState(() {
+        _cargandoAulas = true;
+        _errorAulas = null;
+      });
+    }
 
     try {
       final esAdmin =
@@ -89,19 +96,23 @@ class _OtpTabState extends State<OtpTab> {
       setState(() {
         _aulas = aulas;
         if (_aulas.isNotEmpty) {
-          _aulaSeleccionada = widget.aulaIdInicial != null
-              ? (_aulas.where((a) => a.id == widget.aulaIdInicial).firstOrNull ??
+          final targetId = widget.aulaIdInicial ?? _aulaSeleccionada?.id;
+          _aulaSeleccionada = targetId != null
+              ? (_aulas.where((a) => a.id == targetId).firstOrNull ??
                   _aulas.first)
               : _aulas.first;
         }
         _cargandoAulas = false;
+        _errorAulas = null;
       });
     } catch (e) {
       if (!mounted) return;
-      setState(() {
-        _errorAulas = e.toString().replaceAll('Exception: ', '');
-        _cargandoAulas = false;
-      });
+      if (!silent) {
+        setState(() {
+          _errorAulas = e.toString().replaceAll('Exception: ', '');
+          _cargandoAulas = false;
+        });
+      }
     }
   }
 

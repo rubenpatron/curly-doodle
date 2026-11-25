@@ -18,18 +18,39 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   int _currentIndex = 0;
   Usuario? _usuario;
   int? _aulaPreseleccionadaOtp;
   int _otpSelectionSeq = 0;
+  int _horariosRefreshSeq = 0;
+  int _solicitudesRefreshSeq = 0;
+  int _otpRefreshSeq = 0;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _usuario = widget.usuario ?? ApiService().usuarioActual;
     if (_usuario == null) {
       _recuperarUsuario();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && mounted) {
+      setState(() {
+        _horariosRefreshSeq++;
+        _solicitudesRefreshSeq++;
+        _otpRefreshSeq++;
+      });
     }
   }
 
@@ -55,19 +76,23 @@ class _HomeScreenState extends State<HomeScreen> {
     final List<Widget> tabs = [
       HorariosTab(
         iniciales: _iniciales(user?.nombre ?? 'Docente'),
+        refreshSeq: _horariosRefreshSeq,
         onIrAOtp: (idAula) => setState(() {
           _aulaPreseleccionadaOtp = idAula;
           _otpSelectionSeq++;
+          _otpRefreshSeq++;
           _currentIndex = 2;
         }),
         onIrAPerfil: () => setState(() => _currentIndex = 3),
       ),
       SolicitudesTab(
         esAdmin: user?.rol.toLowerCase() == 'admin',
+        refreshSeq: _solicitudesRefreshSeq,
       ),
       OtpTab(
         aulaIdInicial: _aulaPreseleccionadaOtp,
         selectionSeq: _otpSelectionSeq,
+        refreshSeq: _otpRefreshSeq,
       ),
       _buildPerfilTab(),
     ];
@@ -108,8 +133,12 @@ class _HomeScreenState extends State<HomeScreen> {
               backgroundColor: Colors.transparent,
               elevation: 0,
               selectedIndex: _currentIndex,
-              onDestinationSelected: (index) =>
-                  setState(() => _currentIndex = index),
+              onDestinationSelected: (index) => setState(() {
+                _currentIndex = index;
+                if (index == 0) _horariosRefreshSeq++;
+                if (index == 1) _solicitudesRefreshSeq++;
+                if (index == 2) _otpRefreshSeq++;
+              }),
               destinations: const [
                 NavigationDestination(
                   icon: Icon(Icons.calendar_month_outlined,

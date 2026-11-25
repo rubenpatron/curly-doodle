@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../models/clase_horario.dart';
 import '../services/api_service.dart';
@@ -8,12 +9,14 @@ class HorariosTab extends StatefulWidget {
   final void Function(int idAula)? onIrAOtp;
   final VoidCallback? onIrAPerfil;
   final String iniciales;
+  final int refreshSeq;
 
   const HorariosTab({
     super.key,
     this.onIrAOtp,
     this.onIrAPerfil,
     this.iniciales = 'EP',
+    this.refreshSeq = 0,
   });
 
   @override
@@ -29,6 +32,7 @@ class _HorariosTabState extends State<HorariosTab> {
   String? _errorMessage;
   int _filtroDia = 0;
   String _filtroBusqueda = '';
+  Timer? _liveTimer;
 
   final List<Map<String, dynamic>> _diasSemana = const [
     {'id': 0, 'label': 'Todos'},
@@ -44,19 +48,34 @@ class _HorariosTabState extends State<HorariosTab> {
   void initState() {
     super.initState();
     _cargarHorarios();
+    _liveTimer = Timer.periodic(
+      const Duration(seconds: 15),
+      (_) => _cargarHorarios(silent: true),
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant HorariosTab oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.refreshSeq != oldWidget.refreshSeq) {
+      _cargarHorarios(silent: true);
+    }
   }
 
   @override
   void dispose() {
+    _liveTimer?.cancel();
     _searchCtrl.dispose();
     super.dispose();
   }
 
-  Future<void> _cargarHorarios() async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
+  Future<void> _cargarHorarios({bool silent = false}) async {
+    if (!silent) {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
+      });
+    }
 
     try {
       final list = await _apiService.getHorario();
@@ -64,13 +83,16 @@ class _HorariosTabState extends State<HorariosTab> {
       setState(() {
         _horarios = list;
         _isLoading = false;
+        _errorMessage = null;
       });
     } catch (e) {
       if (!mounted) return;
-      setState(() {
-        _errorMessage = e.toString().replaceAll('Exception: ', '');
-        _isLoading = false;
-      });
+      if (!silent) {
+        setState(() {
+          _errorMessage = e.toString().replaceAll('Exception: ', '');
+          _isLoading = false;
+        });
+      }
     }
   }
 

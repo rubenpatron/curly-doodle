@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../models/solicitud.dart';
 import '../services/api_service.dart';
@@ -7,8 +8,9 @@ import 'nueva_solicitud_screen.dart';
 
 class SolicitudesTab extends StatefulWidget {
   final bool? esAdmin;
+  final int refreshSeq;
 
-  const SolicitudesTab({super.key, this.esAdmin});
+  const SolicitudesTab({super.key, this.esAdmin, this.refreshSeq = 0});
 
   @override
   State<SolicitudesTab> createState() => _SolicitudesTabState();
@@ -20,6 +22,7 @@ class _SolicitudesTabState extends State<SolicitudesTab> {
   List<Solicitud> _solicitudes = [];
   String _filtroEstado = 'todas';
   int? _procesandoId;
+  Timer? _liveTimer;
 
   bool get _esAdmin =>
       widget.esAdmin ??
@@ -29,13 +32,33 @@ class _SolicitudesTabState extends State<SolicitudesTab> {
   void initState() {
     super.initState();
     _cargarSolicitudes();
+    _liveTimer = Timer.periodic(
+      const Duration(seconds: 15),
+      (_) => _cargarSolicitudes(silent: true),
+    );
   }
 
-  Future<void> _cargarSolicitudes() async {
-    setState(() {
-      _cargando = true;
-      _error = null;
-    });
+  @override
+  void didUpdateWidget(covariant SolicitudesTab oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.refreshSeq != oldWidget.refreshSeq) {
+      _cargarSolicitudes(silent: true);
+    }
+  }
+
+  @override
+  void dispose() {
+    _liveTimer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _cargarSolicitudes({bool silent = false}) async {
+    if (!silent) {
+      setState(() {
+        _cargando = true;
+        _error = null;
+      });
+    }
 
     try {
       final list = await ApiService().getSolicitudes();
@@ -43,13 +66,16 @@ class _SolicitudesTabState extends State<SolicitudesTab> {
       setState(() {
         _solicitudes = list;
         _cargando = false;
+        _error = null;
       });
     } catch (e) {
       if (!mounted) return;
-      setState(() {
-        _error = e.toString().replaceAll('Exception: ', '');
-        _cargando = false;
-      });
+      if (!silent) {
+        setState(() {
+          _error = e.toString().replaceAll('Exception: ', '');
+          _cargando = false;
+        });
+      }
     }
   }
 
