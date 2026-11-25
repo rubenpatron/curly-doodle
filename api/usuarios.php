@@ -7,6 +7,7 @@
  */
 require_once __DIR__ . '/helpers.php';
 api_boot();
+exigir_admin();
 
 $pdo = db();
 $metodo = $_SERVER['REQUEST_METHOD'] ?? 'GET';

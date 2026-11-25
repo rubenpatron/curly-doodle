@@ -63,6 +63,10 @@
                     <i class="fas fa-building"></i>
                     <span>Edificios y Aulas</span>
                 </a>
+                <a href="#" class="nav-link" data-section="section-docentes" onclick="switchSection(this, event)">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Alta de Profesores</span>
+                </a>
             </nav>
 
             <div class="sidebar-section-title">Configuración</div>
@@ -517,6 +521,72 @@
                                 <p class="mb-0" style="font-size:0.75rem;color:var(--text-muted);">La cerradura de A-104 reporta 35% de batería. Se recomienda reemplazo preventivo.</p>
                             </div>
                             <button class="btn btn-sm btn-outline-secondary" style="font-size:0.75rem;white-space:nowrap;">Programar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== SECTION: Alta de Profesores ===== -->
+                <div class="app-section" id="section-docentes">
+                    <div class="section-header">
+                        <h2>Alta de Profesores</h2>
+                        <p>Registra docentes con correo institucional y contraseña segura (bcrypt vía API REST)</p>
+                    </div>
+                    <div class="row g-4">
+                        <div class="col-lg-5">
+                            <div class="content-card">
+                                <div class="content-card-header">
+                                    <h6><i class="fas fa-user-plus me-2" style="color:var(--secondary);"></i>Nuevo Profesor</h6>
+                                </div>
+                                <div class="content-card-body">
+                                    <form id="formAltaDocente" onsubmit="registrarDocenteApi(event)">
+                                        <div class="mb-3">
+                                            <label class="form-label" style="font-size:0.82rem;font-weight:700;">Nombre completo</label>
+                                            <input type="text" class="form-control" id="docNombre" placeholder="Ej. Mtra. Sofía Herrera" required minlength="3">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label" style="font-size:0.82rem;font-weight:700;">Correo institucional</label>
+                                            <input type="email" class="form-control" id="docEmail" placeholder="profesor@universidad.edu" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label" style="font-size:0.82rem;font-weight:700;">Contraseña</label>
+                                            <input type="password" class="form-control" id="docPassword" placeholder="Mínimo 4 caracteres" required minlength="4">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label" style="font-size:0.82rem;font-weight:700;">Matrícula / No. Empleado (opcional)</label>
+                                            <input type="text" class="form-control" id="docMatricula" placeholder="Ej. DOC-4012">
+                                        </div>
+                                        <div id="docAlert" class="alert d-none py-2 px-3" style="font-size:0.82rem;border-radius:12px;"></div>
+                                        <button type="submit" class="btn btn-primary w-100 py-2" id="btnGuardarDocente">
+                                            <i class="fas fa-save me-2"></i>Registrar Profesor
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-7">
+                            <div class="content-card">
+                                <div class="content-card-header d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0"><i class="fas fa-chalkboard-teacher me-2" style="color:var(--secondary);"></i>Profesores Registrados</h6>
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="loadDocentes()"><i class="fas fa-sync-alt"></i></button>
+                                </div>
+                                <div class="content-card-body p-0">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover align-middle mb-0" style="font-size:0.86rem;">
+                                            <thead>
+                                                <tr>
+                                                    <th class="ps-4">Profesor</th>
+                                                    <th>Correo</th>
+                                                    <th>Matrícula</th>
+                                                    <th class="text-end pe-4">Acción</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="docentesTableBody">
+                                                <tr><td colspan="4" class="text-center text-muted py-4">Cargando profesores...</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

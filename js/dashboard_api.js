@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     loadCerraduras('A');
     loadTelemetria();
     loadLogs();
+    loadDocentes();
 
     // 3. Temporizadores de actualización en vivo
     setInterval(loadTelemetria, 10000); // Telemetría cada 10s
@@ -455,4 +456,82 @@ window.controlRemoto = async function(accion) {
 window.bloqueoEmergencia = function() {
     if (!window.currentAulaId) return;
     controlRemoto('cerrar');
+};
+
+
+// ==========================================
+// 6. Gestión de Docentes (Alta vía API REST)
+// ==========================================
+async function loadDocentes() {
+    const tbody = document.getElementById('docentesTableBody');
+    if (!tbody) return;
+    try {
+        const data = await apiFetch('docentes.php');
+        const docentes = data.docentes || [];
+        if (!docentes.length) {
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">No hay profesores registrados.</td></tr>';
+            return;
+        }
+        tbody.innerHTML = docentes.map(d => `
+            <tr>
+                <td class="ps-4 fw-semibold">${esc(d.nombre)}</td>
+                <td class="text-muted">${esc(d.email)}</td>
+                <td><span class="badge bg-light text-dark">${esc(d.matricula || 'Sin matrícula')}</span></td>
+                <td class="text-end pe-4">
+                    <button class="btn btn-sm btn-outline-danger" onclick="eliminarDocenteApi(${d.id}, '${esc(d.nombre)}')">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center text-danger py-4">${esc(err.message)}</td></tr>`;
+    }
+}
+
+window.registrarDocenteApi = async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btnGuardarDocente');
+    const alertBox = document.getElementById('docAlert');
+    const nombre = document.getElementById('docNombre').value.trim();
+    const email = document.getElementById('docEmail').value.trim();
+    const password = document.getElementById('docPassword').value;
+    const matricula = document.getElementById('docMatricula').value.trim();
+
+    alertBox.className = 'alert d-none';
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Registrando...';
+
+    try {
+        const res = await apiFetch('usuarios.php', {
+            method: 'POST',
+            body: JSON.stringify({
+                nombre,
+                email,
+                password,
+                matricula: matricula || null,
+                id_rol: 2
+            })
+        });
+        alertBox.className = 'alert alert-success py-2 px-3';
+        alertBox.textContent = res.mensaje || 'Profesor registrado correctamente.';
+        document.getElementById('formAltaDocente').reset();
+        await loadDocentes();
+    } catch (err) {
+        alertBox.className = 'alert alert-danger py-2 px-3';
+        alertBox.textContent = err.message;
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-save me-2"></i>Registrar Profesor';
+    }
+};
+
+window.eliminarDocenteApi = async function(id, nombre) {
+    if (!confirm(`¿Eliminar al profesor ${nombre}?`)) return;
+    try {
+        await apiFetch(`usuarios.php?id=${id}`, { method: 'DELETE' });
+        await loadDocentes();
+    } catch (err) {
+        alert(err.message);
+    }
 };
