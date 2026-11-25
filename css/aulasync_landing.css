@@ -235,7 +235,7 @@ nav {
 .btn-accent:hover {
     background: var(--accent-dark);
     transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(15, 204, 146, 0.2);
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.14);
 }
 
 /* Hero Section */
