@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../config/api_config.dart';
 import '../models/usuario.dart';
 import '../services/api_service.dart';
+import '../theme/app_theme.dart';
+import '../widgets/aulasync_logo.dart';
+import '../widgets/aulasync_widgets.dart';
 import 'horarios_tab.dart';
-import 'solicitudes_tab.dart';
-import 'otp_tab.dart';
 import 'login_screen.dart';
+import 'otp_tab.dart';
+import 'solicitudes_tab.dart';
 
 class HomeScreen extends StatefulWidget {
   final Usuario? usuario;
@@ -55,73 +57,63 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> tabs = [
-      const HorariosTab(),
+      HorariosTab(onIrAOtp: () => setState(() => _currentIndex = 2)),
       const SolicitudesTab(),
       const OtpTab(),
       _buildPerfilTab(),
     ];
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        elevation: 0,
-        scrolledUnderElevation: 3,
-        title: Row(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              padding: const EdgeInsets.all(7),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF0F766E), Color(0xFF14B8A6)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF0F766E).withValues(alpha: 0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
+            const AulaSyncWordmark(fontSize: 19, darkBackground: true),
+            const SizedBox(height: 1),
+            Text(
+              _appBarTitle,
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF94A3B8),
               ),
-              child: const Icon(Icons.fingerprint_rounded, size: 20, color: Colors.white),
-            ),
-            const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  _appBarTitle,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 17,
-                    letterSpacing: -0.3,
-                  ),
-                ),
-                const Text(
-                  'AulaSync • UTM',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF94A3B8),
-                  ),
-                ),
-              ],
             ),
           ],
         ),
         actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 12),
-            child: ActionChip(
-              avatar: const Icon(Icons.dns_rounded, size: 14, color: Color(0xFF10B981)),
-              label: const Text('API Online', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.white)),
-              backgroundColor: Colors.white.withValues(alpha: 0.12),
-              side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
-              onPressed: _mostrarDialogoConfiguracionUrl,
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: InkWell(
+              onTap: _mostrarDialogoConfiguracionUrl,
+              borderRadius: BorderRadius.circular(AppRadii.pill),
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(AppRadii.pill),
+                  border:
+                      Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircleAvatar(
+                        radius: 3.5, backgroundColor: Color(0xFF10B981)),
+                    SizedBox(width: 6),
+                    Text(
+                      'API Online',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ],
@@ -130,216 +122,179 @@ class _HomeScreenState extends State<HomeScreen> {
         index: _currentIndex,
         children: tabs,
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: const Border(top: BorderSide(color: Color(0xFFE2E8F0))),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 10,
-              offset: const Offset(0, -3),
-            ),
-          ],
-        ),
-        child: NavigationBar(
-          selectedIndex: _currentIndex,
-          onDestinationSelected: (index) {
-            setState(() => _currentIndex = index);
-          },
-          backgroundColor: Colors.white,
-          indicatorColor: const Color(0xFF0B2F4F).withValues(alpha: 0.1),
-          indicatorShape: const StadiumBorder(),
-          elevation: 0,
-          destinations: const [
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Container(
+          margin: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(28),
+            border: Border.all(color: AppColors.border),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.navy.withValues(alpha: 0.09),
+                blurRadius: 24,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: NavigationBar(
+            height: 66,
+            backgroundColor: Colors.transparent,
+            selectedIndex: _currentIndex,
+            onDestinationSelected: (index) =>
+                setState(() => _currentIndex = index),
+            destinations: const [
             NavigationDestination(
               icon: Icon(Icons.calendar_month_outlined),
-              selectedIcon: Icon(Icons.calendar_month_rounded, color: Color(0xFF0B2F4F)),
+              selectedIcon: Icon(Icons.calendar_month_rounded,
+                  color: AppColors.navy),
               label: 'Horarios',
             ),
             NavigationDestination(
               icon: Icon(Icons.assignment_outlined),
-              selectedIcon: Icon(Icons.assignment_rounded, color: Color(0xFF0B2F4F)),
+              selectedIcon:
+                  Icon(Icons.assignment_rounded, color: AppColors.navy),
               label: 'Solicitudes',
             ),
             NavigationDestination(
               icon: Icon(Icons.key_outlined),
-              selectedIcon: Icon(Icons.key_rounded, color: Color(0xFF0B2F4F)),
+              selectedIcon: Icon(Icons.key_rounded, color: AppColors.navy),
               label: 'Apertura OTP',
             ),
             NavigationDestination(
               icon: Icon(Icons.person_outline_rounded),
-              selectedIcon: Icon(Icons.person_rounded, color: Color(0xFF0B2F4F)),
+              selectedIcon: Icon(Icons.person_rounded, color: AppColors.navy),
               label: 'Perfil',
             ),
           ],
+        ),
         ),
       ),
     );
   }
 
-  // --- TAB DE PERFIL Y AJUSTES ---
   Widget _buildPerfilTab() {
     final user = _usuario ?? ApiService().usuarioActual;
     final nombre = user?.nombre ?? 'Docente Universitario';
     final email = user?.email ?? 'correo@universidad.edu';
     final rol = (user?.rol ?? 'Docente').toUpperCase();
-    final matricula = user?.matricula.isNotEmpty == true ? user!.matricula : 'No asignada';
+    final matricula =
+        user?.matricula.isNotEmpty == true ? user!.matricula : 'No asignada';
 
     return Center(
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 580),
+        constraints: const BoxConstraints(maxWidth: 560),
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Tarjeta de Identidad del Usuario
-              Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: const Color(0xFFE2E8F0)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.04),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
+              AulaSyncCard(
+                padding: const EdgeInsets.all(22),
                 child: Column(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(4),
+                      padding: const EdgeInsets.all(3),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        border: Border.all(color: const Color(0xFF0F766E), width: 2),
+                        border: Border.all(color: AppColors.teal, width: 2),
                       ),
                       child: CircleAvatar(
-                        radius: 40,
-                        backgroundColor: const Color(0xFF0B2F4F),
+                        radius: 36,
+                        backgroundColor: AppColors.navy,
                         child: Text(
-                          nombre.isNotEmpty ? nombre.substring(0, 1).toUpperCase() : 'U',
+                          nombre.isNotEmpty
+                              ? nombre.substring(0, 1).toUpperCase()
+                              : 'U',
                           style: const TextStyle(
-                            fontSize: 34,
-                            fontWeight: FontWeight.bold,
+                            fontSize: 30,
+                            fontWeight: FontWeight.w800,
                             color: Colors.white,
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 14),
                     Text(
                       nombre,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
-                        fontSize: 20,
+                        fontSize: 19,
                         fontWeight: FontWeight.w800,
-                        color: Color(0xFF0F172A),
-                        letterSpacing: -0.4,
+                        color: AppColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       email,
-                      style: const TextStyle(fontSize: 13, color: Color(0xFF64748B)),
+                      style: const TextStyle(
+                          fontSize: 13, color: AppColors.textMuted),
                     ),
-                    const SizedBox(height: 14),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
                       children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF127A6B).withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: const Color(0xFF127A6B).withValues(alpha: 0.4)),
-                          ),
-                          child: Text(
-                            rol,
-                            style: const TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF127A6B),
-                              letterSpacing: 0.5,
-                            ),
-                          ),
+                        StatusPill(
+                          label: rol,
+                          backgroundColor:
+                              AppColors.teal.withValues(alpha: 0.12),
+                          foregroundColor: AppColors.teal,
+                          borderColor: AppColors.teal.withValues(alpha: 0.35),
                         ),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFF1F5F9),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: const Color(0xFFCBD5E1)),
-                          ),
-                          child: Text(
-                            'Mat: $matricula',
-                            style: const TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF475569),
-                            ),
-                          ),
+                        StatusPill(
+                          label: 'Mat: $matricula',
+                          backgroundColor: AppColors.surfaceSubtle,
+                          foregroundColor: AppColors.textSecondary,
+                          borderColor: AppColors.borderStrong,
                         ),
                       ],
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 14),
 
-              // Tarjeta de Configuración de Red / API
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: const Color(0xFFE2E8F0)),
-                ),
+              AulaSyncCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Row(
                       children: [
-                        Icon(Icons.dns_rounded, color: Color(0xFF0B2F4F), size: 22),
-                        SizedBox(width: 10),
+                        Icon(Icons.dns_rounded,
+                            color: AppColors.navy, size: 20),
+                        SizedBox(width: 8),
                         Text(
                           'Conexión al Servidor API',
                           style: TextStyle(
                             fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF0F172A),
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.textPrimary,
                           ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 10),
-                    const Text(
-                      'Endpoint base de la API REST para peticiones móviles:',
-                      style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
-                    ),
-                    const SizedBox(height: 8),
                     Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 10),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF8FAFC),
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: const Color(0xFFE2E8F0)),
+                        color: AppColors.background,
+                        borderRadius: BorderRadius.circular(AppRadii.sm),
+                        border: Border.all(color: AppColors.border),
                       ),
                       child: Text(
                         ApiConfig.baseUrl,
-                        style: const TextStyle(
-                          fontFamily: 'monospace',
+                        style: AppTheme.tabularMono.copyWith(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF0B2F4F),
+                          color: AppColors.navy,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 12),
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton.icon(
@@ -347,86 +302,59 @@ class _HomeScreenState extends State<HomeScreen> {
                         icon: const Icon(Icons.edit_rounded, size: 16),
                         label: const Text('Modificar URL de API'),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFF0B2F4F),
-                          side: const BorderSide(color: Color(0xFF0B2F4F)),
+                          foregroundColor: AppColors.navy,
+                          side: const BorderSide(color: AppColors.navy),
                           padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(AppRadii.md),
+                          ),
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 14),
 
-              // Información del Sistema
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: const Color(0xFFE2E8F0)),
-                ),
-                child: const Column(
+              const AulaSyncCard(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.info_outline_rounded, color: Color(0xFF0B2F4F), size: 22),
-                        SizedBox(width: 10),
+                        Icon(Icons.info_outline_rounded,
+                            color: AppColors.navy, size: 20),
+                        SizedBox(width: 8),
                         Text(
                           'Información de la Plataforma',
                           style: TextStyle(
                             fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF0F172A),
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.textPrimary,
                           ),
                         ),
                       ],
                     ),
-                    SizedBox(height: 14),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Versión:', style: TextStyle(fontSize: 13, color: Color(0xFF64748B))),
-                        Text('1.0.0 (Sesión 3)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-                      ],
-                    ),
+                    SizedBox(height: 12),
+                    _InfoRow(label: 'Versión', value: '2.0.0 (Flutter M3)'),
                     Divider(height: 18),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Seguridad:', style: TextStyle(fontSize: 13, color: Color(0xFF64748B))),
-                        Text('bcrypt + Bearer Token', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-                      ],
-                    ),
+                    _InfoRow(label: 'Seguridad', value: 'bcrypt + Bearer Token'),
                     Divider(height: 18),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Apertura IoT:', style: TextStyle(fontSize: 13, color: Color(0xFF64748B))),
-                        Text('Cerraduras OTP Dinámicas', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-                      ],
-                    ),
+                    _InfoRow(
+                        label: 'Apertura IoT',
+                        value: 'Cerraduras OTP Dinámicas'),
                   ],
                 ),
               ),
-              const SizedBox(height: 28),
+              const SizedBox(height: 22),
 
-              // Botón Cerrar Sesión
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton.icon(
-                  onPressed: _confirmarCerrarSesion,
-                  icon: const Icon(Icons.logout_rounded, size: 20),
-                  label: const Text('Cerrar Sesión', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xFFDC2626),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                    elevation: 0,
-                  ),
+              FilledButton.icon(
+                onPressed: _confirmarCerrarSesion,
+                icon: const Icon(Icons.logout_rounded, size: 19),
+                label: const Text('Cerrar Sesión'),
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.error,
+                  foregroundColor: Colors.white,
                 ),
               ),
             ],
@@ -436,88 +364,46 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Diálogo interactivo para modificar la URL de la API
   void _mostrarDialogoConfiguracionUrl() {
-    final ipCtrl = TextEditingController(text: ApiConfig.baseUrl);
-
+    final urlCtrl = TextEditingController(text: ApiConfig.baseUrl);
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
-          children: [
-            Icon(Icons.settings_ethernet, color: Color(0xFF0B2F4F)),
-            SizedBox(width: 8),
-            Text('Ajustar URL del Servidor', style: TextStyle(fontSize: 16)),
-          ],
-        ),
+      builder: (dialogCtx) => AlertDialog(
+        title: const Text('Configurar Servidor API'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Selecciona o ingresa la URL de la API REST:',
-              style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+              'Ingresa la URL base de la API REST:',
+              style: TextStyle(fontSize: 13, color: AppColors.textMuted),
             ),
-            const SizedBox(height: 10),
-            // Atajos rápidos
-            Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children: [
-                ActionChip(
-                  label: const Text('Emulador Android', style: TextStyle(fontSize: 11)),
-                  onPressed: () => ipCtrl.text = 'http://10.0.2.2/aulasync/api',
-                ),
-                ActionChip(
-                  label: const Text('Localhost', style: TextStyle(fontSize: 11)),
-                  onPressed: () => ipCtrl.text = 'http://localhost/aulasync/api',
-                ),
-                ActionChip(
-                  label: const Text('127.0.0.1', style: TextStyle(fontSize: 11)),
-                  onPressed: () => ipCtrl.text = 'http://127.0.0.1/aulasync/api',
-                ),
-              ],
-            ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 12),
             TextField(
-              controller: ipCtrl,
-              decoration: const InputDecoration(
-                labelText: 'URL Base API',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.link),
-              ),
+              controller: urlCtrl,
+              decoration: const InputDecoration(labelText: 'URL Base'),
+              keyboardType: TextInputType.url,
             ),
           ],
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(ctx),
+            onPressed: () => Navigator.pop(dialogCtx),
             child: const Text('Cancelar'),
           ),
-          ElevatedButton(
+          FilledButton(
             onPressed: () async {
-              final newUrl = ipCtrl.text.trim();
-              if (newUrl.isNotEmpty) {
-                ApiConfig.setBaseUrl(newUrl);
-                final prefs = await SharedPreferences.getInstance();
-                await prefs.setString('aulasync_base_url', ApiConfig.baseUrl);
-                if (!ctx.mounted) return;
-                Navigator.pop(ctx);
-                if (!mounted) return;
-                setState(() {});
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('URL actualizada: ${ApiConfig.baseUrl}'),
-                    backgroundColor: const Color(0xFF127A6B),
-                  ),
-                );
-              }
+              await ApiConfig.saveBaseUrl(urlCtrl.text);
+              if (!mounted) return;
+              if (dialogCtx.mounted) Navigator.pop(dialogCtx);
+              setState(() {});
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('URL guardada: ${ApiConfig.baseUrl}'),
+                  backgroundColor: AppColors.teal,
+                ),
+              );
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF0B2F4F),
-              foregroundColor: Colors.white,
-            ),
             child: const Text('Guardar'),
           ),
         ],
@@ -525,38 +411,55 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Diálogo de confirmación para cerrar sesión
   void _confirmarCerrarSesion() {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('¿Cerrar Sesión?'),
-        content: const Text('Se limpiará el token de seguridad local y volverás a la pantalla de acceso.'),
+      builder: (dialogCtx) => AlertDialog(
+        title: const Text('Cerrar Sesión'),
+        content: const Text('¿Deseas salir de tu cuenta actual en AulaSync?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(ctx),
+            onPressed: () => Navigator.pop(dialogCtx),
             child: const Text('Cancelar'),
           ),
-          ElevatedButton(
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: AppColors.error),
             onPressed: () async {
-              final navigator = Navigator.of(context);
-              Navigator.pop(ctx);
+              Navigator.pop(dialogCtx);
               await ApiService().logout();
               if (!mounted) return;
-              navigator.pushAndRemoveUntil(
+              Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (_) => const LoginScreen()),
                 (route) => false,
               );
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFDC2626),
-              foregroundColor: Colors.white,
-            ),
-            child: const Text('Sí, Cerrar Sesión'),
+            child: const Text('Sí, salir'),
           ),
         ],
       ),
+    );
+  }
+}
+
+class _InfoRow extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _InfoRow({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label,
+            style: const TextStyle(fontSize: 13, color: AppColors.textMuted)),
+        Text(value,
+            style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary)),
+      ],
     );
   }
 }

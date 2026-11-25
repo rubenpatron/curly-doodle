@@ -366,49 +366,34 @@ class _OtpTabState extends State<OtpTab> with TickerProviderStateMixin {
       mainAxisAlignment: MainAxisAlignment.center,
       children: chars.map((ch) {
         final Color borderColor = _codigoExpirado
-            ? const Color(0xFFEF4444)
+            ? const Color(0xFFFCA5A5)
             : _codigoUsado
-                ? const Color(0xFF10B981)
-                : const Color(0xFF0B2F4F);
+                ? const Color(0xFF6EE7B7)
+                : Colors.white.withValues(alpha: 0.30);
         final Color bgColor = _codigoExpirado
-            ? const Color(0xFFFEF2F2)
+            ? const Color(0xFFEF4444).withValues(alpha: 0.22)
             : _codigoUsado
-                ? const Color(0xFFECFDF5)
-                : const Color(0xFFF8FAFC);
-        final Color textColor = _codigoExpirado
-            ? const Color(0xFFB91C1C)
-            : _codigoUsado
-                ? const Color(0xFF047857)
-                : const Color(0xFF0B2F4F);
+                ? const Color(0xFF10B981).withValues(alpha: 0.24)
+                : Colors.white.withValues(alpha: 0.14);
 
         return Container(
           width: 46,
-          height: 58,
-          margin: const EdgeInsets.symmetric(horizontal: 4),
+          height: 60,
+          margin: const EdgeInsets.symmetric(horizontal: 3.5),
           decoration: BoxDecoration(
             color: bgColor,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: borderColor,
-              width: 2,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: borderColor.withValues(alpha: 0.12),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: borderColor, width: 1.3),
           ),
           alignment: Alignment.center,
           child: Text(
             ch,
-            style: TextStyle(
-              fontSize: 28,
+            style: const TextStyle(
+              fontSize: 27,
               fontWeight: FontWeight.w800,
-              color: textColor,
+              color: Colors.white,
               fontFamily: 'monospace',
-              letterSpacing: -1,
+              fontFeatures: [FontFeature.tabularFigures()],
             ),
           ),
         );
@@ -783,24 +768,32 @@ class _OtpTabState extends State<OtpTab> with TickerProviderStateMixin {
                       ),
                       const SizedBox(height: 16),
 
-                      // Panel Visualizador del OTP (PIN y QR)
+                      // Panel Visualizador del OTP (Digital Keycard estilo Apple Wallet)
                       if (_codigoOtp != null) ...[
-                        Card(
-                          elevation: 2,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            side: BorderSide(
-                              color: _codigoExpirado
-                                  ? Colors.red.shade300
-                                  : _codigoUsado
-                                      ? const Color(0xFF127A6B)
-                                      : const Color(0xFF0B2F4F).withValues(alpha: 0.3),
-                              width: 1.5,
+                        Container(
+                          padding: const EdgeInsets.all(20.0),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Color(0xFF071A2F),
+                                Color(0xFF0B2F4F),
+                                Color(0xFF0F766E),
+                              ],
+                              stops: [0.0, 0.55, 1.0],
                             ),
+                            borderRadius: BorderRadius.circular(28),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF0B2F4F)
+                                    .withValues(alpha: 0.28),
+                                blurRadius: 28,
+                                offset: const Offset(0, 14),
+                              ),
+                            ],
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(20.0),
-                            child: Column(
+                          child: Column(
                               children: [
                                 // Estado de la clave
                                 Row(
@@ -816,10 +809,8 @@ class _OtpTabState extends State<OtpTab> with TickerProviderStateMixin {
                                                   : Icons.timer_outlined,
                                           size: 16,
                                           color: _codigoExpirado
-                                              ? Colors.red
-                                              : _codigoUsado
-                                                  ? const Color(0xFF127A6B)
-                                                  : const Color(0xFF0B2F4F),
+                                              ? const Color(0xFFFCA5A5)
+                                              : const Color(0xFF99F6E4),
                                         ),
                                         const SizedBox(width: 6),
                                         Text(
@@ -829,14 +820,12 @@ class _OtpTabState extends State<OtpTab> with TickerProviderStateMixin {
                                                   ? 'CÓDIGO UTILIZADO'
                                                   : 'PIN TEMPORAL ACTIVO',
                                           style: TextStyle(
-                                            fontSize: 12,
+                                            fontSize: 11,
                                             fontWeight: FontWeight.bold,
-                                            letterSpacing: 0.5,
+                                            letterSpacing: 0.6,
                                             color: _codigoExpirado
-                                                ? Colors.red
-                                                : _codigoUsado
-                                                    ? const Color(0xFF127A6B)
-                                                    : const Color(0xFF0B2F4F),
+                                                ? const Color(0xFFFCA5A5)
+                                                : const Color(0xFF99F6E4),
                                           ),
                                         ),
                                       ],
@@ -844,47 +833,40 @@ class _OtpTabState extends State<OtpTab> with TickerProviderStateMixin {
                                     // Temporizador
                                     Container(
                                       padding: const EdgeInsets.symmetric(
-                                          horizontal: 10, vertical: 4),
+                                          horizontal: 11, vertical: 5),
                                       decoration: BoxDecoration(
-                                        color: _codigoExpirado
-                                            ? Colors.red.shade50
-                                            : _codigoUsado
-                                                ? const Color(0xFFE6FFFA)
-                                                : const Color(0xFFEFF6FF),
-                                        borderRadius: BorderRadius.circular(12),
+                                        color: Colors.white.withValues(alpha: 0.16),
+                                        borderRadius: BorderRadius.circular(20),
                                       ),
                                       child: Text(
                                         _codigoExpirado
                                             ? '00:00'
                                             : _formatearTiempoRestante(_segundosRestantes),
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           fontSize: 13,
-                                          fontWeight: FontWeight.bold,
+                                          fontWeight: FontWeight.w800,
                                           fontFamily: 'monospace',
-                                          color: _codigoExpirado
-                                              ? Colors.red
-                                              : _codigoUsado
-                                                  ? const Color(0xFF127A6B)
-                                                  : const Color(0xFF1D4ED8),
+                                          fontFeatures: [FontFeature.tabularFigures()],
+                                          color: Colors.white,
                                         ),
                                       ),
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 12),
+                                const SizedBox(height: 14),
 
                                 // Barra de Progreso
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(4),
                                   child: LinearProgressIndicator(
                                     value: _codigoExpirado || _codigoUsado ? 0 : progreso,
-                                    backgroundColor: const Color(0xFFE2E8F0),
+                                    backgroundColor: Colors.white.withValues(alpha: 0.2),
                                     valueColor: AlwaysStoppedAnimation<Color>(
                                       progreso < 0.2
-                                          ? Colors.red
+                                          ? const Color(0xFFF87171)
                                           : progreso < 0.5
-                                              ? Colors.amber
-                                              : const Color(0xFF127A6B),
+                                              ? const Color(0xFFFBBF24)
+                                              : const Color(0xFF34D399),
                                     ),
                                     minHeight: 6,
                                   ),
@@ -914,17 +896,20 @@ class _OtpTabState extends State<OtpTab> with TickerProviderStateMixin {
                                     backgroundColor:
                                         WidgetStateProperty.resolveWith((states) {
                                       if (states.contains(WidgetState.selected)) {
-                                        return const Color(0xFF0B2F4F);
+                                        return Colors.white;
                                       }
-                                      return Colors.white;
+                                      return Colors.white.withValues(alpha: 0.12);
                                     }),
                                     foregroundColor:
                                         WidgetStateProperty.resolveWith((states) {
                                       if (states.contains(WidgetState.selected)) {
-                                        return Colors.white;
+                                        return const Color(0xFF0B2F4F);
                                       }
-                                      return const Color(0xFF0F172A);
+                                      return Colors.white;
                                     }),
+                                    side: WidgetStateProperty.all(
+                                      BorderSide(color: Colors.white.withValues(alpha: 0.25)),
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(height: 18),
@@ -946,14 +931,14 @@ class _OtpTabState extends State<OtpTab> with TickerProviderStateMixin {
                                     icon: const Icon(Icons.copy, size: 16),
                                     label: const Text('Copiar Código'),
                                     style: TextButton.styleFrom(
-                                      foregroundColor: const Color(0xFF0B2F4F),
+                                      foregroundColor: const Color(0xFFCCFBF1),
                                     ),
                                   ),
                                 ] else ...[
                                   _buildQrView(_codigoOtp!, _aulaSeleccionada?.codigo ?? 'A-101'),
                                 ],
 
-                                const Divider(height: 24),
+                                Divider(height: 24, color: Colors.white.withValues(alpha: 0.18)),
 
                                 // Botón para Simular Apertura con la Cerradura IoT
                                 SizedBox(
@@ -968,7 +953,7 @@ class _OtpTabState extends State<OtpTab> with TickerProviderStateMixin {
                                             height: 18,
                                             child: CircularProgressIndicator(
                                               strokeWidth: 2,
-                                              color: Colors.white,
+                                              color: Color(0xFF0B2F4F),
                                             ),
                                           )
                                         : const Icon(Icons.lock_open_rounded),
@@ -984,11 +969,11 @@ class _OtpTabState extends State<OtpTab> with TickerProviderStateMixin {
                                       ),
                                     ),
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color(0xFF127A6B),
-                                      foregroundColor: Colors.white,
+                                      backgroundColor: Colors.white,
+                                      foregroundColor: const Color(0xFF0B2F4F),
                                       padding: const EdgeInsets.symmetric(vertical: 14),
                                       shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
+                                        borderRadius: BorderRadius.circular(16),
                                       ),
                                     ),
                                   ),
@@ -1001,14 +986,16 @@ class _OtpTabState extends State<OtpTab> with TickerProviderStateMixin {
                                     width: double.infinity,
                                     padding: const EdgeInsets.all(12),
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFFECFDF5),
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(color: const Color(0xFFA7F3D0)),
+                                      color: Colors.white.withValues(alpha: 0.14),
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: const Color(0xFF34D399).withValues(alpha: 0.5),
+                                      ),
                                     ),
                                     child: Row(
                                       children: [
                                         const Icon(Icons.check_circle,
-                                            color: Color(0xFF059669), size: 20),
+                                            color: Color(0xFF34D399), size: 20),
                                         const SizedBox(width: 8),
                                         Expanded(
                                           child: Text(
@@ -1016,7 +1003,7 @@ class _OtpTabState extends State<OtpTab> with TickerProviderStateMixin {
                                             style: const TextStyle(
                                               fontSize: 13,
                                               fontWeight: FontWeight.w600,
-                                              color: Color(0xFF065F46),
+                                              color: Colors.white,
                                             ),
                                           ),
                                         ),
@@ -1026,7 +1013,6 @@ class _OtpTabState extends State<OtpTab> with TickerProviderStateMixin {
                                 ],
                               ],
                             ),
-                          ),
                         ),
                       ],
 
