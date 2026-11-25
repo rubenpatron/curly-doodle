@@ -5,11 +5,14 @@
  */
 const API_BASE = 'api';
 
-async function apiFetch(ruta, { metodo = 'GET', datos = null } = {}) {
+async function apiFetch(ruta, opts = {}) {
+  const metodo = opts.metodo || opts.method || 'GET';
+  const datos = opts.datos !== undefined ? opts.datos : null;
   const opciones = {
     method: metodo,
     headers: {},
     credentials: 'same-origin',
+    cache: 'no-store',
   };
   const token = localStorage.getItem('aulasync_token');
   if (token) {
@@ -18,6 +21,9 @@ async function apiFetch(ruta, { metodo = 'GET', datos = null } = {}) {
   if (datos !== null) {
     opciones.headers['Content-Type'] = 'application/json';
     opciones.body = JSON.stringify(datos);
+  } else if (opts.body !== undefined) {
+    opciones.headers['Content-Type'] = 'application/json';
+    opciones.body = opts.body;
   }
   const resp = await fetch(`${API_BASE}/${ruta}`, opciones);
   let cuerpo;

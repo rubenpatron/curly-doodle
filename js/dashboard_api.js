@@ -504,19 +504,19 @@ window.registrarDocenteApi = async function(e) {
 
     try {
         const res = await apiFetch('usuarios.php', {
-            method: 'POST',
-            body: JSON.stringify({
+            metodo: 'POST',
+            datos: {
                 nombre,
                 email,
                 password,
                 matricula: matricula || null,
                 id_rol: 2
-            })
+            }
         });
         alertBox.className = 'alert alert-success py-2 px-3';
         alertBox.textContent = res.mensaje || 'Profesor registrado correctamente.';
         document.getElementById('formAltaDocente').reset();
-        await loadDocentes();
+        await Promise.all([loadDocentes(), loadKPIs()]);
     } catch (err) {
         alertBox.className = 'alert alert-danger py-2 px-3';
         alertBox.textContent = err.message;
@@ -529,8 +529,8 @@ window.registrarDocenteApi = async function(e) {
 window.eliminarDocenteApi = async function(id, nombre) {
     if (!confirm(`¿Eliminar al profesor ${nombre}?`)) return;
     try {
-        await apiFetch(`usuarios.php?id=${id}`, { method: 'DELETE' });
-        await loadDocentes();
+        await apiFetch(`usuarios.php?id=${id}`, { metodo: 'DELETE' });
+        await Promise.all([loadDocentes(), loadKPIs()]);
     } catch (err) {
         alert(err.message);
     }

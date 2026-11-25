@@ -214,6 +214,11 @@
             await Promise.all([cargarStats(), cargarCombos(), cargarClases()]);
         }
 
+        window.addEventListener('focus', () => {
+            cargarStats();
+            cargarCombos();
+        });
+
         // ---- Stats en vivo (prueba de persistencia) ----
         async function cargarStats() {
             const d = await apiFetch('admin_stats.php');
