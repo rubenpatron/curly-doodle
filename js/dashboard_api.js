@@ -462,7 +462,7 @@ window.bloqueoEmergencia = function() {
 // ==========================================
 // 6. Gestión de Docentes (Alta vía API REST)
 // ==========================================
-async function loadDocentes() {
+window.loadDocentes = async function loadDocentes() {
     const tbody = document.getElementById('docentesTableBody');
     if (!tbody) return;
     try {
