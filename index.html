@@ -11,13 +11,12 @@
 <body>
     <!-- Nav -->
     <nav>
-        <a href="#" class="logo">
-            <div class="logo-dot"></div>
-            AulaSync
+        <a href="#" class="aulasync-wordmark" style="font-size: 1.5rem;">
+            <strong>Aula</strong><span>Sync</span><i class="aulasync-dot"></i>
         </a>
         <div class="nav-links">
             <a href="#arquitectura">Arquitectura</a>
-            <a href="#hardware">Hardware</a>
+            <a href="#hardware">Hardware ESP32</a>
             <a href="login.html" class="btn btn-primary">Panel de Control</a>
         </div>
     </nav>
@@ -25,13 +24,36 @@
     <!-- Hero -->
     <section class="hero">
         <div class="hero-content fade-up">
-            <h1>El acceso,<br><span>reimaginado.</span></h1>
-            <p>La sincronización perfecta entre el sistema de horarios académicos y las puertas físicas de tu campus. Entra al futuro.</p>
-            <a href="#arquitectura" class="btn btn-accent" style="padding: 1rem 2rem; font-size: 1.1rem;">Descubre cómo funciona</a>
+            <span style="display:inline-flex;align-items:center;gap:8px;background:#ECFDF5;color:#059669;padding:6px 14px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:0.05em;margin-bottom:18px;">
+                <span style="width:7px;height:7px;border-radius:50%;background:#10B981;"></span> SISTEMA IOT UNIVERSITARIO · UTM
+            </span>
+            <h1 style="color:#0B2F4F;">El acceso,<br><span style="color:#0F766E;">reimaginado.</span></h1>
+            <p>Sincronización en tiempo real entre el sistema de horarios académicos y las cerraduras inteligentes de tu campus. Cero llaves físicas, 100% trazabilidad.</p>
+            <div style="display:flex;gap:14px;flex-wrap:wrap;">
+                <a href="login.html" class="btn btn-primary" style="padding: 0.95rem 1.85rem; font-size: 1rem;">Entrar al Panel Web</a>
+                <a href="#arquitectura" class="btn" style="background:#FFFFFF;color:#0B2F4F;padding: 0.95rem 1.85rem; font-size: 1rem;box-shadow:0 2px 6px rgba(10,26,51,0.04),0 8px 24px rgba(10,26,51,0.06);">Explorar Arquitectura</a>
+            </div>
         </div>
         <div class="hero-visual fade-up" style="transition-delay: 0.2s;">
-            <!-- Abstract 3D Render -->
-            <img src="images/abstract.png" alt="Abstract Sync Concept" class="abstract-img">
+            <div class="hero-keycard">
+                <div class="hero-keycard-top">
+                    <span>LLAVE IOT ACTIVA · LAB F-107</span>
+                    <span class="hero-keycard-pill">● ESP32 Online · 04:48</span>
+                </div>
+                <div class="hero-pin-grid">
+                    <div class="hero-pin-tile">4</div>
+                    <div class="hero-pin-tile">8</div>
+                    <div class="hero-pin-tile">2</div>
+                    <div class="hero-pin-tile">9</div>
+                    <div class="hero-pin-tile">1</div>
+                    <div class="hero-pin-tile">5</div>
+                </div>
+                <div class="hero-progress-track"><div class="hero-progress-fill"></div></div>
+                <div class="hero-keycard-foot">
+                    <span>Programación de Redes · Prof. Edgar Patrón</span>
+                    <span style="color:#34D399;font-weight:700;">Latencia 118 ms</span>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -154,9 +176,8 @@
 
     <!-- Footer -->
     <footer>
-        <div class="logo">
-            <div class="logo-dot"></div>
-            AulaSync
+        <div class="aulasync-wordmark" style="font-size: 1.25rem;">
+            <strong>Aula</strong><span>Sync</span><i class="aulasync-dot"></i>
         </div>
         <div style="color: var(--text-secondary); font-size: 0.9rem;">
             &copy; 2026. Diseñado para el futuro de la educación.

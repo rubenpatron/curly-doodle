@@ -1,42 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800&family=Sora:wght@400;600;700;800&display=swap');
+
 /* ============================================
-   AULAS INTELIGENTES — DESIGN SYSTEM
-   Shared styles for dashboard.html & usuario.html
+   AULASYNC — FIGMA DESIGN SYSTEM
+   Shared styles for dashboard, admin & usuario
    ============================================ */
 
 /* --- CSS Variables (Design Tokens) --- */
 :root {
-    --primary: #1a2e5a;
-    --primary-light: #2a4a8a;
-    --primary-lighter: #3b6bc6;
-    --secondary: #4e8cff;
-    --accent: #0fcc92;
-    --accent-dark: #0aad7a;
-    --warning-color: #f5a623;
-    --danger-color: #e74c5e;
-    --dark: #121a2b;
-    --dark-sidebar: #0f1724;
-    --dark-hover: #1c2a42;
-    --surface: #ffffff;
-    --surface-alt: #f5f7fb;
-    --border-color: #e2e8f0;
-    --text-primary: #1e293b;
-    --text-secondary: #64748b;
-    --text-muted: #94a3b8;
-    --radius-sm: 6px;
-    --radius-md: 10px;
-    --radius-lg: 16px;
-    --radius-xl: 20px;
-    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-    --shadow-lg: 0 10px 30px rgba(0,0,0,0.10);
-    --shadow-card: 0 2px 8px rgba(26,46,90,0.06);
+    --primary: #0B2F4F;
+    --primary-light: #0F766E;
+    --primary-lighter: #14B8A6;
+    --secondary: #0F766E;
+    --accent: #10B981;
+    --accent-dark: #059669;
+    --warning-color: #D97706;
+    --danger-color: #DC2626;
+    --dark: #071A2F;
+    --dark-sidebar: #FFFFFF;
+    --dark-hover: #F1F5F9;
+    --surface: #FFFFFF;
+    --surface-alt: #EEF2F7;
+    --border-color: #E2E8F0;
+    --text-primary: #0F172A;
+    --text-secondary: #64748B;
+    --text-muted: #64748B;
+    --radius-sm: 12px;
+    --radius-md: 16px;
+    --radius-lg: 22px;
+    --radius-xl: 24px;
+    --shadow-sm: 0 2px 6px rgba(10, 26, 51, 0.03);
+    --shadow-md: 0 2px 6px rgba(10, 26, 51, 0.03), 0 8px 24px rgba(10, 26, 51, 0.06);
+    --shadow-lg: 0 14px 28px rgba(11, 47, 79, 0.26);
+    --shadow-card: 0 2px 6px rgba(10, 26, 51, 0.03), 0 8px 24px rgba(10, 26, 51, 0.06);
     --transition-fast: 0.18s ease;
     --transition-base: 0.28s ease;
-    --gradient-primary: linear-gradient(135deg, #1a2e5a 0%, #2a4a8a 100%);
-    --gradient-accent: linear-gradient(135deg, #0fcc92 0%, #0aad7a 100%);
-    --gradient-header: linear-gradient(135deg, #1a2e5a 0%, #1e3b6e 50%, #254d8a 100%);
-    --gradient-danger: linear-gradient(135deg, #e74c5e 0%, #c0392b 100%);
-    --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --gradient-primary: linear-gradient(135deg, #071A2F 0%, #0B2F4F 41%, #0F766E 74%);
+    --gradient-accent: linear-gradient(135deg, #10B981 0%, #059669 100%);
+    --gradient-header: linear-gradient(135deg, #071A2F 0%, #0B2F4F 41%, #0F766E 74%);
+    --gradient-danger: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+    --font-family: 'Roboto', 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
 /* --- Reset & Base --- */
@@ -1563,4 +1565,154 @@ body {
     height: 3px;
     background: var(--accent);
     border-radius: 3px 3px 0 0;
+}
+
+
+/* ============================================
+   AULASYNC FIGMA OVERRIDES (WHITE SIDEBAR + FLOATING CARDS)
+   ============================================ */
+
+.aulasync-wordmark {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 2px;
+    font-family: 'Sora', sans-serif;
+    font-size: 1.45rem;
+    line-height: 1;
+    text-decoration: none;
+}
+.aulasync-wordmark strong {
+    font-weight: 800;
+    color: #0B2F4F;
+    letter-spacing: -0.045em;
+}
+.aulasync-wordmark span {
+    font-weight: 400;
+    color: #0F766E;
+    letter-spacing: -0.035em;
+}
+.aulasync-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-left: 4px;
+    border-radius: 50%;
+    background: #10B981;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.45);
+    align-self: center;
+}
+
+.sidebar {
+    background: #FFFFFF !important;
+    color: #334155 !important;
+    box-shadow: 0 2px 6px rgba(10, 26, 51, 0.03), 0 8px 24px rgba(10, 26, 51, 0.06);
+    border-right: none !important;
+}
+.sidebar-brand {
+    border-bottom: 1px solid #F1F5F9 !important;
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 4px !important;
+    padding: 1.5rem 1.35rem 1.15rem !important;
+}
+.sidebar-brand small {
+    font-size: 0.72rem;
+    color: #64748B;
+    font-weight: 500;
+}
+.sidebar-section-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.65rem !important;
+    letter-spacing: 0.09em !important;
+    color: #64748B !important;
+}
+.sidebar-nav .nav-link {
+    border-radius: 14px !important;
+    color: #334155 !important;
+    font-weight: 500;
+    padding: 0.68rem 0.95rem !important;
+    margin-bottom: 4px !important;
+}
+.sidebar-nav .nav-link:hover {
+    background: #F1F5F9 !important;
+    color: #0B2F4F !important;
+}
+.sidebar-nav .nav-link.active {
+    background: var(--gradient-primary) !important;
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+    box-shadow: 0 6px 14px rgba(11, 47, 79, 0.2);
+}
+.sidebar-nav .nav-link.active::before {
+    display: none !important;
+}
+
+.top-navbar {
+    background: transparent !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+    padding: 1.25rem 2rem 0.5rem !important;
+    height: auto !important;
+    position: relative !important;
+}
+.top-navbar .page-title {
+    font-family: 'Sora', sans-serif !important;
+    font-size: 1.65rem !important;
+    font-weight: 800 !important;
+    color: #0F172A !important;
+    letter-spacing: -0.03em;
+}
+.page-content {
+    padding: 1rem 2rem 2rem !important;
+}
+.section-header h2 {
+    font-family: 'Sora', sans-serif !important;
+    font-weight: 800 !important;
+    color: #0F172A !important;
+    letter-spacing: -0.02em;
+}
+
+.content-card, .stat-card, .card, .class-card {
+    background: #FFFFFF !important;
+    border: none !important;
+    border-radius: 22px !important;
+    box-shadow: 0 2px 6px rgba(10, 26, 51, 0.03), 0 8px 24px rgba(10, 26, 51, 0.06) !important;
+}
+.content-card-header {
+    background: transparent !important;
+    border-bottom: 1px solid #F1F5F9 !important;
+    padding: 1.15rem 1.4rem !important;
+}
+.form-control, .form-select {
+    background-color: #F1F5F9 !important;
+    border: none !important;
+    border-radius: 14px !important;
+    padding: 0.72rem 1rem !important;
+}
+.form-control:focus, .form-select:focus {
+    box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.25) !important;
+}
+.btn-primary {
+    background: var(--gradient-primary) !important;
+    border: none !important;
+    border-radius: 16px !important;
+    font-weight: 700 !important;
+    box-shadow: 0 6px 14px rgba(11, 47, 79, 0.22);
+}
+.nav-pills .nav-link {
+    border-radius: 999px !important;
+    background: #FFFFFF;
+    color: #64748B;
+    font-weight: 600;
+    margin-right: 8px;
+    box-shadow: 0 2px 6px rgba(10, 26, 51, 0.03);
+}
+.nav-pills .nav-link.active {
+    background: #0B2F4F !important;
+    color: #FFFFFF !important;
+}
+.user-avatar {
+    background: var(--gradient-primary) !important;
+    font-family: 'Sora', sans-serif !important;
+    font-weight: 700 !important;
 }

@@ -8,43 +8,48 @@
 
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/fontawesome.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Google Identity Services -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <style>
         :root {
-            --primary: #0f172a;
-            --accent: #0fcc92;
-            --surface: #ffffff;
-            --surface-alt: #f8fafc;
-            --text-primary: #0f172a;
-            --text-secondary: #475569;
-            --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+            --primary: #0B2F4F;
+            --teal: #0F766E;
+            --accent: #10B981;
+            --surface: #FFFFFF;
+            --surface-alt: #EEF2F7;
+            --text-primary: #0F172A;
+            --text-secondary: #64748B;
+            --font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+            --grad-hero: linear-gradient(135deg, #071A2F 0%, #0B2F4F 41%, #0F766E 74%);
         }
 
         body {
-            background-color: var(--surface);
+            background-color: var(--surface-alt);
             color: var(--text-primary);
             font-family: var(--font-family);
             margin: 0;
             padding: 0;
             -webkit-font-smoothing: antialiased;
-            overflow: hidden; /* Prevent scroll on login */
+            overflow-x: hidden;
         }
 
         /* Split Layout */
         .split-layout {
             display: flex;
-            height: 100vh;
+            min-height: 100vh;
             width: 100vw;
         }
 
         /* Visual Left Side */
         .login-visual {
-            flex: 1;
+            flex: 0.9;
             position: relative;
-            background-color: var(--primary);
+            background: var(--grad-hero);
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -53,113 +58,113 @@
             color: white;
         }
 
-        .login-visual-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0.8;
-            z-index: 1;
-        }
-
         .login-visual-content {
             position: relative;
             z-index: 2;
         }
 
         .login-visual h1 {
-            font-size: 3.5rem;
-            font-weight: 700;
-            line-height: 1.1;
+            font-family: 'Sora', sans-serif;
+            font-size: 2.4rem;
+            font-weight: 800;
+            line-height: 1.18;
             margin-bottom: 1rem;
             letter-spacing: -0.03em;
         }
 
         .login-visual p {
-            font-size: 1.25rem;
-            color: rgba(255, 255, 255, 0.7);
-            max-width: 400px;
+            font-size: 1rem;
+            color: #99F6E4;
+            max-width: 440px;
         }
 
         /* Form Right Side */
         .login-form-container {
-            flex: 1;
+            flex: 1.1;
             display: flex;
             align-items: center;
             justify-content: center;
             background-color: var(--surface-alt);
-            /* Subtle dot pattern for SaaS look */
-            background-image: radial-gradient(rgba(15, 23, 42, 0.08) 1px, transparent 1px);
-            background-size: 24px 24px;
             padding: 2rem;
             position: relative;
-            box-shadow: -20px 0 50px rgba(0,0,0,0.05);
             z-index: 10;
         }
 
         .login-card {
             width: 100%;
-            max-width: 440px;
-            text-align: center;
+            max-width: 460px;
+            text-align: left;
             background: var(--surface);
-            padding: 3rem;
-            border-radius: 24px;
-            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08), 0 4px 6px -1px rgba(0,0,0,0.04);
-            border: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        .login-brand-icon {
-            width: 72px;
-            height: 72px;
-            background: linear-gradient(135deg, rgba(15, 204, 146, 0.1), rgba(10, 173, 122, 0.2));
-            color: var(--accent);
-            border-radius: 20px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: inset 0 0 0 1px rgba(15, 204, 146, 0.2);
+            padding: 2.5rem;
+            border-radius: 28px;
+            box-shadow: 0 2px 6px rgba(10, 26, 51, 0.03), 0 8px 24px rgba(10, 26, 51, 0.06);
         }
 
         .login-card h2 {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
+            font-family: 'Sora', sans-serif;
+            font-size: 1.65rem;
+            font-weight: 800;
+            margin-bottom: 0;
             letter-spacing: -0.03em;
-            color: var(--primary);
+            color: var(--text-primary);
         }
 
         .login-card p.subtitle {
             color: var(--text-secondary);
-            font-size: 1.05rem;
-            margin-bottom: 3rem;
+            font-size: 0.9rem;
+            margin: 0.5rem 0 1.5rem;
             line-height: 1.5;
         }
 
+        .aulasync-input {
+            background: #F1F5F9 !important;
+            border: none !important;
+            border-radius: 14px !important;
+            padding: 0.82rem 1rem !important;
+            font-size: 0.92rem !important;
+        }
+        .aulasync-input:focus {
+            box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.25) !important;
+        }
+
+        .btn-aulasync-cta {
+            background: var(--grad-hero) !important;
+            border: none !important;
+            border-radius: 18px !important;
+            padding: 0.85rem 1.25rem !important;
+            font-weight: 700 !important;
+            color: #fff !important;
+            box-shadow: 0 8px 18px rgba(11, 47, 79, 0.24);
+        }
+
+        .api-online-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #ECFDF5;
+            color: #059669;
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
         .btn-login {
-            background: var(--surface);
+            background: #F1F5F9;
             color: var(--text-primary);
-            border: 1px solid #cbd5e1;
-            padding: 0.85rem 1.5rem;
-            border-radius: 12px;
+            border: none;
+            padding: 0.78rem 1.25rem;
+            border-radius: 14px;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 0.9rem;
             width: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.75rem;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            gap: 0.65rem;
+            transition: all 0.2s ease;
         }
-
-        .btn-login:hover {
-            border-color: var(--primary);
-            box-shadow: 0 10px 20px -10px rgba(0,0,0,0.15);
-            transform: translateY(-2px);
-        }
+        .btn-login:hover { background: #E2E8F0; }
 
         .login-footer {
             margin-top: 4rem;
@@ -195,48 +200,46 @@
     <div class="split-layout">
         <!-- Visual Side (Left) -->
         <div class="login-visual">
-            <img src="images/duotone_bg.png" alt="Architecture Background" class="login-visual-bg">
             <div class="login-visual-content">
-                <!-- Top Logo -->
-                <a href="index.html" style="font-weight: 800; font-size: 1.25rem; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 4rem; color: white; text-decoration: none; width: fit-content;">
-                    <div style="width: 10px; height: 10px; background: var(--accent); border-radius: 50%;"></div>
-                    AulaSync
+                <a href="index.html" style="font-family:'Sora',sans-serif;font-size:2.4rem;text-decoration:none;display:inline-flex;align-items:baseline;gap:2px;">
+                    <strong style="font-weight:800;color:#fff;letter-spacing:-0.045em;">Aula</strong>
+                    <span style="font-weight:400;color:#5EEAD4;letter-spacing:-0.035em;">Sync</span>
+                    <i style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#10B981;margin-left:4px;align-self:center;"></i>
                 </a>
+                <div style="color:#99F6E4;font-size:0.9rem;margin-top:8px;">Llave Digital Universitaria · Campus UTM</div>
             </div>
             
-            <div class="login-visual-content" style="margin-bottom: 15vh;">
-                <h1>Infraestructura invisible.</h1>
-                <p>Ingresa a tu portal para gestionar tus horarios académicos, solicitar espacios, o administrar la infraestructura inteligente de todo el campus.</p>
+            <div class="login-visual-content">
+                <h1>Control académico y acceso físico en un lugar.</h1>
+                <p>• Monitoreo de cerraduras ESP32 en tiempo real<br>• Gestión de carga académica y solicitudes de aula<br>• Emisión de PIN OTP sincronizado con la App</p>
+            </div>
+
+            <div class="login-visual-content" style="font-size:0.8rem;color:#5EEAD4;">
+                Universidad Tecnológica Metropolitana · 4A-IRD
             </div>
         </div>
 
         <!-- Form Side (Right) -->
         <div class="login-form-container">
             <div class="login-card">
-                <div class="login-brand-icon">
-                    <i class="fas fa-fingerprint"></i>
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2>Bienvenido</h2>
+                    <span class="api-online-pill"><span style="width:7px;height:7px;border-radius:50%;background:#10B981;"></span> API Online</span>
                 </div>
-                <h2>Bienvenido de nuevo</h2>
-                <p class="subtitle">Ingresa tus credenciales para continuar</p>
+                <p class="subtitle">Ingresa con tus credenciales institucionales para continuar.</p>
 
                 <!-- Formulario de inicio de sesión local con contraseña bcrypt -->
                 <form id="formLoginLocal" onsubmit="iniciarSesionLocal(event)" class="mb-3 text-start">
                     <div class="mb-3">
-                        <label class="form-label" style="font-size: 0.85rem; font-weight: 600; color: #334155;">Correo Institucional</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-white" style="border-right: none; border-radius: 8px 0 0 8px;"><i class="fas fa-envelope text-muted"></i></span>
-                            <input type="email" class="form-control" id="localEmail" placeholder="admin@universidad.edu" required style="border-left: none; border-radius: 0 8px 8px 0; padding: 0.65rem;">
-                        </div>
+                        <label class="form-label" style="font-size: 0.8rem; font-weight: 700; color: #334155;">Correo Institucional</label>
+                        <input type="email" class="form-control aulasync-input" id="localEmail" placeholder="admin@universidad.edu" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label" style="font-size: 0.85rem; font-weight: 600; color: #334155;">Contraseña</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-white" style="border-right: none; border-radius: 8px 0 0 8px;"><i class="fas fa-key text-muted"></i></span>
-                            <input type="password" class="form-control" id="localPassword" placeholder="••••••••" required style="border-left: none; border-radius: 0 8px 8px 0; padding: 0.65rem;">
-                        </div>
+                        <label class="form-label" style="font-size: 0.8rem; font-weight: 700; color: #334155;">Contraseña</label>
+                        <input type="password" class="form-control aulasync-input" id="localPassword" placeholder="••••••••" required>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100 py-2" id="btnSubmitLocal" style="background: #0f172a; border: none; border-radius: 8px; font-weight: 600;">
-                        <i class="fas fa-sign-in-alt me-2"></i> Iniciar Sesión
+                    <button type="submit" class="btn btn-aulasync-cta w-100" id="btnSubmitLocal">
+                        Iniciar Sesión
                     </button>
                 </form>
 

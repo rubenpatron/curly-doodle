@@ -1,27 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800&family=Sora:wght@400;600;700;800&display=swap');
+
 /* ============================================
-   AULASYNC LANDING PAGE — STRIPE/APPLE STYLE
+   AULASYNC LANDING PAGE — FIGMA DESIGN SYSTEM
    ============================================ */
 
 :root {
-    --primary: #0f172a;        /* Deep modern navy */
-    --primary-light: #1e293b;
-    --accent: #0fcc92;         /* Brand Mint/Teal */
-    --accent-dark: #0aad7a;
-    --surface: #ffffff;
-    --surface-alt: #f8fafc;
-    --text-primary: #0f172a;
-    --text-secondary: #475569;
-    --text-muted: #94a3b8;
-    
-    --font-heading: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, sans-serif;
-    --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, sans-serif;
-    
+    --primary: #0B2F4F;
+    --primary-deep: #071A2F;
+    --primary-light: #0F766E;
+    --accent: #10B981;
+    --accent-dark: #059669;
+    --surface: #FFFFFF;
+    --surface-alt: #EEF2F7;
+    --text-primary: #0F172A;
+    --text-secondary: #334155;
+    --text-muted: #64748B;
+
+    --font-heading: 'Sora', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+
     --radius-lg: 24px;
-    --radius-xl: 32px;
-    
-    --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-    --shadow-float: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
-    
+    --radius-xl: 28px;
+
+    --shadow-soft: 0 2px 6px rgba(10, 26, 51, 0.03), 0 8px 24px rgba(10, 26, 51, 0.06);
+    --shadow-float: 0 14px 28px rgba(11, 47, 79, 0.28);
+    --grad-hero: linear-gradient(135deg, #071A2F 0%, #0B2F4F 41%, #0F766E 74%);
+
     --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -32,12 +36,110 @@
 }
 
 body {
-    background-color: var(--surface);
+    background-color: var(--surface-alt);
     color: var(--text-primary);
     font-family: var(--font-body);
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
+}
+
+/* Wordmark oficial AulaSync. */
+.aulasync-wordmark {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 2px;
+    font-family: 'Sora', sans-serif;
+    text-decoration: none;
+    line-height: 1;
+}
+.aulasync-wordmark strong {
+    font-weight: 800;
+    color: #0B2F4F;
+    letter-spacing: -0.045em;
+}
+.aulasync-wordmark span {
+    font-weight: 400;
+    color: #0F766E;
+    letter-spacing: -0.035em;
+}
+.aulasync-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-left: 3px;
+    border-radius: 50%;
+    background: #10B981;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+    align-self: center;
+}
+
+/* Hero Digital Keycard */
+.hero-keycard {
+    background: var(--grad-hero);
+    border-radius: 28px;
+    padding: 28px;
+    color: #fff;
+    box-shadow: var(--shadow-float);
+    width: 100%;
+    max-width: 520px;
+}
+.hero-keycard-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #99F6E4;
+}
+.hero-keycard-pill {
+    background: rgba(255, 255, 255, 0.14);
+    color: #34D399;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0;
+}
+.hero-pin-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.hero-pin-tile {
+    height: 76px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1.2px solid rgba(255, 255, 255, 0.28);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Sora', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: #fff;
+}
+.hero-progress-track {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+.hero-progress-fill {
+    width: 78%;
+    height: 100%;
+    background: #34D399;
+    border-radius: 999px;
+}
+.hero-keycard-foot {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #CCFBF1;
 }
 
 /* Typography */
@@ -113,9 +215,10 @@ nav {
 }
 
 .btn-primary {
-    background: var(--primary) !important;
+    background: var(--grad-hero) !important;
     color: white !important;
     border: none !important;
+    box-shadow: 0 6px 14px rgba(11, 47, 79, 0.22);
 }
 
 .btn-primary:hover {
