@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../models/aula.dart';
 import '../services/api_service.dart';
+import '../theme/app_theme.dart';
+import '../widgets/aulasync_widgets.dart';
 
 class NuevaSolicitudScreen extends StatefulWidget {
   const NuevaSolicitudScreen({super.key});
@@ -12,14 +14,14 @@ class NuevaSolicitudScreen extends StatefulWidget {
 class _NuevaSolicitudScreenState extends State<NuevaSolicitudScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  String _tipo = 'aula_adicional'; // 'aula_adicional' o 'cambio_aula'
+  String _tipo = 'aula_adicional';
   int? _idMateria;
   int? _idAulaSolicitada;
   int? _idAulaOriginal;
 
   DateTime _fecha = DateTime.now();
-  TimeOfDay _horaInicio = const TimeOfDay(hour: 8, minute: 0);
-  TimeOfDay _horaFin = const TimeOfDay(hour: 10, minute: 0);
+  TimeOfDay _horaInicio = const TimeOfDay(hour: 9, minute: 0);
+  TimeOfDay _horaFin = const TimeOfDay(hour: 11, minute: 0);
 
   final _motivoCtrl = TextEditingController();
   final _justificacionCtrl = TextEditingController();
@@ -31,11 +33,11 @@ class _NuevaSolicitudScreenState extends State<NuevaSolicitudScreen> {
   List<Map<String, dynamic>> _materias = [];
   List<Aula> _aulas = [];
 
-  final List<String> _motivosSugeridos = [
+  final List<String> _motivosSugeridos = const [
     'Examen Parcial',
     'Práctica de Laboratorio',
-    'Clase de Recuperación',
-    'Asesoría Académica Grupal',
+    'Evaluación Final',
+    'Asesoría Grupal',
   ];
 
   @override
@@ -98,17 +100,33 @@ class _NuevaSolicitudScreenState extends State<NuevaSolicitudScreen> {
     return '$year-$month-$day';
   }
 
+  String _formatearFechaCorta(DateTime dt) {
+    const meses = [
+      '',
+      'Ene',
+      'Feb',
+      'Mar',
+      'Abr',
+      'May',
+      'Jun',
+      'Jul',
+      'Ago',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dic'
+    ];
+    return '${dt.day} ${meses[dt.month]}';
+  }
+
   String _formatearHora(TimeOfDay t) {
     final hour = t.hour.toString().padLeft(2, '0');
     final minute = t.minute.toString().padLeft(2, '0');
     return '$hour:$minute';
   }
 
-  bool _esHoraFinPosterior(TimeOfDay inicio, TimeOfDay fin) {
-    final minInicio = inicio.hour * 60 + inicio.minute;
-    final minFin = fin.hour * 60 + fin.minute;
-    return minFin > minInicio;
-  }
+  bool _esHoraFinPosterior(TimeOfDay inicio, TimeOfDay fin) =>
+      (fin.hour * 60 + fin.minute) > (inicio.hour * 60 + inicio.minute);
 
   Future<void> _seleccionarFecha() async {
     final ahora = DateTime.now();
@@ -117,20 +135,7 @@ class _NuevaSolicitudScreenState extends State<NuevaSolicitudScreen> {
       initialDate: _fecha.isBefore(ahora) ? ahora : _fecha,
       firstDate: ahora.subtract(const Duration(days: 1)),
       lastDate: ahora.add(const Duration(days: 180)),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: Color(0xFF0B2F4F),
-              onPrimary: Colors.white,
-              onSurface: Color(0xFF0F172A),
-            ),
-          ),
-          child: child!,
-        );
-      },
     );
-
     if (seleccionada != null && mounted) {
       setState(() => _fecha = seleccionada);
     }
@@ -140,28 +145,13 @@ class _NuevaSolicitudScreenState extends State<NuevaSolicitudScreen> {
     final seleccionada = await showTimePicker(
       context: context,
       initialTime: _horaInicio,
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: Color(0xFF0B2F4F),
-              onPrimary: Colors.white,
-              onSurface: Color(0xFF0F172A),
-            ),
-          ),
-          child: child!,
-        );
-      },
     );
-
     if (seleccionada != null && mounted) {
       setState(() {
         _horaInicio = seleccionada;
-        // Ajustar horaFin si queda antes o igual
         if (!_esHoraFinPosterior(_horaInicio, _horaFin)) {
-          int nuevaHora = _horaInicio.hour + 2;
-          if (nuevaHora >= 24) nuevaHora = 23;
-          _horaFin = TimeOfDay(hour: nuevaHora, minute: _horaInicio.minute);
+          final h = (_horaInicio.hour + 2).clamp(0, 23);
+          _horaFin = TimeOfDay(hour: h, minute: _horaInicio.minute);
         }
       });
     }
@@ -171,26 +161,13 @@ class _NuevaSolicitudScreenState extends State<NuevaSolicitudScreen> {
     final seleccionada = await showTimePicker(
       context: context,
       initialTime: _horaFin,
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: Color(0xFF0B2F4F),
-              onPrimary: Colors.white,
-              onSurface: Color(0xFF0F172A),
-            ),
-          ),
-          child: child!,
-        );
-      },
     );
-
     if (seleccionada != null && mounted) {
       if (!_esHoraFinPosterior(_horaInicio, seleccionada)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('La hora de fin debe ser posterior a la hora de inicio.'),
-            backgroundColor: Colors.red,
+            content: Text('La hora de fin debe ser posterior a la de inicio.'),
+            backgroundColor: AppColors.error,
           ),
         );
         return;
@@ -200,63 +177,36 @@ class _NuevaSolicitudScreenState extends State<NuevaSolicitudScreen> {
   }
 
   Future<void> _enviarSolicitud() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-
-    if (_idMateria == null) {
+    if (!_formKey.currentState!.validate()) return;
+    if (_idMateria == null || _idAulaSolicitada == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Por favor selecciona una materia.'),
-          backgroundColor: Colors.red,
+          content: Text('Selecciona materia y aula solicitada.'),
+          backgroundColor: AppColors.error,
         ),
       );
       return;
     }
-
-    if (_idAulaSolicitada == null) {
+    if (_tipo == 'cambio_aula' && _idAulaOriginal == _idAulaSolicitada) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Por favor selecciona el aula solicitada.'),
-          backgroundColor: Colors.red,
+          content: Text('El aula solicitada debe diferir de la original.'),
+          backgroundColor: AppColors.error,
         ),
       );
       return;
     }
-
-    if (_tipo == 'cambio_aula') {
-      if (_idAulaOriginal == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Debes seleccionar el aula original para un cambio.'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      }
-      if (_idAulaOriginal == _idAulaSolicitada) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('El aula solicitada debe ser diferente al aula original.'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      }
-    }
-
     if (!_esHoraFinPosterior(_horaInicio, _horaFin)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('La hora de fin debe ser posterior a la hora de inicio.'),
-          backgroundColor: Colors.red,
+          content: Text('La hora de fin debe ser posterior a la de inicio.'),
+          backgroundColor: AppColors.error,
         ),
       );
       return;
     }
 
     setState(() => _enviando = true);
-
     try {
       await ApiService().crearSolicitud(
         tipo: _tipo,
@@ -271,557 +221,358 @@ class _NuevaSolicitudScreenState extends State<NuevaSolicitudScreen> {
             ? _justificacionCtrl.text.trim()
             : null,
       );
-
       if (!mounted) return;
-
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Row(
-            children: [
-              Icon(Icons.check_circle, color: Colors.white),
-              SizedBox(width: 8),
-              Expanded(child: Text('Solicitud registrada exitosamente.')),
-            ],
-          ),
-          backgroundColor: Color(0xFF127A6B),
+          content: Text('Solicitud enviada correctamente.'),
+          backgroundColor: AppColors.success,
         ),
       );
-
       Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) return;
+      setState(() => _enviando = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(e.toString().replaceAll('Exception: ', '')),
-          backgroundColor: Colors.red.shade700,
+          backgroundColor: AppColors.error,
         ),
       );
-    } finally {
-      if (mounted) setState(() => _enviando = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        title: const Text(
-          'Nueva Solicitud',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-        ),
-        backgroundColor: const Color(0xFF0B2F4F),
-        foregroundColor: Colors.white,
-        elevation: 0,
-      ),
-      body: _cargandoCatalogos
-          ? const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(color: Color(0xFF0B2F4F)),
-                  SizedBox(height: 12),
-                  Text('Cargando catálogo de aulas y materias...',
-                      style: TextStyle(color: Color(0xFF64748B))),
-                ],
-              ),
-            )
-          : _errorCatalogos != null
-              ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.error_outline, size: 48, color: Colors.red),
-                        const SizedBox(height: 12),
-                        Text(
-                          _errorCatalogos!,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(color: Color(0xFF0F172A)),
+      backgroundColor: AppColors.background,
+      body: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 620),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 14, 20, 12),
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: AppColors.surface,
+                            borderRadius: BorderRadius.circular(14),
+                            boxShadow: AppShadows.card,
+                          ),
+                          child: const Icon(Icons.arrow_back_rounded,
+                              size: 18, color: AppColors.textPrimary),
                         ),
-                        const SizedBox(height: 16),
-                        ElevatedButton.icon(
-                          onPressed: _cargarCatalogos,
-                          icon: const Icon(Icons.refresh),
-                          label: const Text('Reintentar'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF0B2F4F),
-                            foregroundColor: Colors.white,
-                          ),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        'Nueva Solicitud',
+                        style: AppTheme.displayFont(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.textPrimary,
+                          letterSpacing: -0.4,
                         ),
-                      ],
-                    ),
-                  ),
-                )
-              : Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 640),
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            // Selector de Tipo de Solicitud
-                            Card(
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                side: const BorderSide(color: Color(0xFFE2E8F0)),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                      'Tipo de Solicitud',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xFF0F172A),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    SegmentedButton<String>(
-                                      segments: const [
-                                        ButtonSegment(
-                                          value: 'aula_adicional',
-                                          label: Text('Aula Adicional'),
-                                          icon: Icon(Icons.add_home_work_outlined),
-                                        ),
-                                        ButtonSegment(
-                                          value: 'cambio_aula',
-                                          label: Text('Cambio de Aula'),
-                                          icon: Icon(Icons.swap_horiz_outlined),
-                                        ),
-                                      ],
-                                      selected: {_tipo},
-                                      onSelectionChanged: (newSelection) {
-                                        setState(() => _tipo = newSelection.first);
-                                      },
-                                      style: ButtonStyle(
-                                        backgroundColor:
-                                            WidgetStateProperty.resolveWith((states) {
-                                          if (states.contains(WidgetState.selected)) {
-                                            return const Color(0xFF0B2F4F);
-                                          }
-                                          return Colors.white;
-                                        }),
-                                        foregroundColor:
-                                            WidgetStateProperty.resolveWith((states) {
-                                          if (states.contains(WidgetState.selected)) {
-                                            return Colors.white;
-                                          }
-                                          return const Color(0xFF0F172A);
-                                        }),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                        const SizedBox(height: 16),
-
-                        // Card: Materia y Aulas
-                        Card(
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            side: const BorderSide(color: Color(0xFFE2E8F0)),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Row(
-                                  children: [
-                                    Icon(Icons.school_outlined,
-                                        size: 20, color: Color(0xFF0B2F4F)),
-                                    SizedBox(width: 8),
-                                    Text(
-                                      'Materia y Espacios',
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xFF0F172A),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 14),
-
-                                // Materia Dropdown
-                                DropdownButtonFormField<int>(
-                                  initialValue: _idMateria,
-                                  decoration: InputDecoration(
-                                    labelText: 'Materia Académica *',
-                                    prefixIcon: const Icon(Icons.menu_book),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    contentPadding:
-                                        const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                  ),
-                                  isExpanded: true,
-                                  items: _materias.map((m) {
-                                    final id = m['id'] is int
-                                        ? m['id'] as int
-                                        : int.tryParse(m['id'].toString()) ?? 0;
-                                    final codigo = m['codigo'] ?? '';
-                                    final nombre = m['nombre'] ?? '';
-                                    return DropdownMenuItem<int>(
-                                      value: id,
-                                      child: Text('$codigo - $nombre',
-                                          overflow: TextOverflow.ellipsis),
-                                    );
-                                  }).toList(),
-                                  onChanged: (val) {
-                                    setState(() => _idMateria = val);
-                                  },
-                                  validator: (v) => v == null ? 'Selecciona una materia' : null,
-                                ),
-
-                                // Aula Original si es cambio de aula
-                                if (_tipo == 'cambio_aula') ...[
-                                  const SizedBox(height: 14),
-                                  DropdownButtonFormField<int>(
-                                    initialValue: _idAulaOriginal,
-                                    decoration: InputDecoration(
-                                      labelText: 'Aula Original (Actual) *',
-                                      prefixIcon: const Icon(Icons.meeting_room_outlined),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      contentPadding: const EdgeInsets.symmetric(
-                                          horizontal: 12, vertical: 14),
-                                      filled: true,
-                                      fillColor: Colors.white,
-                                    ),
-                                    isExpanded: true,
-                                    items: _aulas.map((a) {
-                                      return DropdownMenuItem<int>(
-                                        value: a.id,
-                                        child: Text(
-                                          'Aula ${a.codigo} - ${a.edificio} (Cap: ${a.capacidad})',
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      );
-                                    }).toList(),
-                                    onChanged: (val) {
-                                      setState(() => _idAulaOriginal = val);
-                                    },
-                                    validator: (v) {
-                                      if (_tipo == 'cambio_aula' && v == null) {
-                                        return 'Selecciona el aula original';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ],
-
-                                const SizedBox(height: 14),
-
-                                // Aula Solicitada
-                                DropdownButtonFormField<int>(
-                                  initialValue: _idAulaSolicitada,
-                                  decoration: InputDecoration(
-                                    labelText: _tipo == 'cambio_aula'
-                                        ? 'Aula Nueva Solicitada *'
-                                        : 'Aula Solicitada *',
-                                    prefixIcon: const Icon(Icons.door_front_door_outlined),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    contentPadding:
-                                        const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                  ),
-                                  isExpanded: true,
-                                  items: _aulas.map((a) {
-                                    return DropdownMenuItem<int>(
-                                      value: a.id,
-                                      child: Text(
-                                        'Aula ${a.codigo} - ${a.edificio} (Cap: ${a.capacidad})',
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    );
-                                  }).toList(),
-                                  onChanged: (val) {
-                                    setState(() => _idAulaSolicitada = val);
-                                  },
-                                  validator: (v) =>
-                                      v == null ? 'Selecciona el aula solicitada' : null,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Card: Fecha y Horario
-                        Card(
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            side: const BorderSide(color: Color(0xFFE2E8F0)),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Row(
-                                  children: [
-                                    Icon(Icons.calendar_month_outlined,
-                                        size: 20, color: Color(0xFF0B2F4F)),
-                                    SizedBox(width: 8),
-                                    Text(
-                                      'Fecha y Horario',
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xFF0F172A),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 14),
-
-                                // Selector de Fecha
-                                InkWell(
-                                  onTap: _seleccionarFecha,
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: InputDecorator(
-                                    decoration: InputDecoration(
-                                      labelText: 'Fecha de Uso *',
-                                      prefixIcon: const Icon(Icons.event),
-                                      suffixIcon: const Icon(Icons.arrow_drop_down),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      filled: true,
-                                      fillColor: Colors.white,
-                                      contentPadding: const EdgeInsets.symmetric(
-                                          horizontal: 12, vertical: 14),
-                                    ),
-                                    child: Text(
-                                      _formatearFecha(_fecha),
-                                      style: const TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w600,
-                                        color: Color(0xFF0F172A),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 14),
-
-                                // Horas Inicio y Fin
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: InkWell(
-                                        onTap: _seleccionarHoraInicio,
-                                        borderRadius: BorderRadius.circular(10),
-                                        child: InputDecorator(
-                                          decoration: InputDecoration(
-                                            labelText: 'Hora Inicio *',
-                                            prefixIcon: const Icon(Icons.access_time),
-                                            border: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(10),
-                                            ),
-                                            filled: true,
-                                            fillColor: Colors.white,
-                                            contentPadding: const EdgeInsets.symmetric(
-                                                horizontal: 8, vertical: 12),
-                                          ),
-                                          child: Text(
-                                            _formatearHora(_horaInicio),
-                                            style: const TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.w600,
-                                              color: Color(0xFF0F172A),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Expanded(
-                                      child: InkWell(
-                                        onTap: _seleccionarHoraFin,
-                                        borderRadius: BorderRadius.circular(10),
-                                        child: InputDecorator(
-                                          decoration: InputDecoration(
-                                            labelText: 'Hora Fin *',
-                                            prefixIcon: const Icon(Icons.access_time_filled),
-                                            border: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(10),
-                                            ),
-                                            filled: true,
-                                            fillColor: Colors.white,
-                                            contentPadding: const EdgeInsets.symmetric(
-                                                horizontal: 8, vertical: 12),
-                                          ),
-                                          child: Text(
-                                            _formatearHora(_horaFin),
-                                            style: const TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.w600,
-                                              color: Color(0xFF0F172A),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Card: Motivo y Justificación
-                        Card(
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            side: const BorderSide(color: Color(0xFFE2E8F0)),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Row(
-                                  children: [
-                                    Icon(Icons.edit_note_outlined,
-                                        size: 20, color: Color(0xFF0B2F4F)),
-                                    SizedBox(width: 8),
-                                    Text(
-                                      'Motivo y Justificación',
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xFF0F172A),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 10),
-
-                                // Sugerencias rápidas de motivos
-                                Wrap(
-                                  spacing: 6,
-                                  runSpacing: 4,
-                                  children: _motivosSugeridos.map((m) {
-                                    return ActionChip(
-                                      label: Text(m, style: const TextStyle(fontSize: 11)),
-                                      backgroundColor: const Color(0xFFF1F5F9),
-                                      side: const BorderSide(color: Color(0xFFCBD5E1)),
-                                      onPressed: () {
-                                        setState(() => _motivoCtrl.text = m);
-                                      },
-                                    );
-                                  }).toList(),
-                                ),
-                                const SizedBox(height: 10),
-
-                                // Campo Motivo
-                                TextFormField(
-                                  controller: _motivoCtrl,
-                                  decoration: InputDecoration(
-                                    labelText: 'Motivo de la solicitud *',
-                                    hintText: 'Ej. Aplicación de examen parcial presencial',
-                                    prefixIcon: const Icon(Icons.help_outline),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                  ),
-                                  validator: (v) {
-                                    if (v == null || v.trim().length < 3) {
-                                      return 'Ingresa un motivo de al menos 3 caracteres';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                const SizedBox(height: 14),
-
-                                // Campo Justificación (opcional)
-                                TextFormField(
-                                  controller: _justificacionCtrl,
-                                  maxLines: 3,
-                                  decoration: InputDecoration(
-                                    labelText: 'Justificación detallada (Opcional)',
-                                    hintText:
-                                        'Detalles adicionales para la aprobación del administrador...',
-                                    alignLabelWithHint: true,
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-
-                        // Botón Enviar Solicitud
-                        ElevatedButton(
-                          onPressed: _enviando ? null : _enviarSolicitud,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF0B2F4F),
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            elevation: 2,
-                          ),
-                          child: _enviando
-                              ? const SizedBox(
-                                  height: 22,
-                                  width: 22,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : const Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.send_rounded, size: 20),
-                                    SizedBox(width: 8),
-                                    Text(
-                                      'Enviar Solicitud',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                        ),
-                        const SizedBox(height: 24),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
+                Expanded(
+                  child: _cargandoCatalogos
+                      ? const SkeletonListPlaceholder(count: 3, itemHeight: 90)
+                      : _errorCatalogos != null
+                          ? ErrorStateView(
+                              message: _errorCatalogos!,
+                              onRetry: _cargarCatalogos,
+                            )
+                          : _buildFormBody(),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFormBody() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Segmented toggle estilo Figma 04
+            Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: AppShadows.card,
+              ),
+              child: Row(
+                children: [
+                  _SegmentButton(
+                    label: 'Aula Adicional',
+                    selected: _tipo == 'aula_adicional',
+                    onTap: () => setState(() => _tipo = 'aula_adicional'),
+                  ),
+                  _SegmentButton(
+                    label: 'Cambio de Aula',
+                    selected: _tipo == 'cambio_aula',
+                    onTap: () => setState(() => _tipo = 'cambio_aula'),
+                  ),
+                ],
               ),
             ),
+            const SizedBox(height: 14),
+
+            // Tarjeta blanca agrupada estilo Figma 04
+            AulaSyncCard(
+              radius: 24,
+              padding: const EdgeInsets.all(18),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _FieldLabel('Materia Académica'),
+                  const SizedBox(height: 6),
+                  DropdownButtonFormField<int>(
+                    initialValue: _idMateria,
+                    isExpanded: true,
+                    decoration: const InputDecoration(),
+                    items: _materias
+                        .map((m) => DropdownMenuItem<int>(
+                              value: m['id'] as int,
+                              child: Text(
+                                '${m['codigo'] ?? ''} · ${m['nombre'] ?? ''}',
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                    fontSize: 13, fontWeight: FontWeight.w600),
+                              ),
+                            ))
+                        .toList(),
+                    onChanged: (v) => setState(() => _idMateria = v),
+                  ),
+                  const SizedBox(height: 14),
+                  if (_tipo == 'cambio_aula') ...[
+                    _FieldLabel('Aula Original'),
+                    const SizedBox(height: 6),
+                    DropdownButtonFormField<int>(
+                      initialValue: _idAulaOriginal,
+                      isExpanded: true,
+                      decoration: const InputDecoration(),
+                      items: _aulas
+                          .map((a) => DropdownMenuItem<int>(
+                                value: a.id,
+                                child: Text(
+                                  'Aula ${a.codigo} · ${a.edificio}',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                              ))
+                          .toList(),
+                      onChanged: (v) => setState(() => _idAulaOriginal = v),
+                    ),
+                    const SizedBox(height: 14),
+                  ],
+                  _FieldLabel('Aula Solicitada'),
+                  const SizedBox(height: 6),
+                  DropdownButtonFormField<int>(
+                    initialValue: _idAulaSolicitada,
+                    isExpanded: true,
+                    decoration: const InputDecoration(),
+                    items: _aulas
+                        .map((a) => DropdownMenuItem<int>(
+                              value: a.id,
+                              child: Text(
+                                'Aula ${a.codigo} · ${a.edificio} (Cap: ${a.capacidad})',
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                    fontSize: 13, fontWeight: FontWeight.w600),
+                              ),
+                            ))
+                        .toList(),
+                    onChanged: (v) => setState(() => _idAulaSolicitada = v),
+                  ),
+                  const SizedBox(height: 14),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _PickerTile(
+                          label: 'Fecha',
+                          value: _formatearFechaCorta(_fecha),
+                          onTap: _seleccionarFecha,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: _PickerTile(
+                          label: 'Inicio',
+                          value: _formatearHora(_horaInicio),
+                          onTap: _seleccionarHoraInicio,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: _PickerTile(
+                          label: 'Fin',
+                          value: _formatearHora(_horaFin),
+                          onTap: _seleccionarHoraFin,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                  _FieldLabel('Motivo de Solicitud'),
+                  const SizedBox(height: 6),
+                  TextFormField(
+                    controller: _motivoCtrl,
+                    maxLines: 2,
+                    decoration: const InputDecoration(
+                      hintText: 'Ej. Evaluación Final Presencial 4A-IRD',
+                    ),
+                    validator: (v) => v == null || v.trim().isEmpty
+                        ? 'Ingresa el motivo'
+                        : null,
+                  ),
+                  const SizedBox(height: 10),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: _motivosSugeridos
+                        .map((m) => ActionChip(
+                              label: Text(m, style: const TextStyle(fontSize: 11)),
+                              backgroundColor: AppColors.surfaceMuted,
+                              side: BorderSide.none,
+                              onPressed: () =>
+                                  setState(() => _motivoCtrl.text = m),
+                            ))
+                        .toList(),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            AulaSyncGradientButton(
+              label: 'Enviar Solicitud',
+              loading: _enviando,
+              onPressed: _enviarSolicitud,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SegmentButton extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _SegmentButton({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 160),
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: selected ? AppColors.navy : Colors.transparent,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          alignment: Alignment.center,
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+              color: selected ? Colors.white : AppColors.textMuted,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _FieldLabel extends StatelessWidget {
+  final String text;
+  const _FieldLabel(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: const TextStyle(
+        fontSize: 11,
+        fontWeight: FontWeight.w700,
+        color: AppColors.textMuted,
+      ),
+    );
+  }
+}
+
+class _PickerTile extends StatelessWidget {
+  final String label;
+  final String value;
+  final VoidCallback onTap;
+
+  const _PickerTile({
+    required this.label,
+    required this.value,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceMuted,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textMuted,
+              ),
+            ),
+            const SizedBox(height: 3),
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w800,
+                color: AppColors.navy,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

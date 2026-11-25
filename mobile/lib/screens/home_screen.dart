@@ -3,7 +3,6 @@ import '../config/api_config.dart';
 import '../models/usuario.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
-import '../widgets/aulasync_logo.dart';
 import '../widgets/aulasync_widgets.dart';
 import 'horarios_tab.dart';
 import 'login_screen.dart';
@@ -39,25 +38,23 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  String get _appBarTitle {
-    switch (_currentIndex) {
-      case 0:
-        return 'Carga Académica';
-      case 1:
-        return 'Solicitudes de Aulas';
-      case 2:
-        return 'Apertura de Aula (OTP)';
-      case 3:
-        return 'Perfil y Ajustes';
-      default:
-        return 'AulaSync';
+  String _iniciales(String nombre) {
+    final parts = nombre.trim().split(RegExp(r'\s+'));
+    if (parts.isEmpty || parts.first.isEmpty) return 'US';
+    if (parts.length == 1) {
+      return parts.first.substring(0, parts.first.length >= 2 ? 2 : 1).toUpperCase();
     }
+    return (parts[0][0] + parts[1][0]).toUpperCase();
   }
 
   @override
   Widget build(BuildContext context) {
+    final user = _usuario ?? ApiService().usuarioActual;
     final List<Widget> tabs = [
-      HorariosTab(onIrAOtp: () => setState(() => _currentIndex = 2)),
+      HorariosTab(
+        iniciales: _iniciales(user?.nombre ?? 'Docente'),
+        onIrAOtp: () => setState(() => _currentIndex = 2),
+      ),
       const SolicitudesTab(),
       const OtpTab(),
       _buildPerfilTab(),
@@ -65,62 +62,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const AulaSyncWordmark(fontSize: 19, darkBackground: true),
-            const SizedBox(height: 1),
-            Text(
-              _appBarTitle,
-              style: const TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF94A3B8),
-              ),
-            ),
-          ],
+      body: SafeArea(
+        bottom: false,
+        child: IndexedStack(
+          index: _currentIndex,
+          children: tabs,
         ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 12),
-            child: InkWell(
-              onTap: _mostrarDialogoConfiguracionUrl,
-              borderRadius: BorderRadius.circular(AppRadii.pill),
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(AppRadii.pill),
-                  border:
-                      Border.all(color: Colors.white.withValues(alpha: 0.2)),
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CircleAvatar(
-                        radius: 3.5, backgroundColor: Color(0xFF10B981)),
-                    SizedBox(width: 6),
-                    Text(
-                      'API Online',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-      body: IndexedStack(
-        index: _currentIndex,
-        children: tabs,
       ),
       bottomNavigationBar: SafeArea(
         top: false,
@@ -129,47 +76,58 @@ class _HomeScreenState extends State<HomeScreen> {
           decoration: BoxDecoration(
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(28),
-            border: Border.all(color: AppColors.border),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.navy.withValues(alpha: 0.09),
-                blurRadius: 24,
-                offset: const Offset(0, 8),
-              ),
-            ],
+            boxShadow: AppShadows.card,
           ),
           clipBehavior: Clip.antiAlias,
-          child: NavigationBar(
-            height: 66,
-            backgroundColor: Colors.transparent,
-            selectedIndex: _currentIndex,
-            onDestinationSelected: (index) =>
-                setState(() => _currentIndex = index),
-            destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.calendar_month_outlined),
-              selectedIcon: Icon(Icons.calendar_month_rounded,
-                  color: AppColors.navy),
-              label: 'Horarios',
+          child: NavigationBarTheme(
+            data: NavigationBarThemeData(
+              indicatorColor: AppColors.background,
+              labelTextStyle: WidgetStateProperty.resolveWith((states) {
+                final selected = states.contains(WidgetState.selected);
+                return TextStyle(
+                  fontSize: 11,
+                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                  color: selected ? AppColors.navy : AppColors.textMuted,
+                );
+              }),
             ),
-            NavigationDestination(
-              icon: Icon(Icons.assignment_outlined),
-              selectedIcon:
-                  Icon(Icons.assignment_rounded, color: AppColors.navy),
-              label: 'Solicitudes',
+            child: NavigationBar(
+              height: 66,
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              selectedIndex: _currentIndex,
+              onDestinationSelected: (index) =>
+                  setState(() => _currentIndex = index),
+              destinations: const [
+                NavigationDestination(
+                  icon: Icon(Icons.calendar_month_outlined,
+                      color: AppColors.textMuted),
+                  selectedIcon: Icon(Icons.calendar_month_rounded,
+                      color: AppColors.navy),
+                  label: 'Horarios',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.assignment_outlined,
+                      color: AppColors.textMuted),
+                  selectedIcon:
+                      Icon(Icons.assignment_rounded, color: AppColors.navy),
+                  label: 'Solicitudes',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.key_outlined, color: AppColors.textMuted),
+                  selectedIcon: Icon(Icons.key_rounded, color: AppColors.navy),
+                  label: 'Apertura OTP',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.person_outline_rounded,
+                      color: AppColors.textMuted),
+                  selectedIcon:
+                      Icon(Icons.person_rounded, color: AppColors.navy),
+                  label: 'Perfil',
+                ),
+              ],
             ),
-            NavigationDestination(
-              icon: Icon(Icons.key_outlined),
-              selectedIcon: Icon(Icons.key_rounded, color: AppColors.navy),
-              label: 'Apertura OTP',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.person_outline_rounded),
-              selectedIcon: Icon(Icons.person_rounded, color: AppColors.navy),
-              label: 'Perfil',
-            ),
-          ],
-        ),
+          ),
         ),
       ),
     );
@@ -178,183 +136,148 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildPerfilTab() {
     final user = _usuario ?? ApiService().usuarioActual;
     final nombre = user?.nombre ?? 'Docente Universitario';
-    final email = user?.email ?? 'correo@universidad.edu';
     final rol = (user?.rol ?? 'Docente').toUpperCase();
     final matricula =
         user?.matricula.isNotEmpty == true ? user!.matricula : 'No asignada';
+    final iniciales = _iniciales(nombre);
 
     return Center(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 560),
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                child: Text(
+                  'Perfil',
+                  style: AppTheme.displayFont(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.textPrimary,
+                    letterSpacing: -0.6,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              // Tarjeta identidad estilo Figma 06
               AulaSyncCard(
-                padding: const EdgeInsets.all(22),
-                child: Column(
+                radius: 24,
+                padding: const EdgeInsets.all(18),
+                child: Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(3),
-                      decoration: BoxDecoration(
+                      width: 62,
+                      height: 62,
+                      decoration: const BoxDecoration(
+                        gradient: AppColors.brandGradient,
                         shape: BoxShape.circle,
-                        border: Border.all(color: AppColors.teal, width: 2),
                       ),
-                      child: CircleAvatar(
-                        radius: 36,
-                        backgroundColor: AppColors.navy,
-                        child: Text(
-                          nombre.isNotEmpty
-                              ? nombre.substring(0, 1).toUpperCase()
-                              : 'U',
-                          style: const TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    Text(
-                      nombre,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 19,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      email,
-                      style: const TextStyle(
-                          fontSize: 13, color: AppColors.textMuted),
-                    ),
-                    const SizedBox(height: 12),
-                    Wrap(
-                      spacing: 8,
-                      children: [
-                        StatusPill(
-                          label: rol,
-                          backgroundColor:
-                              AppColors.teal.withValues(alpha: 0.12),
-                          foregroundColor: AppColors.teal,
-                          borderColor: AppColors.teal.withValues(alpha: 0.35),
-                        ),
-                        StatusPill(
-                          label: 'Mat: $matricula',
-                          backgroundColor: AppColors.surfaceSubtle,
-                          foregroundColor: AppColors.textSecondary,
-                          borderColor: AppColors.borderStrong,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 14),
-
-              AulaSyncCard(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Row(
-                      children: [
-                        Icon(Icons.dns_rounded,
-                            color: AppColors.navy, size: 20),
-                        SizedBox(width: 8),
-                        Text(
-                          'Conexión al Servidor API',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 10),
-                      decoration: BoxDecoration(
-                        color: AppColors.background,
-                        borderRadius: BorderRadius.circular(AppRadii.sm),
-                        border: Border.all(color: AppColors.border),
-                      ),
+                      alignment: Alignment.center,
                       child: Text(
-                        ApiConfig.baseUrl,
-                        style: AppTheme.tabularMono.copyWith(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.navy,
+                        iniciales,
+                        style: AppTheme.displayFont(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton.icon(
-                        onPressed: _mostrarDialogoConfiguracionUrl,
-                        icon: const Icon(Icons.edit_rounded, size: 16),
-                        label: const Text('Modificar URL de API'),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.navy,
-                          side: const BorderSide(color: AppColors.navy),
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(AppRadii.md),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            nombre,
+                            style: AppTheme.displayFont(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.textPrimary,
+                            ),
                           ),
-                        ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '$rol · Mat. $matricula',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.teal,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 16),
 
-              const AulaSyncCard(
+              // Tarjeta agrupada de ajustes estilo Figma 06
+              AulaSyncCard(
+                radius: 24,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
+                    _SettingsRow(
+                      icon: Icons.dns_rounded,
+                      iconColor: AppColors.info,
+                      iconBg: AppColors.infoBg,
+                      title: 'Servidor API REST',
+                      subtitle: ApiConfig.baseUrl,
+                      onTap: _mostrarDialogoConfiguracionUrl,
+                    ),
+                    const Divider(height: 1, color: AppColors.background),
+                    const _SettingsRow(
+                      icon: Icons.verified_user_outlined,
+                      iconColor: AppColors.success,
+                      iconBg: AppColors.successBg,
+                      title: 'Seguridad y Sesión',
+                      subtitle: 'bcrypt + Bearer Token',
+                    ),
+                    const Divider(height: 1, color: AppColors.background),
+                    const _SettingsRow(
+                      icon: Icons.lock_clock_outlined,
+                      iconColor: AppColors.warningDark,
+                      iconBg: AppColors.warningBg,
+                      title: 'Protocolo Cerraduras',
+                      subtitle: 'OTP Dinámico 6 dígitos',
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Botón suave Cerrar Sesión estilo Figma 06
+              Material(
+                color: AppColors.errorBg,
+                borderRadius: BorderRadius.circular(20),
+                child: InkWell(
+                  onTap: _confirmarCerrarSesion,
+                  borderRadius: BorderRadius.circular(20),
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 15),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.info_outline_rounded,
-                            color: AppColors.navy, size: 20),
+                        Icon(Icons.logout_rounded,
+                            size: 18, color: AppColors.error),
                         SizedBox(width: 8),
                         Text(
-                          'Información de la Plataforma',
+                          'Cerrar Sesión',
                           style: TextStyle(
-                            fontSize: 15,
+                            fontSize: 14,
                             fontWeight: FontWeight.w700,
-                            color: AppColors.textPrimary,
+                            color: AppColors.error,
                           ),
                         ),
                       ],
                     ),
-                    SizedBox(height: 12),
-                    _InfoRow(label: 'Versión', value: '2.0.0 (Flutter M3)'),
-                    Divider(height: 18),
-                    _InfoRow(label: 'Seguridad', value: 'bcrypt + Bearer Token'),
-                    Divider(height: 18),
-                    _InfoRow(
-                        label: 'Apertura IoT',
-                        value: 'Cerraduras OTP Dinámicas'),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 22),
-
-              FilledButton.icon(
-                onPressed: _confirmarCerrarSesion,
-                icon: const Icon(Icons.logout_rounded, size: 19),
-                label: const Text('Cerrar Sesión'),
-                style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.error,
-                  foregroundColor: Colors.white,
+                  ),
                 ),
               ),
             ],
@@ -441,25 +364,71 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class _InfoRow extends StatelessWidget {
-  final String label;
-  final String value;
+class _SettingsRow extends StatelessWidget {
+  final IconData icon;
+  final Color iconColor;
+  final Color iconBg;
+  final String title;
+  final String subtitle;
+  final VoidCallback? onTap;
 
-  const _InfoRow({required this.label, required this.value});
+  const _SettingsRow({
+    required this.icon,
+    required this.iconColor,
+    required this.iconBg,
+    required this.title,
+    required this.subtitle,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(label,
-            style: const TextStyle(fontSize: 13, color: AppColors.textMuted)),
-        Text(value,
-            style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary)),
-      ],
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(9),
+              decoration: BoxDecoration(
+                color: iconBg,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, size: 18, color: iconColor),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.textMuted,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right_rounded,
+                size: 18, color: AppColors.textMuted),
+          ],
+        ),
+      ),
     );
   }
 }

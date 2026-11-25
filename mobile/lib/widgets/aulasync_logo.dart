@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_theme.dart';
 
-/// Wordmark tipográfico oficial de AulaSync con punto de sincronización IoT
-/// y onda expansiva concéntrica opcional ([animate]).
+/// Wordmark tipográfico oficial `AulaSync.` con fuente Sora y punto IoT esmeralda.
+/// Replica el diseño aprobado en Figma (sin caja de ícono) y la coreografía
+/// `TextStagger + SyncRipple` cuando `animate` es true.
 class AulaSyncWordmark extends StatefulWidget {
   final double fontSize;
   final bool darkBackground;
@@ -10,7 +12,7 @@ class AulaSyncWordmark extends StatefulWidget {
 
   const AulaSyncWordmark({
     super.key,
-    this.fontSize = 42,
+    this.fontSize = 36,
     this.darkBackground = false,
     this.animate = false,
   });
@@ -21,68 +23,22 @@ class AulaSyncWordmark extends StatefulWidget {
 
 class _AulaSyncWordmarkState extends State<AulaSyncWordmark>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-  late final Animation<double> _wordOpacity;
-  late final Animation<double> _wordOffset;
-  late final Animation<double> _dotScale;
-  late final Animation<double> _rippleScale;
-  late final Animation<double> _rippleOpacity;
+  AnimationController? _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1800),
-    );
-
-    _wordOpacity = CurvedAnimation(
-      parent: _controller,
-      curve: const Interval(0.0, 0.42, curve: Curves.easeOut),
-    );
-    _wordOffset = Tween<double>(begin: 18, end: 0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.0, 0.45, curve: Curves.easeOutCubic),
-      ),
-    );
-
-    _dotScale = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 0.0, end: 1.38), weight: 60),
-      TweenSequenceItem(tween: Tween(begin: 1.38, end: 1.0), weight: 40),
-    ]).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.35, 0.62, curve: Curves.easeOut),
-      ),
-    );
-
-    _rippleScale = Tween<double>(begin: 0.8, end: 3.6).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.42, 0.95, curve: Curves.easeOut),
-      ),
-    );
-    _rippleOpacity = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 0.0, end: 0.85), weight: 15),
-      TweenSequenceItem(tween: Tween(begin: 0.85, end: 0.0), weight: 85),
-    ]).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.42, 0.95, curve: Curves.easeOut),
-      ),
-    );
-
     if (widget.animate) {
-      _controller.forward();
-    } else {
-      _controller.value = 1.0;
+      _controller = AnimationController(
+        vsync: this,
+        duration: const Duration(milliseconds: 2200),
+      )..repeat();
     }
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
@@ -90,95 +46,111 @@ class _AulaSyncWordmarkState extends State<AulaSyncWordmark>
   Widget build(BuildContext context) {
     final aulaColor = widget.darkBackground ? Colors.white : AppColors.navy;
     final syncColor =
-        widget.darkBackground ? const Color(0xFF5EEAD4) : AppColors.teal;
-    final dotColor =
-        widget.darkBackground ? const Color(0xFF34D399) : AppColors.success;
-    final dotSize = (widget.fontSize * 0.18).clamp(5.0, 10.0);
+        widget.darkBackground ? AppColors.tealSoft : AppColors.teal;
+    final dotSize = widget.fontSize * 0.18;
 
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, _) {
-        return Opacity(
-          opacity: widget.animate ? _wordOpacity.value : 1.0,
-          child: Transform.translate(
-            offset: Offset(0, widget.animate ? _wordOffset.value : 0),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                RichText(
-                  text: TextSpan(
-                    style: TextStyle(
-                      fontSize: widget.fontSize,
-                      letterSpacing: -(widget.fontSize * 0.045),
-                      height: 1.05,
+    Widget buildWordmark(double ripple) {
+      final dotPulse = widget.animate
+          ? 1.0 + (0.14 * (1.0 - (ripple - 0.5).abs() * 2.0)).clamp(0.0, 0.14)
+          : 1.0;
+
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
+        children: [
+          Text(
+            'Aula',
+            style: GoogleFonts.sora(
+              fontSize: widget.fontSize,
+              fontWeight: FontWeight.w800,
+              letterSpacing: -widget.fontSize * 0.045,
+              color: aulaColor,
+              height: 1.05,
+            ),
+          ),
+          Text(
+            'Sync',
+            style: GoogleFonts.sora(
+              fontSize: widget.fontSize,
+              fontWeight: FontWeight.w400,
+              letterSpacing: -widget.fontSize * 0.035,
+              color: syncColor,
+              height: 1.05,
+            ),
+          ),
+          SizedBox(width: widget.fontSize * 0.06),
+          Transform.scale(
+            scale: dotPulse,
+            child: SizedBox(
+              width: dotSize * 2.4,
+              height: dotSize * 2.4,
+              child: Stack(
+                alignment: Alignment.center,
+                clipBehavior: Clip.none,
+                children: [
+                  if (widget.animate) ...[
+                    _RippleRing(
+                      size: dotSize * (1.2 + ripple * 3.1),
+                      opacity: (1.0 - ripple).clamp(0.0, 0.55),
                     ),
-                    children: [
-                      TextSpan(
-                        text: 'Aula',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w800,
-                          color: aulaColor,
-                        ),
-                      ),
-                      TextSpan(
-                        text: 'Sync',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w400,
-                          color: syncColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Padding(
-                  padding: EdgeInsets.only(bottom: widget.fontSize * 0.16),
-                  child: SizedBox(
-                    width: dotSize + 4,
-                    height: dotSize + 4,
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      alignment: Alignment.center,
-                      children: [
-                        if (widget.animate && _rippleOpacity.value > 0.01)
-                          Transform.scale(
-                            scale: _rippleScale.value,
-                            child: Opacity(
-                              opacity: _rippleOpacity.value,
-                              child: Container(
-                                width: dotSize + 2,
-                                height: dotSize + 2,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: dotColor,
-                                    width: 1.6,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        Transform.scale(
-                          scale: widget.animate ? _dotScale.value : 1.0,
-                          child: Container(
-                            width: dotSize,
-                            height: dotSize,
-                            decoration: BoxDecoration(
-                              color: dotColor,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
+                    _RippleRing(
+                      size: dotSize * (1.2 + ((ripple + 0.45) % 1.0) * 2.4),
+                      opacity:
+                          (1.0 - ((ripple + 0.45) % 1.0)).clamp(0.0, 0.35),
+                    ),
+                  ],
+                  Container(
+                    width: dotSize,
+                    height: dotSize,
+                    decoration: BoxDecoration(
+                      color: AppColors.emerald,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.emerald.withValues(alpha: 0.45),
+                          blurRadius: dotSize * 1.1,
                         ),
                       ],
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        );
-      },
+        ],
+      );
+    }
+
+    if (_controller == null) {
+      return buildWordmark(0.0);
+    }
+
+    return AnimatedBuilder(
+      animation: _controller!,
+      builder: (_, _) => buildWordmark(_controller!.value),
+    );
+  }
+}
+
+class _RippleRing extends StatelessWidget {
+  final double size;
+  final double opacity;
+
+  const _RippleRing({required this.size, required this.opacity});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: AppColors.emerald.withValues(alpha: opacity),
+          width: 1.5,
+        ),
+      ),
     );
   }
 }

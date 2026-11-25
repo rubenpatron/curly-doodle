@@ -6,8 +6,13 @@ import '../widgets/aulasync_widgets.dart';
 
 class HorariosTab extends StatefulWidget {
   final VoidCallback? onIrAOtp;
+  final String iniciales;
 
-  const HorariosTab({super.key, this.onIrAOtp});
+  const HorariosTab({
+    super.key,
+    this.onIrAOtp,
+    this.iniciales = 'EP',
+  });
 
   @override
   State<HorariosTab> createState() => _HorariosTabState();
@@ -83,135 +88,51 @@ class _HorariosTabState extends State<HorariosTab> {
 
   int get _diaActual => DateTime.now().weekday;
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: RefreshIndicator(
-        onRefresh: _cargarHorarios,
-        color: AppColors.navy,
-        child: Column(
-          children: [
-            _buildBarraFiltros(),
-            Expanded(child: _buildContenido()),
-          ],
-        ),
-      ),
-    );
+  String get _fechaHoyTexto {
+    const dias = [
+      '',
+      'Lunes',
+      'Martes',
+      'Miércoles',
+      'Jueves',
+      'Viernes',
+      'Sábado',
+      'Domingo'
+    ];
+    const meses = [
+      '',
+      'Enero',
+      'Febrero',
+      'Marzo',
+      'Abril',
+      'Mayo',
+      'Junio',
+      'Julio',
+      'Agosto',
+      'Septiembre',
+      'Octubre',
+      'Noviembre',
+      'Diciembre'
+    ];
+    final now = DateTime.now();
+    return '${dias[now.weekday]} ${now.day} de ${meses[now.month]}';
   }
 
-  Widget _buildBarraFiltros() {
-    return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        border: Border(bottom: BorderSide(color: AppColors.border)),
-      ),
-      padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+  @override
+  Widget build(BuildContext context) {
+    return RefreshIndicator(
+      onRefresh: _cargarHorarios,
+      color: AppColors.navy,
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 720),
-          child: Column(
-            children: [
-              TextField(
-                controller: _searchCtrl,
-                onChanged: (val) =>
-                    setState(() => _filtroBusqueda = val.trim()),
-                decoration: InputDecoration(
-                  hintText: 'Buscar materia, aula o edificio...',
-                  hintStyle: const TextStyle(
-                      fontSize: 13, color: AppColors.textMuted),
-                  prefixIcon: const Icon(Icons.search_rounded,
-                      size: 20, color: AppColors.navy),
-                  suffixIcon: _filtroBusqueda.isNotEmpty
-                      ? IconButton(
-                          icon: const Icon(Icons.clear_rounded, size: 18),
-                          onPressed: () {
-                            _searchCtrl.clear();
-                            setState(() => _filtroBusqueda = '');
-                          },
-                        )
-                      : null,
-                  contentPadding: const EdgeInsets.symmetric(
-                      vertical: 12, horizontal: 16),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppRadii.pill),
-                    borderSide: BorderSide.none,
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppRadii.pill),
-                    borderSide: BorderSide.none,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppRadii.pill),
-                    borderSide:
-                        const BorderSide(color: AppColors.navy, width: 1.5),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: _diasSemana.map((dia) {
-                    final isSelected = _filtroDia == dia['id'];
-                    final isToday = dia['id'] == _diaActual;
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 6),
-                      child: FilterChip(
-                        selected: isSelected,
-                        showCheckmark: false,
-                        label: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              dia['label'] as String,
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: isSelected
-                                    ? FontWeight.w700
-                                    : FontWeight.w500,
-                                color: isSelected
-                                    ? Colors.white
-                                    : AppColors.textPrimary,
-                              ),
-                            ),
-                            if (isToday && dia['id'] != 0) ...[
-                              const SizedBox(width: 5),
-                              Container(
-                                width: 6,
-                                height: 6,
-                                decoration: BoxDecoration(
-                                  color: isSelected
-                                      ? const Color(0xFF34D399)
-                                      : AppColors.success,
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
-                        backgroundColor: AppColors.background,
-                        selectedColor: AppColors.navy,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(AppRadii.pill),
-                          side: BorderSide(
-                            color: isSelected
-                                ? AppColors.navy
-                                : isToday && dia['id'] != 0
-                                    ? AppColors.success
-                                    : AppColors.border,
-                          ),
-                        ),
-                        onSelected: (selected) {
-                          setState(() {
-                            _filtroDia = selected ? dia['id'] as int : 0;
-                          });
-                        },
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ),
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              SliverToBoxAdapter(child: _buildHeader()),
+              SliverToBoxAdapter(child: _buildHeroIfAny()),
+              SliverToBoxAdapter(child: _buildFiltros()),
+              ..._buildBodySlivers(),
             ],
           ),
         ),
@@ -219,172 +140,321 @@ class _HorariosTabState extends State<HorariosTab> {
     );
   }
 
-  Widget _buildContenido() {
-    if (_isLoading) {
-      return Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 720),
-          child: const SkeletonListPlaceholder(itemCount: 4, itemHeight: 102),
+  Widget _buildHeader() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 14, 20, 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Horarios',
+                style: AppTheme.displayFont(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textPrimary,
+                  letterSpacing: -0.6,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                _fechaHoyTexto,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textMuted,
+                ),
+              ),
+            ],
+          ),
+          Container(
+            width: 40,
+            height: 40,
+            decoration: const BoxDecoration(
+              gradient: AppColors.brandGradient,
+              shape: BoxShape.circle,
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              widget.iniciales,
+              style: AppTheme.displayFont(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeroIfAny() {
+    if (_isLoading || _errorMessage != null) return const SizedBox.shrink();
+    final claseHoy =
+        _horarios.where((c) => c.diaSemana == _diaActual).firstOrNull;
+    if (claseHoy == null) return const SizedBox.shrink();
+
+    final inicio = claseHoy.horaInicio.length >= 5
+        ? claseHoy.horaInicio.substring(0, 5)
+        : claseHoy.horaInicio;
+    final fin = claseHoy.horaFin.length >= 5
+        ? claseHoy.horaFin.substring(0, 5)
+        : claseHoy.horaFin;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          gradient: AppColors.brandGradient,
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: AppShadows.hero,
         ),
-      );
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.16),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircleAvatar(
+                          radius: 3, backgroundColor: AppColors.emeraldBright),
+                      SizedBox(width: 6),
+                      Text(
+                        'CLASE ACTIVA HOY',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          letterSpacing: 0.4,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Text(
+                  '$inicio – $fin',
+                  style: AppTheme.tabularMono.copyWith(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.tealLight,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              claseHoy.materia,
+              style: AppTheme.displayFont(
+                fontSize: 19,
+                fontWeight: FontWeight.w800,
+                color: Colors.white,
+                letterSpacing: -0.3,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    'Aula ${claseHoy.aula} · ${claseHoy.edificio}',
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFFCCFBF1),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Material(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(14),
+                  child: InkWell(
+                    onTap: widget.onIrAOtp,
+                    borderRadius: BorderRadius.circular(14),
+                    child: const Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.key_rounded,
+                              size: 14, color: AppColors.navy),
+                          SizedBox(width: 6),
+                          Text(
+                            'Abrir con OTP',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.navy,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFiltros() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: AppShadows.card,
+            ),
+            child: TextField(
+              controller: _searchCtrl,
+              onChanged: (val) =>
+                  setState(() => _filtroBusqueda = val.trim()),
+              decoration: InputDecoration(
+                filled: false,
+                hintText: 'Buscar materia, aula o edificio...',
+                hintStyle:
+                    const TextStyle(fontSize: 13, color: AppColors.textMuted),
+                prefixIcon: const Icon(Icons.search_rounded,
+                    size: 18, color: AppColors.textMuted),
+                suffixIcon: _filtroBusqueda.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear_rounded, size: 18),
+                        onPressed: () {
+                          _searchCtrl.clear();
+                          setState(() => _filtroBusqueda = '');
+                        },
+                      )
+                    : null,
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+              ),
+            ),
+          ),
+          const SizedBox(height: 14),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: _diasSemana.map((dia) {
+                final isSelected = _filtroDia == dia['id'];
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: GestureDetector(
+                    onTap: () => setState(() => _filtroDia = dia['id'] as int),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 180),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 7),
+                      decoration: BoxDecoration(
+                        color: isSelected ? AppColors.navy : AppColors.surface,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: isSelected
+                            ? const [
+                                BoxShadow(
+                                  color: Color(0x330B2F4F),
+                                  blurRadius: 10,
+                                  offset: Offset(0, 4),
+                                ),
+                              ]
+                            : AppShadows.card,
+                      ),
+                      child: Text(
+                        dia['label'] as String,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight:
+                              isSelected ? FontWeight.w700 : FontWeight.w500,
+                          color: isSelected
+                              ? Colors.white
+                              : AppColors.textMuted,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _buildBodySlivers() {
+    if (_isLoading) {
+      return const [
+        SliverFillRemaining(
+          child: SkeletonListPlaceholder(count: 4, itemHeight: 96),
+        ),
+      ];
     }
 
     if (_errorMessage != null) {
-      return ErrorStateView(
-        message: _errorMessage!,
-        onRetry: _cargarHorarios,
-      );
+      return [
+        SliverFillRemaining(
+          child: ErrorStateView(
+            message: _errorMessage!,
+            onRetry: _cargarHorarios,
+          ),
+        ),
+      ];
     }
 
     final lista = _horariosFiltrados;
     if (lista.isEmpty) {
-      return EmptyStateView(
-        icon: Icons.calendar_today_outlined,
-        title: _horarios.isEmpty
-            ? 'Sin carga académica asignada'
-            : 'Sin coincidencias en tu búsqueda',
-        message: _horarios.isEmpty
-            ? 'Cuando el administrador te asigne materias y aulas, aparecerán aquí.'
-            : 'Prueba cambiando el filtro de día o el término de búsqueda.',
-      );
+      return [
+        SliverFillRemaining(
+          child: EmptyStateView(
+            icon: Icons.calendar_today_outlined,
+            title: _horarios.isEmpty
+                ? 'Sin carga académica asignada'
+                : 'Sin coincidencias en tu búsqueda',
+            subtitle: _horarios.isEmpty
+                ? 'Cuando el administrador te asigne materias y aulas, aparecerán aquí.'
+                : 'Prueba cambiando el filtro de día o el término de búsqueda.',
+          ),
+        ),
+      ];
     }
 
-    final claseHoy = _horarios.where((c) => c.diaSemana == _diaActual).firstOrNull;
-
-    return Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 720),
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            if (claseHoy != null) ...[
-              _buildHeroClaseHoy(claseHoy),
-              const SizedBox(height: 16),
-            ],
-            for (int i = 0; i < lista.length; i++) ...[
-              _buildClaseCard(lista[i]),
-              if (i < lista.length - 1) const SizedBox(height: 12),
-            ],
-          ],
+    return [
+      SliverPadding(
+        padding: const EdgeInsets.fromLTRB(16, 2, 16, 24),
+        sliver: SliverList.separated(
+          itemCount: lista.length,
+          separatorBuilder: (_, _) => const SizedBox(height: 12),
+          itemBuilder: (_, idx) => _buildClaseCard(lista[idx]),
         ),
       ),
-    );
-  }
-
-  Widget _buildHeroClaseHoy(ClaseHorario c) {
-    final inicio = c.horaInicio.length >= 5
-        ? c.horaInicio.substring(0, 5)
-        : c.horaInicio;
-    final fin =
-        c.horaFin.length >= 5 ? c.horaFin.substring(0, 5) : c.horaFin;
-
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF071A2F), AppColors.navy, AppColors.teal],
-          stops: [0.0, 0.55, 1.0],
-        ),
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.navy.withValues(alpha: 0.25),
-            blurRadius: 24,
-            offset: const Offset(0, 12),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.16),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CircleAvatar(
-                        radius: 3.5, backgroundColor: Color(0xFF34D399)),
-                    SizedBox(width: 6),
-                    Text(
-                      'CLASE ACTIVA HOY',
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                        letterSpacing: 0.4,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Text(
-                '$inicio – $fin',
-                style: AppTheme.tabularMono.copyWith(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: const Color(0xFF99F6E4),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            c.materia,
-            style: const TextStyle(
-              fontSize: 19,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Aula ${c.aula} · ${c.edificio}',
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFFCCFBF1),
-                ),
-              ),
-              FilledButton.icon(
-                onPressed: widget.onIrAOtp,
-                icon: const Icon(Icons.key_rounded, size: 15),
-                label: const Text('Abrir con OTP'),
-                style: FilledButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: AppColors.navy,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  textStyle: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
+    ];
   }
 
   Widget _buildClaseCard(ClaseHorario c) {
-    final esHoy = c.diaSemana == _diaActual;
     final inicio = c.horaInicio.length >= 5
         ? c.horaInicio.substring(0, 5)
         : c.horaInicio;
@@ -392,23 +462,17 @@ class _HorariosTabState extends State<HorariosTab> {
         c.horaFin.length >= 5 ? c.horaFin.substring(0, 5) : c.horaFin;
 
     return AulaSyncCard(
+      radius: 22,
       padding: const EdgeInsets.all(14),
-      backgroundColor: esHoy ? const Color(0xFFFAFFFE) : AppColors.surface,
-      borderColor: esHoy ? AppColors.successBorder : AppColors.border,
-      borderWidth: esHoy ? 1.4 : 1,
+      onTap: widget.onIrAOtp,
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Bloque horario tabular a la izquierda
           Container(
-            width: 72,
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
+            width: 68,
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
             decoration: BoxDecoration(
-              color: esHoy ? AppColors.successBg : AppColors.surfaceSubtle,
-              borderRadius: BorderRadius.circular(AppRadii.md),
-              border: Border.all(
-                color: esHoy ? AppColors.successBorder : AppColors.border,
-              ),
+              color: AppColors.background,
+              borderRadius: BorderRadius.circular(16),
             ),
             child: Column(
               children: [
@@ -417,7 +481,7 @@ class _HorariosTabState extends State<HorariosTab> {
                   style: AppTheme.tabularMono.copyWith(
                     fontSize: 13,
                     fontWeight: FontWeight.w800,
-                    color: esHoy ? AppColors.success : AppColors.navy,
+                    color: AppColors.navy,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -433,41 +497,10 @@ class _HorariosTabState extends State<HorariosTab> {
             ),
           ),
           const SizedBox(width: 14),
-
-          // Información de la clase
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    StatusPill(
-                      label: c.materiaCodigo.isNotEmpty
-                          ? c.materiaCodigo
-                          : c.diaNombre,
-                      backgroundColor: AppColors.surfaceSubtle,
-                      foregroundColor: AppColors.navy,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      c.diaNombre,
-                      style: const TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textMuted,
-                      ),
-                    ),
-                    const Spacer(),
-                    if (esHoy)
-                      const StatusPill(
-                        label: 'HOY',
-                        backgroundColor: AppColors.successBg,
-                        foregroundColor: AppColors.success,
-                        borderColor: AppColors.successBorder,
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 6),
                 Text(
                   c.materia,
                   style: const TextStyle(
@@ -476,28 +509,21 @@ class _HorariosTabState extends State<HorariosTab> {
                     color: AppColors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 6),
-                Row(
-                  children: [
-                    const Icon(Icons.meeting_room_outlined,
-                        size: 15, color: AppColors.teal),
-                    const SizedBox(width: 5),
-                    Expanded(
-                      child: Text(
-                        'Aula ${c.aula} · ${c.edificio}',
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.teal,
-                        ),
-                      ),
-                    ),
-                  ],
+                const SizedBox(height: 4),
+                Text(
+                  'Aula ${c.aula} · ${c.edificio}',
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.teal,
+                  ),
                 ),
               ],
             ),
           ),
+          const Icon(Icons.chevron_right_rounded,
+              size: 20, color: AppColors.textMuted),
         ],
       ),
     );

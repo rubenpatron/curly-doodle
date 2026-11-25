@@ -120,8 +120,8 @@ void main() {
         ),
       );
 
-      expect(find.byType(FloatingActionButton), findsOneWidget);
-      expect(find.text('Nueva Solicitud'), findsOneWidget);
+      expect(find.text('Solicitudes'), findsOneWidget);
+      expect(find.text('Nueva'), findsOneWidget);
     });
 
     testWidgets('OtpTab se monta con estado animado de cerradura', (tester) async {
@@ -150,9 +150,9 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 200));
 
-      // Verificamos que se renderice el componente de estado animado de cerradura
+      // Verificamos que se renderice el componente de llave IoT
       expect(find.byType(OtpTab), findsOneWidget);
-      expect(find.text('Cerradura Asegurada'), findsOneWidget);
+      expect(find.text('CERRADURA ASEGURADA'), findsOneWidget);
     });
 
     testWidgets('QrMatrixPainter dibuja matriz correctamente sin errores', (tester) async {

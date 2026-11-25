@@ -176,12 +176,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  const Text(
+                                  Text(
                                     'Bienvenido',
-                                    style: TextStyle(
+                                    style: AppTheme.displayFont(
                                       fontSize: 22,
                                       fontWeight: FontWeight.w800,
                                       color: AppColors.textPrimary,
+                                      letterSpacing: -0.4,
                                     ),
                                   ),
                                   InkWell(
@@ -190,10 +191,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                         BorderRadius.circular(AppRadii.pill),
                                     child: const StatusPill(
                                       label: 'API Online',
-                                      icon: Icons.circle,
+                                      showDot: true,
                                       backgroundColor: AppColors.successBg,
-                                      foregroundColor: AppColors.success,
-                                      borderColor: AppColors.successBorder,
+                                      color: AppColors.success,
                                     ),
                                   ),
                                 ],
@@ -319,18 +319,10 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               const SizedBox(height: 22),
 
-                              FilledButton(
-                                onPressed: _isLoading ? null : _iniciarSesion,
-                                child: _isLoading
-                                    ? const SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          color: Colors.white,
-                                        ),
-                                      )
-                                    : const Text('Iniciar Sesión'),
+                              AulaSyncGradientButton(
+                                label: 'Iniciar Sesión',
+                                loading: _isLoading,
+                                onPressed: _iniciarSesion,
                               ),
                               const SizedBox(height: 14),
 

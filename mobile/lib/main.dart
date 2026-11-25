@@ -145,12 +145,12 @@ class _SplashScreen extends StatelessWidget {
                     children: [
                       const AulaSyncWordmark(fontSize: 46, animate: true),
                       const SizedBox(height: 12),
-                      const Text(
+                      Text(
                         'ACCESO INTELIGENTE DE AULAS',
-                        style: TextStyle(
+                        style: AppTheme.displayFont(
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
-                          letterSpacing: 2.0,
+                          letterSpacing: 2.2,
                           color: AppColors.textSecondary,
                         ),
                       ),

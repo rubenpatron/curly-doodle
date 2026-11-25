@@ -73,7 +73,13 @@ void main() {
       );
 
       expect(find.byType(NavigationBar), findsOneWidget);
-      expect(find.text('Horarios'), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byType(NavigationBar),
+          matching: find.text('Horarios'),
+        ),
+        findsOneWidget,
+      );
       expect(find.text('Solicitudes'), findsOneWidget);
       expect(find.text('Apertura OTP'), findsOneWidget);
       expect(find.text('Perfil'), findsOneWidget);
