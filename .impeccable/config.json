@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "roboto",
+        "createdAt": "2026-11-25T02:21:01.108Z",
+        "reason": "user confirmed: approved Figma design uses Sora + Roboto typography"
+      }
+    ]
+  }
+}
