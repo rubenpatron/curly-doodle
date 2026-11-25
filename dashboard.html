@@ -650,6 +650,12 @@
             sidebar.classList.toggle('show');
             backdrop.classList.toggle('show');
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.location.hash) {
+                switchSectionById(window.location.hash.substring(1));
+            }
+        });
     </script>
 
     <!-- Cliente API y autenticación -->
