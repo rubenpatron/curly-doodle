@@ -21,6 +21,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   Usuario? _usuario;
+  int? _aulaPreseleccionadaOtp;
+  int _otpSelectionSeq = 0;
 
   @override
   void initState() {
@@ -53,10 +55,20 @@ class _HomeScreenState extends State<HomeScreen> {
     final List<Widget> tabs = [
       HorariosTab(
         iniciales: _iniciales(user?.nombre ?? 'Docente'),
-        onIrAOtp: () => setState(() => _currentIndex = 2),
+        onIrAOtp: (idAula) => setState(() {
+          _aulaPreseleccionadaOtp = idAula;
+          _otpSelectionSeq++;
+          _currentIndex = 2;
+        }),
+        onIrAPerfil: () => setState(() => _currentIndex = 3),
       ),
-      const SolicitudesTab(),
-      const OtpTab(),
+      SolicitudesTab(
+        esAdmin: user?.rol.toLowerCase() == 'admin',
+      ),
+      OtpTab(
+        aulaIdInicial: _aulaPreseleccionadaOtp,
+        selectionSeq: _otpSelectionSeq,
+      ),
       _buildPerfilTab(),
     ];
 

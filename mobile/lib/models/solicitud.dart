@@ -1,6 +1,7 @@
 class Solicitud {
   final int id;
   final String tipo;
+  final String? docente;
   final String? aulaOriginal;
   final String aulaSolicitada;
   final String materia;
@@ -16,6 +17,7 @@ class Solicitud {
   Solicitud({
     required this.id,
     required this.tipo,
+    this.docente,
     this.aulaOriginal,
     required this.aulaSolicitada,
     required this.materia,
@@ -33,6 +35,7 @@ class Solicitud {
     return Solicitud(
       id: json['id'] is int ? json['id'] : int.tryParse(json['id'].toString()) ?? 0,
       tipo: json['tipo'] ?? 'aula_adicional',
+      docente: json['docente'],
       aulaOriginal: json['aula_original'],
       aulaSolicitada: json['aula_solicitada'] ?? '',
       materia: json['materia'] ?? '',

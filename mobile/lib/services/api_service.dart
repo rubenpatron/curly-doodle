@@ -234,6 +234,62 @@ class ApiService {
     }
   }
 
+  /// Aulas autorizadas para el docente (horario + solicitudes aprobadas)
+  Future<List<Aula>> getAulasAutorizadas() async {
+    final prefs = await SharedPreferences.getInstance();
+    try {
+      final url = Uri.parse('${ApiConfig.baseUrl}/aulas_autorizadas.php');
+      final headers = await _getHeaders();
+      final response =
+          await http.get(url, headers: headers).timeout(const Duration(seconds: 4));
+
+      final data = jsonDecode(response.body);
+      if (response.statusCode != 200 || data['ok'] != true) {
+        throw Exception(data['error'] ?? 'Error al cargar aulas asignadas');
+      }
+
+      final List list = data['data']['aulas'] ?? [];
+      await prefs.setString('aulasync_cache_aulas_autorizadas', jsonEncode(list));
+      return list.map((item) => Aula.fromJson(item)).toList();
+    } catch (_) {
+      for (final key in ['aulasync_cache_aulas_autorizadas', 'aulasync_cache_aulas']) {
+        final cachedStr = prefs.getString(key);
+        if (cachedStr != null && cachedStr.isNotEmpty) {
+          try {
+            final List list = jsonDecode(cachedStr);
+            return list.map((item) => Aula.fromJson(item)).toList();
+          } catch (_) {}
+        }
+      }
+      rethrow;
+    }
+  }
+
+  /// MÓDULO 2 (Admin): Aprobar o rechazar una solicitud
+  Future<void> responderSolicitud({
+    required int id,
+    required String accion,
+    String? comentarios,
+  }) async {
+    final url = Uri.parse('${ApiConfig.baseUrl}/solicitud_responder.php');
+    final headers = await _getHeaders();
+    final response = await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode({
+        'id': id,
+        'accion': accion,
+        if (comentarios != null && comentarios.trim().isNotEmpty)
+          'comentarios': comentarios.trim(),
+      }),
+    );
+
+    final data = jsonDecode(response.body);
+    if (response.statusCode != 200 || data['ok'] != true) {
+      throw Exception(data['error'] ?? 'Error al responder solicitud');
+    }
+  }
+
   /// MÓDULO 3: Generación de PIN OTP para abrir cerradura
   Future<Map<String, dynamic>> solicitarOtp(int idAula) async {
     final url = Uri.parse('${ApiConfig.baseUrl}/otp_solicitar.php');

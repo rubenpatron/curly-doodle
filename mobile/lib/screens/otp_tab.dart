@@ -8,7 +8,14 @@ import '../theme/app_theme.dart';
 import '../widgets/aulasync_widgets.dart';
 
 class OtpTab extends StatefulWidget {
-  const OtpTab({super.key});
+  final int? aulaIdInicial;
+  final int selectionSeq;
+
+  const OtpTab({
+    super.key,
+    this.aulaIdInicial,
+    this.selectionSeq = 0,
+  });
 
   @override
   State<OtpTab> createState() => _OtpTabState();
@@ -38,6 +45,29 @@ class _OtpTabState extends State<OtpTab> {
   }
 
   @override
+  void didUpdateWidget(covariant OtpTab oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.aulaIdInicial != null &&
+        (widget.aulaIdInicial != oldWidget.aulaIdInicial ||
+            widget.selectionSeq != oldWidget.selectionSeq)) {
+      _seleccionarAulaPorId(widget.aulaIdInicial!);
+    }
+  }
+
+  void _seleccionarAulaPorId(int idAula) {
+    final encontrada = _aulas.where((a) => a.id == idAula).firstOrNull;
+    if (encontrada != null && mounted) {
+      _timer?.cancel();
+      setState(() {
+        _aulaSeleccionada = encontrada;
+        _codigoOtp = null;
+        _codigoExpirado = false;
+        _codigoUsado = false;
+      });
+    }
+  }
+
+  @override
   void dispose() {
     _timer?.cancel();
     super.dispose();
@@ -50,12 +80,19 @@ class _OtpTabState extends State<OtpTab> {
     });
 
     try {
-      final aulas = await ApiService().getAulas();
+      final esAdmin =
+          ApiService().usuarioActual?.rol.toLowerCase() == 'admin';
+      final aulas = esAdmin
+          ? await ApiService().getAulas()
+          : await ApiService().getAulasAutorizadas();
       if (!mounted) return;
       setState(() {
         _aulas = aulas;
         if (_aulas.isNotEmpty) {
-          _aulaSeleccionada = _aulas.first;
+          _aulaSeleccionada = widget.aulaIdInicial != null
+              ? (_aulas.where((a) => a.id == widget.aulaIdInicial).firstOrNull ??
+                  _aulas.first)
+              : _aulas.first;
         }
         _cargandoAulas = false;
       });

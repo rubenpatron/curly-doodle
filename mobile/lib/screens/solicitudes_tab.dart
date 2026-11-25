@@ -6,7 +6,9 @@ import '../widgets/aulasync_widgets.dart';
 import 'nueva_solicitud_screen.dart';
 
 class SolicitudesTab extends StatefulWidget {
-  const SolicitudesTab({super.key});
+  final bool? esAdmin;
+
+  const SolicitudesTab({super.key, this.esAdmin});
 
   @override
   State<SolicitudesTab> createState() => _SolicitudesTabState();
@@ -17,6 +19,11 @@ class _SolicitudesTabState extends State<SolicitudesTab> {
   String? _error;
   List<Solicitud> _solicitudes = [];
   String _filtroEstado = 'todas';
+  int? _procesandoId;
+
+  bool get _esAdmin =>
+      widget.esAdmin ??
+      (ApiService().usuarioActual?.rol.toLowerCase() == 'admin');
 
   @override
   void initState() {
@@ -319,9 +326,169 @@ class _SolicitudesTabState extends State<SolicitudesTab> {
               ),
             ),
           ],
+          if (_esAdmin && s.docente != null && s.docente!.trim().isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Text(
+              'Docente: ${s.docente!}',
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: AppColors.navy,
+              ),
+            ),
+          ],
+          if (_esAdmin && s.estado.toLowerCase() == 'pendiente') ...[
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: _procesandoId == s.id
+                        ? null
+                        : () => _mostrarDialogoResponder(s, 'rechazar'),
+                    icon: const Icon(Icons.close_rounded, size: 16),
+                    label: const Text('Rechazar'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.error,
+                      backgroundColor: AppColors.errorBg,
+                      side: const BorderSide(color: AppColors.errorBorder),
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: FilledButton.icon(
+                    onPressed: _procesandoId == s.id
+                        ? null
+                        : () => _mostrarDialogoResponder(s, 'aprobar'),
+                    icon: _procesandoId == s.id
+                        ? const SizedBox(
+                            width: 14,
+                            height: 14,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Icon(Icons.check_rounded, size: 16),
+                    label: const Text('Aprobar'),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.success,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ],
       ),
     );
+  }
+
+  Future<void> _mostrarDialogoResponder(Solicitud s, String accion) async {
+    final esRechazo = accion == 'rechazar';
+    final ctrl = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    final confirmado = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+        title: Text(esRechazo ? 'Rechazar solicitud' : 'Aprobar solicitud'),
+        content: Form(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '${s.materia} · Aula ${s.aulaSolicitada} (${s.fecha})',
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textMuted,
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: ctrl,
+                maxLines: 2,
+                decoration: InputDecoration(
+                  labelText: esRechazo
+                      ? 'Motivo del rechazo (obligatorio)'
+                      : 'Comentarios (opcional)',
+                  hintText: esRechazo
+                      ? 'Ej. Aula ocupada en ese bloque horario'
+                      : 'Ej. Aprobado, usar llave OTP asignada',
+                ),
+                validator: (v) {
+                  if (esRechazo && (v == null || v.trim().isEmpty)) {
+                    return 'Debes indicar el motivo del rechazo';
+                  }
+                  return null;
+                },
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: esRechazo ? AppColors.error : AppColors.success,
+            ),
+            onPressed: () {
+              if (formKey.currentState!.validate()) {
+                Navigator.pop(ctx, true);
+              }
+            },
+            child: Text(esRechazo ? 'Rechazar' : 'Aprobar'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmado != true || !mounted) return;
+    setState(() => _procesandoId = s.id);
+    try {
+      await ApiService().responderSolicitud(
+        id: s.id,
+        accion: accion,
+        comentarios: ctrl.text,
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(esRechazo
+              ? 'Solicitud rechazada.'
+              : 'Solicitud aprobada correctamente.'),
+          backgroundColor: esRechazo ? AppColors.error : AppColors.success,
+        ),
+      );
+      await _cargarSolicitudes();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString().replaceAll('Exception: ', '')),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _procesandoId = null);
+    }
   }
 }
 

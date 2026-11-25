@@ -5,12 +5,14 @@ import '../theme/app_theme.dart';
 import '../widgets/aulasync_widgets.dart';
 
 class HorariosTab extends StatefulWidget {
-  final VoidCallback? onIrAOtp;
+  final void Function(int idAula)? onIrAOtp;
+  final VoidCallback? onIrAPerfil;
   final String iniciales;
 
   const HorariosTab({
     super.key,
     this.onIrAOtp,
+    this.onIrAPerfil,
     this.iniciales = 'EP',
   });
 
@@ -169,20 +171,23 @@ class _HorariosTabState extends State<HorariosTab> {
               ),
             ],
           ),
-          Container(
-            width: 40,
-            height: 40,
-            decoration: const BoxDecoration(
-              gradient: AppColors.brandGradient,
-              shape: BoxShape.circle,
-            ),
-            alignment: Alignment.center,
-            child: Text(
-              widget.iniciales,
-              style: AppTheme.displayFont(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
+          GestureDetector(
+            onTap: widget.onIrAPerfil,
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: const BoxDecoration(
+                gradient: AppColors.brandGradient,
+                shape: BoxShape.circle,
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                widget.iniciales,
+                style: AppTheme.displayFont(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
               ),
             ),
           ),
@@ -284,7 +289,9 @@ class _HorariosTabState extends State<HorariosTab> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(14),
                   child: InkWell(
-                    onTap: widget.onIrAOtp,
+                    onTap: widget.onIrAOtp != null
+                        ? () => widget.onIrAOtp!(claseHoy.idAula)
+                        : null,
                     borderRadius: BorderRadius.circular(14),
                     child: const Padding(
                       padding:
@@ -464,7 +471,7 @@ class _HorariosTabState extends State<HorariosTab> {
     return AulaSyncCard(
       radius: 22,
       padding: const EdgeInsets.all(14),
-      onTap: widget.onIrAOtp,
+      onTap: widget.onIrAOtp != null ? () => widget.onIrAOtp!(c.idAula) : null,
       child: Row(
         children: [
           Container(
